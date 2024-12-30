@@ -1,0 +1,34 @@
+[versions]
+kotlin = "2.1.0"
+dokka = "1.9.20"
+mockk = "1.13.14"
+# https://detekt.dev/docs/intro
+detekt = "1.23.7"
+# https://github.com/Kotlin/kotlinx-io/
+kotlinx-io = "0.6.0"
+[libraries]
+
+# gradle-nexus:publish-plugin
+#gradleNexusPublishPlugin = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "gradleNexusPublishPlugin" }
+
+# dokka
+dokka-plugin = { group = "org.jetbrains.dokka", name = "dokka-gradle-plugin", version.ref = "dokka" }
+dokka-core = { group = "org.jetbrains.dokka", name = "dokka-core", version.ref = "dokka" }
+dokka-base = { group = "org.jetbrains.dokka", name = "dokka-base", version.ref = "dokka" }
+
+# kotlinx-io
+kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
+
+# mockk
+## https://mockk.io/
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+# https://github.com/Kotlin/binary-compatibility-validator
+kotlinxBinaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.17.0" }
+
+[bundles]
+dokka = ["dokka-plugin", "dokka-core", "dokka-base"]
