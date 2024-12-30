@@ -20,7 +20,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-rootProject.name = "simple-robot"
+rootProject.name = "javapoet-multiplatform"
 
 pluginManagement {
     repositories {
