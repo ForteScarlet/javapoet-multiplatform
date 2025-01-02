@@ -16,6 +16,9 @@
 
 package love.forte.javapoet
 
+import love.forte.javapoet.internal.TypeNameImpl
+import kotlin.jvm.JvmStatic
+
 public interface TypeName {
 
     public val annotations: List<AnnotationSpec>
@@ -27,8 +30,6 @@ public interface TypeName {
     }
 
     public fun withoutAnnotations(): TypeName
-
-    public fun concatAnnotations(annotations: List<AnnotationSpec>): TypeName
 
     public val isAnnotated: Boolean
         get() = annotations.isNotEmpty()
@@ -42,4 +43,67 @@ public interface TypeName {
     public val isPrimitive: Boolean
 
     // TODO emit?
+
+    public companion object {
+        @JvmStatic
+        public val VOID: TypeName = TypeName("void")
+
+        @JvmStatic
+        public val BOOLEAN: TypeName = TypeName("boolean")
+
+        @JvmStatic
+        public val BYTE: TypeName = TypeName("byte")
+
+        @JvmStatic
+        public val SHORT: TypeName = TypeName("short")
+
+        @JvmStatic
+        public val INT: TypeName = TypeName("int")
+
+        @JvmStatic
+        public val LONG: TypeName = TypeName("long")
+
+        @JvmStatic
+        public val CHAR: TypeName = TypeName("char")
+
+        @JvmStatic
+        public val FLOAT: TypeName = TypeName("float")
+
+        @JvmStatic
+        public val DOUBLE: TypeName = TypeName("double")
+
+        @JvmStatic
+        public val OBJECT: ClassName = ClassName("java.lang", "Object")
+
+        private val BOXED_VOID: ClassName = ClassName("java.lang", "Void")
+        private val BOXED_BOOLEAN: ClassName = ClassName("java.lang", "Boolean")
+        private val BOXED_BYTE: ClassName = ClassName("java.lang", "Byte")
+        private val BOXED_SHORT: ClassName = ClassName("java.lang", "Short")
+        private val BOXED_INT: ClassName = ClassName("java.lang", "Integer")
+        private val BOXED_LONG: ClassName = ClassName("java.lang", "Long")
+        private val BOXED_CHAR: ClassName = ClassName("java.lang", "Character")
+        private val BOXED_FLOAT: ClassName = ClassName("java.lang", "Float")
+        private val BOXED_DOUBLE: ClassName = ClassName("java.lang", "Double")
+    }
+}
+
+private fun TypeName(keyword: String): TypeName = when (keyword) {
+    "void" -> TypeName.VOID
+    "boolean" -> TypeName.BOOLEAN
+    "byte" -> TypeName.BYTE
+    "short" -> TypeName.SHORT
+    "int" -> TypeName.INT
+    "long" -> TypeName.LONG
+    "char" -> TypeName.CHAR
+    "float" -> TypeName.FLOAT
+    "double" -> TypeName.DOUBLE
+    else -> TypeNameImpl(keyword)
+}
+
+private fun TypeName(keyword: String, annotations: List<AnnotationSpec>): TypeName {
+    if (annotations.isEmpty()) {
+        return TypeName(keyword)
+    }
+
+    return TypeNameImpl(keyword, annotations)
 }

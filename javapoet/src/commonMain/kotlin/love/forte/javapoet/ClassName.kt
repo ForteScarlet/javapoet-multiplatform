@@ -64,9 +64,6 @@ public interface ClassName : TypeName, Comparable<ClassName> {
     }
 }
 
-/**
- *
- */
 public fun ClassName(clz: KClass<*>): ClassName = TODO()
 
 /**
