@@ -125,3 +125,9 @@ public interface FieldSpec {
         }
     }
 }
+
+/**
+ * @see FieldSpec.builder
+ */
+public inline fun FieldSpec(type: TypeName, name: String, block: FieldSpec.Builder.() -> Unit = {}): FieldSpec =
+    FieldSpec.builder(type, name).also(block).build()

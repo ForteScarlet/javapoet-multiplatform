@@ -20,9 +20,9 @@
 package love.forte.javapoet
 
 import love.forte.javapoet.internal.TypeNameImpl
+import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
-import kotlin.jvm.JvmStatic
 
 public interface TypeName {
 
@@ -49,59 +49,62 @@ public interface TypeName {
 
     // TODO emit?
 
-    public companion object {
-        @JvmStatic
+    public object Builtins {
+        @JvmField
         public val VOID: TypeName = TypeName("void")
 
-        @JvmStatic
+        @JvmField
         public val BOOLEAN: TypeName = TypeName("boolean")
 
-        @JvmStatic
+        @JvmField
         public val BYTE: TypeName = TypeName("byte")
 
-        @JvmStatic
+        @JvmField
         public val SHORT: TypeName = TypeName("short")
 
-        @JvmStatic
+        @JvmField
         public val INT: TypeName = TypeName("int")
 
-        @JvmStatic
+        @JvmField
         public val LONG: TypeName = TypeName("long")
 
-        @JvmStatic
+        @JvmField
         public val CHAR: TypeName = TypeName("char")
 
-        @JvmStatic
+        @JvmField
         public val FLOAT: TypeName = TypeName("float")
 
-        @JvmStatic
+        @JvmField
         public val DOUBLE: TypeName = TypeName("double")
 
-        @JvmStatic
-        public val OBJECT: ClassName = ClassName("java.lang", "Object")
+        @JvmField
+        public val OBJECT: TypeName = ClassName.Builtins.OBJECT
+    }
 
-        private val BOXED_VOID: ClassName = ClassName("java.lang", "Void")
-        private val BOXED_BOOLEAN: ClassName = ClassName("java.lang", "Boolean")
-        private val BOXED_BYTE: ClassName = ClassName("java.lang", "Byte")
-        private val BOXED_SHORT: ClassName = ClassName("java.lang", "Short")
-        private val BOXED_INT: ClassName = ClassName("java.lang", "Integer")
-        private val BOXED_LONG: ClassName = ClassName("java.lang", "Long")
-        private val BOXED_CHAR: ClassName = ClassName("java.lang", "Character")
-        private val BOXED_FLOAT: ClassName = ClassName("java.lang", "Float")
-        private val BOXED_DOUBLE: ClassName = ClassName("java.lang", "Double")
+    public companion object {
+        // private val BOXED_VOID: ClassName = ClassName("java.lang", "Void")
+        // private val BOXED_BOOLEAN: ClassName = ClassName("java.lang", "Boolean")
+        // private val BOXED_BYTE: ClassName = ClassName("java.lang", "Byte")
+        // private val BOXED_SHORT: ClassName = ClassName("java.lang", "Short")
+        // private val BOXED_INT: ClassName = ClassName("java.lang", "Integer")
+        // private val BOXED_LONG: ClassName = ClassName("java.lang", "Long")
+        // private val BOXED_CHAR: ClassName = ClassName("java.lang", "Character")
+        // private val BOXED_FLOAT: ClassName = ClassName("java.lang", "Float")
+        // private val BOXED_DOUBLE: ClassName = ClassName("java.lang", "Double")
     }
 }
 
+
 private fun TypeName(keyword: String): TypeName = when (keyword) {
-    "void" -> TypeName.VOID
-    "boolean" -> TypeName.BOOLEAN
-    "byte" -> TypeName.BYTE
-    "short" -> TypeName.SHORT
-    "int" -> TypeName.INT
-    "long" -> TypeName.LONG
-    "char" -> TypeName.CHAR
-    "float" -> TypeName.FLOAT
-    "double" -> TypeName.DOUBLE
+    "void" -> TypeName.Builtins.VOID
+    "boolean" -> TypeName.Builtins.BOOLEAN
+    "byte" -> TypeName.Builtins.BYTE
+    "short" -> TypeName.Builtins.SHORT
+    "int" -> TypeName.Builtins.INT
+    "long" -> TypeName.Builtins.LONG
+    "char" -> TypeName.Builtins.CHAR
+    "float" -> TypeName.Builtins.FLOAT
+    "double" -> TypeName.Builtins.DOUBLE
     else -> TypeNameImpl(keyword)
 }
 

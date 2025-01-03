@@ -302,6 +302,9 @@ public fun CodeBlock(format: String, vararg args: Any?): CodeBlock {
     return CodeBlock.builder().add(format, *args).build()
 }
 
+public inline fun CodeBlock(block: CodeBlock.Builder.() -> Unit): CodeBlock =
+    CodeBlock.builder().also(block).build()
+
 // join?
 // public fun Iterable<CodeBlock>.join(separator: String): CodeBlock = TODO()
 

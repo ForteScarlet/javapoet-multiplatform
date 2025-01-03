@@ -22,6 +22,7 @@ import love.forte.javapoet.internal.AnnotationSpecImpl
 import love.forte.javapoet.internal.isSourceName
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
+import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 import kotlin.reflect.KClass
 

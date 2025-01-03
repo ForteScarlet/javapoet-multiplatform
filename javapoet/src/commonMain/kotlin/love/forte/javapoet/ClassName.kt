@@ -19,6 +19,7 @@
 
 package love.forte.javapoet
 
+import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.reflect.KClass
@@ -79,13 +80,28 @@ public interface ClassName : TypeName, Comparable<ClassName> {
 
     override fun compareTo(other: ClassName): Int = canonicalName.compareTo(other.canonicalName)
 
+    public object Builtins {
+        @JvmField
+        public val OBJECT: ClassName = ClassName("java.lang", "Object")
+
+    }
+
     public companion object {
         // OBJECT?
 
     }
 }
 
-public fun ClassName(clz: KClass<*>): ClassName = TODO()
+// expect?
+public fun ClassName(clz: KClass<*>): ClassName {
+    TODO()
+}
+
+
+public inline fun <reified T> ClassName(): ClassName {
+    TODO()
+}
+
 
 /**
  * Returns a class name created from the given parts. For example, calling this with package name `"java.util"`

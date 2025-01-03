@@ -19,4 +19,9 @@ kotlin {
         binaries.library()
     }
 
+    sourceSets {
+        commonMain.dependencies {
+            implementation(kotlin("reflect"))
+        }
+    }
 }
