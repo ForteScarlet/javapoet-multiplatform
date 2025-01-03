@@ -19,8 +19,10 @@
 
 package love.forte.javapoet
 
+import love.forte.javapoet.internal.CodeBlockImpl
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
+import kotlin.jvm.JvmStatic
 
 
 /**
@@ -59,62 +61,96 @@ public interface CodeBlock {
 
     public val isEmpty: Boolean
 
+    public fun addTo(builder: Builder)
 
-    public class Builder private constructor(
-    ) {
+    public fun toBuilder(): Builder
+
+    public abstract class Builder {
         internal val formatParts: MutableList<String> = mutableListOf()
         internal val args: MutableList<Any?> = mutableListOf()
 
-        public val isEmpty: Boolean
+        public open val isEmpty: Boolean
             get() = formatParts.isEmpty()
 
-        public fun addNamed(format: String, arguments: Map<String, *>): Builder = apply {
-            TODO()
+        public abstract fun addNamed(format: String, arguments: Map<String, *>): Builder
+
+        public abstract fun add(format: String, vararg args: Any?): Builder
+
+        public open fun beginControlFlow(controlFlow: String, vararg args: Any?): Builder = apply {
+            add("$controlFlow {\n", *args)
+            indent()
         }
 
-        public fun add(format: String, vararg args: Any?): Builder = apply {
-            TODO()
+        public open fun nextControlFlow(controlFlow: String, vararg args: Any?): Builder = apply {
+            unindent()
+            add("} $controlFlow {\n", *args)
+            indent()
         }
 
-        /**
-         * @param controlFlow the control flow construct and its code, such as `"if (foo == 5)"`.
-         * Shouldn't contain braces or newline characters.
-         */
-        public fun beginControlFlow(controlFlow: String, vararg args: Any?): Builder = apply {
-            TODO()
-        }
-
-        /**
-         * @param controlFlow the control flow construct and its code, such as `"else if (foo == 10)"`.
-         * Shouldn't contain braces or newline characters.
-         */
-        public fun nextControlFlow(controlFlow: String, vararg args: Any?): Builder = apply {
-            TODO()
-        }
-
-        public fun endControlFlow(): Builder = apply {
-            TODO()
+        public open fun endControlFlow(): Builder = apply {
+            unindent()
+            add("}\n")
         }
 
         /**
          * @param controlFlow the optional control flow construct and its code, such as
          * `"while(foo == 20)"`. Only used for `"do/while"` control flows.
          */
-        public fun endControlFlow(controlFlow: String, vararg args: Any?): Builder = apply { }
+        public open fun endControlFlow(controlFlow: String, vararg args: Any?): Builder = apply {
+            unindent()
+            add("} $controlFlow;\n", *args)
+        }
+
+        public open fun addStatement(format: String, vararg args: Any?): Builder = apply {
+            add("$[")
+            add(format, *args)
+            add(";\n$]")
+        }
+
+        public open fun addStatement(codeBlock: CodeBlock): Builder = apply {
+            addStatement("\$L", codeBlock)
+        }
+
+        public open fun add(codeBlock: CodeBlock): Builder = apply {
+            codeBlock.addTo(this)
+        }
+
+        public open fun indent(): Builder = apply {
+            formatParts.add("$>")
+        }
+
+        public open fun unindent(): Builder = apply {
+            formatParts.add("$<")
+        }
+
+        public open fun clear(): Builder = apply {
+            formatParts.clear()
+            args.clear()
+        }
+
+        public abstract fun build(): CodeBlock
     }
 
     public companion object {
         internal val NAMED_ARGUMENT = Regex("\\$(?<argumentName>[\\w_]+):(?<typeChar>[\\w]).*")
         internal val LOWERCASE = Regex("[a-z]+[\\w_]*")
 
+        /**
+         * Create a new [Builder].
+         */
+        @JvmStatic
+        public fun builder(): Builder = CodeBlockImpl.Builder()
     }
 }
 
 
-public fun CodeBlock(format: String, vararg args: Any?): CodeBlock = TODO()
+public fun CodeBlock(format: String, vararg args: Any?): CodeBlock {
+    return CodeBlock.builder().add(format, *args).build()
+}
 
 
-public fun Iterable<CodeBlock>.join(separator: String): CodeBlock = TODO()
+// join?
+// public fun Iterable<CodeBlock>.join(separator: String): CodeBlock = TODO()
 
 // TODO Stream joining
 
