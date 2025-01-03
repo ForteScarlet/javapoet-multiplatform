@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package love.forte.javapoet
 
 import love.forte.javapoet.internal.*
@@ -34,7 +35,7 @@ public class NameAllocator {
 
     public fun newName(suggestion: String, tag: Any): String {
         var toIdentifier = suggestion.toJavaIdentifier()
-        while (toIdentifier.isKeyword() || !allocatedNames.add(toIdentifier)) {
+        while (toIdentifier.isSourceKeyword() || !allocatedNames.add(toIdentifier)) {
             toIdentifier += "_"
         }
 

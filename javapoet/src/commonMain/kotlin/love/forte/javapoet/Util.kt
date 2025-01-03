@@ -63,3 +63,5 @@ private fun Char.isIdentifierIgnorable(): Boolean {
             )
         ) || this in CharCategory.FORMAT
 }
+
+internal expect fun <K, V> MutableMap<K, V>.computeValueIfAbsent(key: K, f: (K) -> V): V

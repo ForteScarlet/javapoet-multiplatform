@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
+@file:JvmName("TypeNames")
+@file:JvmMultifileClass
+
 package love.forte.javapoet
 
 import love.forte.javapoet.internal.TypeNameImpl
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
 public interface TypeName {

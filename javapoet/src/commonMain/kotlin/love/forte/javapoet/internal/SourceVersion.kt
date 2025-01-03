@@ -16,4 +16,38 @@ private val keywords = setOf(
     "null", "true", "false"
 )
 
-internal fun String.isKeyword() = this in keywords
+internal fun CharSequence.isSourceKeyword() = toString() in keywords
+
+internal fun CharSequence.isSourceName(): Boolean {
+    val id = toString()
+
+    for (s in id.split("\\.".toRegex()).toTypedArray()) {
+        if (!s.isSourceIdentifier() || s.isSourceKeyword()) return false
+    }
+    return true
+}
+
+internal fun CharSequence.isSourceIdentifier(): Boolean {
+    val id: String = toString()
+
+    if (id.isEmpty()) {
+        return false
+    }
+    var cp = id.codePointAt(0)
+    if (!cp.isJavaIdentifierStart()) {
+        return false
+    }
+
+    var i: Int = cp.charCount()
+    while (i < id.length) {
+        cp = id.codePointAt(i)
+
+        if (!cp.isJavaIdentifierPart()) {
+            return false
+        }
+
+        i += cp.charCount()
+    }
+
+    return true
+}
