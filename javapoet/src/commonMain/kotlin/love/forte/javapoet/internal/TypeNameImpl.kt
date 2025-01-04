@@ -2,7 +2,7 @@ package love.forte.javapoet.internal
 
 import love.forte.javapoet.AnnotationSpec
 import love.forte.javapoet.TypeName
-import love.forte.javapoet.TypeName.Companion.VOID
+import love.forte.javapoet.TypeName.Builtins.VOID
 
 
 internal class TypeNameImpl(

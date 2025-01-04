@@ -21,6 +21,7 @@ package love.forte.javapoet
 
 import love.forte.javapoet.TypeSpec.Kind
 import love.forte.javapoet.internal.isSourceName
+import kotlin.jvm.JvmInline
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
@@ -44,6 +45,9 @@ public sealed interface TypeSpec {
     public val javadoc: CodeBlock
     public val annotations: List<AnnotationSpec>
     public val modifiers: Set<Modifier>
+
+    public fun hasModifier(modifier: Modifier): Boolean = modifier in modifiers
+
     public val typeVariables: List<TypeVariableName>
 
     // TODO super class:
@@ -77,17 +81,89 @@ public sealed interface TypeSpec {
     /**
      * Type kind
      */
-    public enum class Kind {
-        CLASS,
-        INTERFACE,
-        ENUM,
-        ANNOTATION,
-        RECORD,
-        SEALED_CLASS, // abstract sealed class Vehicle permits Car, Truck
-        NON_SEALED_CLASS, // non-sealed class Car extends Vehicle implements Service
-        SEALED_INTERFACE, // sealed interface Service permits Car, Truck
-        NON_SEALED_INTERFACE, // non-sealed interface Service permits Car, Truck
+    public enum class Kind(
+        internal val states: States = States(0),
+    ) {
+        CLASS(
+            states = States(
+                State.SUPERCLASS_SUPPORT,
+                State.SUPERINTERFACES_SUPPORT,
+            )
+        ),
+        INTERFACE(
+            states = States(
+                State.SUPERINTERFACES_SUPPORT,
+            )
+        ),
+        ENUM(
+            states = States(
+                State.SUPERINTERFACES_SUPPORT,
+            )
+        ),
+        ANNOTATION(
+            states = States(
+            )
+        ),
+        RECORD(
+            states = States(
+                State.SUPERINTERFACES_SUPPORT,
+            )
+        ),
+
+        // abstract sealed class Vehicle permits Car, Truck
+        SEALED_CLASS(
+            states = States(
+                State.SUPERCLASS_SUPPORT,
+                State.SUPERINTERFACES_SUPPORT
+            )
+        ),
+
+        // non-sealed class Car extends Vehicle implements Service
+        NON_SEALED_CLASS(
+            states = States(
+                State.SUPERCLASS_SUPPORT
+            )
+        ),
+
+        // sealed interface Service permits Car, Truck
+        SEALED_INTERFACE(
+            states = States(
+                State.SUPERINTERFACES_SUPPORT,
+            )
+        ),
+
+        // non-sealed interface Service permits Car, Truck
+        NON_SEALED_INTERFACE(
+            states = States(
+                State.SUPERINTERFACES_SUPPORT,
+            )
+        );
+
+        @JvmInline
+        internal value class States(private val bits: Int) {
+            constructor(vararg states: State) : this(
+                states.fold(0) { acc, state -> acc or state.bit }
+            )
+
+            operator fun contains(state: State): Boolean =
+                bits and state.bit != 0
+
+            inline val superclassSupport: Boolean
+                get() = bits and State.SUPERCLASS_SUPPORT.bit != 0
+
+            inline val superinterfacesSupport: Boolean
+                get() = bits and State.SUPERINTERFACES_SUPPORT.bit != 0
+        }
+
+        internal enum class State {
+            SUPERCLASS_SUPPORT,
+            SUPERINTERFACES_SUPPORT,
+            ;
+
+            val bit: Int get() = 1 shl ordinal
+        }
     }
+
 
     /**
      * @see SimpleTypeSpec.Builder
@@ -120,16 +196,139 @@ public sealed interface TypeSpec {
         public val methods: MutableList<MethodSpec> = mutableListOf()
         public val types: MutableList<TypeSpec> = mutableListOf()
 
-        // addJavadoc(s)
-        // addAnnotation(s)
+        protected abstract val self: B
+
+        public open fun addJavadoc(format: String, vararg args: Any?): B = self.apply {
+            javadoc.add(format, *args)
+        }
+
+        public open fun addJavadoc(block: CodeBlock): B = self.apply {
+            javadoc.add(block)
+        }
+
+        public open fun superclass(superclass: TypeName): B = self.apply {
+            check(kind.states.superclassSupport) { "`superclass` is not supported for kind $kind" }
+            require(!superclass.isPrimitive) { "`superclass` can't be primitive." }
+            this.superclass = superclass
+        }
+
+        public open fun addStaticBlock(format: String, vararg args: Any?): B = self.apply {
+            this.staticBlock.add(format, *args)
+        }
+
+        public open fun addStaticBlock(block: CodeBlock): B = self.apply {
+            this.staticBlock.add(block)
+        }
+
+        public open fun addInitializerBlock(format: String, vararg args: Any?): B = self.apply {
+            this.initializerBlock.add(format, *args)
+        }
+
+        public open fun addInitializerBlock(block: CodeBlock): B = self.apply {
+            this.initializerBlock.add(block)
+        }
+
+        public open fun addAnnotations(annotations: Iterable<AnnotationSpec>): B = self.apply {
+            this.annotations.addAll(annotations)
+        }
+
+        public open fun addAnnotations(vararg annotations: AnnotationSpec): B = self.apply {
+            this.annotations.addAll(annotations)
+        }
+
+        public open fun addAnnotation(annotation: AnnotationSpec): B = self.apply {
+            this.annotations.add(annotation)
+        }
+
+        public open fun addAnnotation(annotation: ClassName): B =
+            addAnnotation(AnnotationSpec(annotation))
+
+        public open fun addModifiers(vararg modifiers: Modifier): B = self.apply {
+            this.modifiers.addAll(modifiers)
+        }
+
+        public open fun addModifiers(modifiers: Iterable<Modifier>): B = self.apply {
+            this.modifiers.addAll(modifiers)
+        }
+
+        public open fun addModifier(modifier: Modifier): B = self.apply {
+            this.modifiers.add(modifier)
+        }
+
+        public open fun addTypeVariables(vararg typeVariables: TypeVariableName): B = self.apply {
+            this.typeVariables.addAll(typeVariables)
+        }
+
+        public open fun addTypeVariables(typeVariables: Iterable<TypeVariableName>): B = self.apply {
+            this.typeVariables.addAll(typeVariables)
+        }
+
+        public open fun addTypeVariable(typeVariable: TypeVariableName): B = self.apply {
+            this.typeVariables.add(typeVariable)
+        }
+
+        public open fun addSuperinterfaces(vararg superinterfaces: TypeName): B = self.apply {
+            checkSuperinterfaceSupport()
+            this.superinterfaces.addAll(superinterfaces)
+        }
+
+        public open fun addSuperinterfaces(superinterfaces: Iterable<TypeName>): B = self.apply {
+            checkSuperinterfaceSupport()
+            this.superinterfaces.addAll(superinterfaces)
+        }
+
+        public open fun addSuperinterface(superinterface: TypeName): B = self.apply {
+            checkSuperinterfaceSupport()
+            this.superinterfaces.add(superinterface)
+        }
+
+        private fun checkSuperinterfaceSupport() {
+            check(kind.states.superinterfacesSupport) { "`superinterface` is not supported for kind $kind" }
+        }
+
+        public open fun addFields(vararg fields: FieldSpec): B = self.apply {
+            this.fields.addAll(fields)
+        }
+
+        public open fun addFields(fields: Iterable<FieldSpec>): B = self.apply {
+            this.fields.addAll(fields)
+        }
+
+        public open fun addField(field: FieldSpec): B = self.apply {
+            this.fields.add(field)
+        }
+
+        // TODO check field?
+
+        public open fun addMethods(methods: Iterable<MethodSpec>): B = self.apply {
+            this.methods.addAll(methods)
+        }
+
+        public open fun addMethods(vararg methods: MethodSpec): B = self.apply {
+            this.methods.addAll(methods)
+        }
+
+        public open fun addMethod(method: MethodSpec): B = self.apply {
+            this.methods.add(method)
+        }
+
+        public open fun addTypes(types: Iterable<TypeSpec>): B = self.apply {
+            this.types.addAll(types)
+        }
+
+        public open fun addTypes(vararg types: TypeSpec): B = self.apply {
+            this.types.addAll(types)
+        }
+
+        public open fun addType(type: TypeSpec): B = self.apply {
+            this.types.add(type)
+        }
 
 
         public abstract fun build(): T
     }
 
-    public companion object {
-
-    }
+    public companion object
 }
 
 /**
@@ -147,6 +346,9 @@ public interface SimpleTypeSpec : TypeSpec {
                 "Invalid simple type `kind`: $kind"
             }
         }
+
+        override val self: Builder
+            get() = this
 
 
         override fun build(): SimpleTypeSpec {
@@ -169,6 +371,9 @@ public interface AnnotationTypeSpec : TypeSpec {
         name: String?,
         anonymousTypeArguments: CodeBlock,
     ) : TypeSpec.Builder<Builder, AnnotationTypeSpec>(Kind.ANNOTATION, name, anonymousTypeArguments) {
+
+        override val self: Builder
+            get() = this
 
         override fun build(): AnnotationTypeSpec {
             TODO("Not yet implemented")
@@ -196,6 +401,14 @@ public interface EnumTypeSpec : TypeSpec {
         name: String?,
         anonymousTypeArguments: CodeBlock,
     ) : TypeSpec.Builder<Builder, EnumTypeSpec>(Kind.ENUM, name, anonymousTypeArguments) {
+        override val self: Builder
+            get() = this
+
+        private val enumConstants = linkedMapOf<String, TypeSpec>()
+
+        public fun addEnumConstant(name: String, type: TypeSpec): Builder = apply {
+            enumConstants[name] = type
+        }
 
         override fun build(): EnumTypeSpec {
             TODO("Not yet implemented")
@@ -228,6 +441,9 @@ public interface NonSealedTypeSpec : TypeSpec {
             }
         }
 
+        override val self: Builder
+            get() = this
+
         override fun build(): NonSealedTypeSpec {
             TODO("Not yet implemented")
         }
@@ -251,6 +467,23 @@ public interface SealedTypeSpec : TypeSpec {
             check(kind == Kind.SEALED_CLASS || kind == Kind.SEALED_INTERFACE) {
                 "Invalid sealed `kind`: $kind"
             }
+        }
+
+        override val self: Builder
+            get() = this
+
+        private val permits = mutableListOf<TypeName>()
+
+        public fun addPermits(permits: Iterable<TypeName>): Builder = apply {
+            this.permits.addAll(permits)
+        }
+
+        public fun addPermits(vararg permits: TypeName): Builder = apply {
+            this.permits.addAll(permits)
+        }
+
+        public fun addPermit(permit: TypeName): Builder = apply {
+            permits.add(permit)
         }
 
         override fun build(): SealedTypeSpec {
@@ -277,6 +510,14 @@ public interface RecordTypeSpec : TypeSpec {
         name: String?,
         anonymousTypeArguments: CodeBlock,
     ) : TypeSpec.Builder<Builder, SealedTypeSpec>(Kind.RECORD, name, anonymousTypeArguments) {
+        override val self: Builder
+            get() = this
+
+        private var mainConstructor: MethodSpec? = null
+
+        public fun mainConstructor(method: MethodSpec): Builder = apply {
+            mainConstructor = method
+        }
 
         override fun build(): SealedTypeSpec {
             TODO("Not yet implemented")

@@ -98,11 +98,6 @@ public fun ClassName(clz: KClass<*>): ClassName {
 }
 
 
-public inline fun <reified T> ClassName(): ClassName {
-    TODO()
-}
-
-
 /**
  * Returns a class name created from the given parts. For example, calling this with package name `"java.util"`
  * and simple names `"Map"`, `"Entry"` yields [Map.Entry].
