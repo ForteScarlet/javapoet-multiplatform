@@ -20,7 +20,7 @@
 package love.forte.javapoet
 
 import love.forte.javapoet.TypeSpec.Kind
-import love.forte.javapoet.internal.isSourceName
+import love.forte.javapoet.internal.*
 import kotlin.jvm.JvmInline
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -39,9 +39,8 @@ import kotlin.jvm.JvmName
  * @author ForteScarlet
  */
 public sealed interface TypeSpec {
-    public val name: String
+    public val name: String?
     public val kind: Kind
-    public val anonymousTypeArguments: CodeBlock
     public val javadoc: CodeBlock
     public val annotations: List<AnnotationSpec>
     public val modifiers: Set<Modifier>
@@ -72,7 +71,7 @@ public sealed interface TypeSpec {
     public val methods: List<MethodSpec>
 
     // subtypes
-    public val types: List<TypeName>
+    public val types: List<TypeSpec>
 
     // val nestedTypesSimpleNames: Set<String>? = null
     // val alwaysQualifiedNames: Set<String>? = null
@@ -176,7 +175,6 @@ public sealed interface TypeSpec {
     public sealed class Builder<B : Builder<B, T>, T : TypeSpec>(
         public val kind: Kind,
         public val name: String?,
-        public val anonymousTypeArguments: CodeBlock,
     ) {
         init {
             check(name == null || name.isSourceName()) { "Invalid `name`: $name" }
@@ -187,7 +185,6 @@ public sealed interface TypeSpec {
         internal val staticBlock = CodeBlock.builder()
         internal val initializerBlock = CodeBlock.builder()
 
-        // enumConstants
         public val annotations: MutableList<AnnotationSpec> = mutableListOf()
         public val modifiers: MutableSet<Modifier> = linkedSetOf()
         public val typeVariables: MutableList<TypeVariableName> = mutableListOf()
@@ -335,14 +332,14 @@ public sealed interface TypeSpec {
  * A generated `class` or `interface`.
  */
 public interface SimpleTypeSpec : TypeSpec {
+    override val name: String
 
     public class Builder(
         kind: Kind,
-        name: String?,
-        anonymousTypeArguments: CodeBlock,
-    ) : TypeSpec.Builder<Builder, SimpleTypeSpec>(kind, name, anonymousTypeArguments) {
+        name: String,
+    ) : TypeSpec.Builder<Builder, SimpleTypeSpec>(kind, name) {
         init {
-            check(kind == Kind.CLASS || kind == Kind.INTERFACE) {
+            require(kind == Kind.CLASS || kind == Kind.INTERFACE) {
                 "Invalid simple type `kind`: $kind"
             }
         }
@@ -352,11 +349,71 @@ public interface SimpleTypeSpec : TypeSpec {
 
 
         override fun build(): SimpleTypeSpec {
-            TODO("Not yet implemented")
+            return SimpleTypeSpecImpl(
+                name = name!!,
+                kind = kind,
+                javadoc = javadoc.build(),
+                annotations = annotations.toList(),
+                modifiers = LinkedHashSet(modifiers),
+                typeVariables = typeVariables.toList(),
+                superclass = superclass,
+                superinterfaces = superinterfaces.toList(),
+                fields = fields.toList(),
+                staticBlock = staticBlock.build(),
+                initializerBlock = initializerBlock.build(),
+                methods = methods,
+                types = types.toList(),
+            )
         }
     }
-
 }
+
+/**
+ * A generated anonymous class.
+ * ```java
+ * new java.lang.Object() {
+ * }
+ * ////
+ * new HashMap<String, String>(1) {
+ * // `anonymousTypeArguments` 👆
+ * }
+ * ```
+ *
+ * Also used in enum constants, see [EnumTypeSpec.enumConstants].
+ *
+ */
+public interface AnonymousClassTypeSpec : TypeSpec {
+    override val name: String?
+        get() = null
+
+    public val anonymousTypeArguments: CodeBlock
+
+    public class Builder(
+        public val anonymousTypeArguments: CodeBlock,
+    ) : TypeSpec.Builder<Builder, AnonymousClassTypeSpec>(Kind.CLASS, null) {
+        override val self: Builder
+            get() = this
+
+        override fun build(): AnonymousClassTypeSpec {
+            return AnonymousClassTypeSpecImpl(
+                kind = kind,
+                anonymousTypeArguments = anonymousTypeArguments,
+                javadoc = javadoc.build(),
+                annotations = annotations.toList(),
+                modifiers = LinkedHashSet(modifiers),
+                typeVariables = typeVariables.toList(),
+                superclass = superclass,
+                superinterfaces = superinterfaces.toList(),
+                fields = fields.toList(),
+                staticBlock = staticBlock.build(),
+                initializerBlock = initializerBlock.build(),
+                methods = methods,
+                types = types.toList(),
+            )
+        }
+    }
+}
+
 // Class, interface
 
 /**
@@ -367,16 +424,34 @@ public interface SimpleTypeSpec : TypeSpec {
  * ```
  */
 public interface AnnotationTypeSpec : TypeSpec {
+    override val name: String
+
     public class Builder(
-        name: String?,
-        anonymousTypeArguments: CodeBlock,
-    ) : TypeSpec.Builder<Builder, AnnotationTypeSpec>(Kind.ANNOTATION, name, anonymousTypeArguments) {
+        name: String,
+    ) : TypeSpec.Builder<Builder, AnnotationTypeSpec>(Kind.ANNOTATION, name) {
 
         override val self: Builder
             get() = this
 
         override fun build(): AnnotationTypeSpec {
-            TODO("Not yet implemented")
+            // TODO check method must be public abstract
+            // TODO check field must be public static (no private)
+
+            return AnnotationTypeSpecImpl(
+                name = name!!,
+                kind = kind,
+                javadoc = javadoc.build(),
+                annotations = annotations.toList(),
+                modifiers = LinkedHashSet(modifiers),
+                typeVariables = typeVariables.toList(),
+                superclass = superclass,
+                superinterfaces = superinterfaces.toList(),
+                fields = fields.toList(),
+                staticBlock = staticBlock.build(),
+                initializerBlock = initializerBlock.build(),
+                methods = methods,
+                types = types.toList(),
+            )
         }
     }
 }
@@ -399,19 +474,34 @@ public interface EnumTypeSpec : TypeSpec {
 
     public class Builder(
         name: String?,
-        anonymousTypeArguments: CodeBlock,
-    ) : TypeSpec.Builder<Builder, EnumTypeSpec>(Kind.ENUM, name, anonymousTypeArguments) {
+    ) : TypeSpec.Builder<Builder, EnumTypeSpec>(Kind.ENUM, name) {
         override val self: Builder
             get() = this
 
-        private val enumConstants = linkedMapOf<String, TypeSpec>()
+        // TODO superclass must be null
 
-        public fun addEnumConstant(name: String, type: TypeSpec): Builder = apply {
+        private val enumConstants = linkedMapOf<String, AnonymousClassTypeSpec>()
+
+        public fun addEnumConstant(name: String, type: AnonymousClassTypeSpec): Builder = apply {
             enumConstants[name] = type
         }
 
         override fun build(): EnumTypeSpec {
-            TODO("Not yet implemented")
+            return EnumTypeSpecImpl(
+                name = name!!,
+                kind = kind,
+                enumConstants = enumConstants.toMap(linkedMapOf()),
+                javadoc = javadoc.build(),
+                annotations = annotations.toList(),
+                modifiers = LinkedHashSet(modifiers),
+                typeVariables = typeVariables.toList(),
+                superinterfaces = superinterfaces.toList(),
+                fields = fields.toList(),
+                staticBlock = staticBlock.build(),
+                initializerBlock = initializerBlock.build(),
+                methods = methods,
+                types = types.toList(),
+            )
         }
     }
 }
@@ -430,11 +520,12 @@ public interface EnumTypeSpec : TypeSpec {
  * ```
  */
 public interface NonSealedTypeSpec : TypeSpec {
+    override val name: String
+
     public class Builder(
         kind: Kind,
-        name: String?,
-        anonymousTypeArguments: CodeBlock,
-    ) : TypeSpec.Builder<Builder, NonSealedTypeSpec>(kind, name, anonymousTypeArguments) {
+        name: String,
+    ) : TypeSpec.Builder<Builder, NonSealedTypeSpec>(kind, name) {
         init {
             check(kind == Kind.NON_SEALED_CLASS || kind == Kind.NON_SEALED_INTERFACE) {
                 "Invalid non-sealed `kind`: $kind"
@@ -445,7 +536,21 @@ public interface NonSealedTypeSpec : TypeSpec {
             get() = this
 
         override fun build(): NonSealedTypeSpec {
-            TODO("Not yet implemented")
+            return NonSealedTypeSpecImpl(
+                name = name!!,
+                kind = kind,
+                javadoc = javadoc.build(),
+                annotations = annotations.toList(),
+                modifiers = LinkedHashSet(modifiers),
+                typeVariables = typeVariables.toList(),
+                superclass = superclass,
+                superinterfaces = superinterfaces.toList(),
+                fields = fields.toList(),
+                staticBlock = staticBlock.build(),
+                initializerBlock = initializerBlock.build(),
+                methods = methods,
+                types = types.toList(),
+            )
         }
     }
 }
@@ -455,14 +560,15 @@ public interface NonSealedTypeSpec : TypeSpec {
  * A generated `sealed class/interface`.
  */
 public interface SealedTypeSpec : TypeSpec {
+    override val name: String
+
     // sealed class, sealed interface
     public val permits: List<TypeName>
 
     public class Builder(
         kind: Kind,
-        name: String?,
-        anonymousTypeArguments: CodeBlock,
-    ) : TypeSpec.Builder<Builder, SealedTypeSpec>(kind, name, anonymousTypeArguments) {
+        name: String,
+    ) : TypeSpec.Builder<Builder, SealedTypeSpec>(kind, name) {
         init {
             check(kind == Kind.SEALED_CLASS || kind == Kind.SEALED_INTERFACE) {
                 "Invalid sealed `kind`: $kind"
@@ -487,7 +593,22 @@ public interface SealedTypeSpec : TypeSpec {
         }
 
         override fun build(): SealedTypeSpec {
-            TODO("Not yet implemented")
+            return SealedTypeSpecImpl(
+                name = name!!,
+                kind = kind,
+                permits = permits.toList(),
+                javadoc = javadoc.build(),
+                annotations = annotations.toList(),
+                modifiers = LinkedHashSet(modifiers),
+                typeVariables = typeVariables.toList(),
+                superclass = superclass,
+                superinterfaces = superinterfaces.toList(),
+                fields = fields.toList(),
+                staticBlock = staticBlock.build(),
+                initializerBlock = initializerBlock.build(),
+                methods = methods,
+                types = types.toList(),
+            )
         }
     }
 }
@@ -501,15 +622,36 @@ public interface SealedTypeSpec : TypeSpec {
  * ```
  */
 public interface RecordTypeSpec : TypeSpec {
+    override val name: String
+
     override val superclass: TypeName?
         get() = null
 
     public val mainConstructor: MethodSpec
 
+    /*
+     * Init constructor:
+     *
+     * ```java
+     * public record Student(String name, int age) {
+     *   // initializerBlock
+     *   public Student {
+     *     require(age > 0, "...")
+     *   }
+     *
+     *   static {  }
+     *
+     *   // Other constructor
+     *   public Student(String name) {
+     *     this(name, 24)
+     *   }
+     * }
+     * ```
+     */
+
     public class Builder(
-        name: String?,
-        anonymousTypeArguments: CodeBlock,
-    ) : TypeSpec.Builder<Builder, SealedTypeSpec>(Kind.RECORD, name, anonymousTypeArguments) {
+        name: String,
+    ) : TypeSpec.Builder<Builder, RecordTypeSpec>(Kind.RECORD, name) {
         override val self: Builder
             get() = this
 
@@ -519,8 +661,25 @@ public interface RecordTypeSpec : TypeSpec {
             mainConstructor = method
         }
 
-        override fun build(): SealedTypeSpec {
-            TODO("Not yet implemented")
+        override fun build(): RecordTypeSpec {
+
+            mainConstructor ?: MethodSpec()
+
+            return RecordTypeSpecImpl(
+                name = name!!,
+                kind = kind,
+                mainConstructor = mainConstructor ?: MethodSpec(),
+                javadoc = javadoc.build(),
+                annotations = annotations.toList(),
+                modifiers = LinkedHashSet(modifiers),
+                typeVariables = typeVariables.toList(),
+                superinterfaces = superinterfaces.toList(),
+                fields = fields.toList(),
+                staticBlock = staticBlock.build(),
+                initializerBlock = initializerBlock.build(),
+                methods = methods,
+                types = types.toList(),
+            )
         }
     }
 }

@@ -15,24 +15,46 @@
  */
 @file:JvmName("WildcardTypeNames")
 @file:JvmMultifileClass
+
 package love.forte.javapoet
 
+import love.forte.javapoet.internal.SubtypeWildcardTypeNameImpl
+import love.forte.javapoet.internal.SupertypeWildcardTypeNameImpl
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
 
-/**
- *
- */
-public interface WildcardTypeName {
-    public val upperBounds: List<TypeName>
-    public val lowerBounds: List<TypeName>
+public sealed interface WildcardTypeName : TypeName {
+    public val upperBounds: List<TypeName> // ? extends T1 & T2
+    public val lowerBounds: List<TypeName> // ? super T1 & T2
 
+    override fun withoutAnnotations(): WildcardTypeName
+
+    override fun annotated(annotations: List<AnnotationSpec>): WildcardTypeName
+
+    override fun annotated(vararg annotations: AnnotationSpec): WildcardTypeName {
+        return annotated(annotations.asList())
+    }
+
+    override val isPrimitive: Boolean
+        get() = false
 }
 
+public interface SubtypeWildcardTypeName : WildcardTypeName {
+    // lowerBounds, ? super A
+    override val upperBounds: List<TypeName>
+        get() = emptyList()
+}
 
-public fun wildcardTypeNameSubtypeOf(upperBound: TypeName): WildcardTypeName =
-    TODO()
+public interface SupertypeWildcardTypeName : WildcardTypeName {
+    // upperBounds, ? extends A & B,
+    // 接口在后，类在前
+    override val lowerBounds: List<TypeName>
+        get() = emptyList()
+}
 
-public fun wildcardTypeNameSupertypeOf(lowerBound: TypeName): WildcardTypeName =
-    TODO()
+public fun SubtypeWildcardTypeName(upperBound: TypeName): SubtypeWildcardTypeName =
+    SubtypeWildcardTypeNameImpl(listOf(upperBound))
+
+public fun SupertypeWildcardTypeName(lowerBound: TypeName): SupertypeWildcardTypeName =
+    SupertypeWildcardTypeNameImpl(listOf(lowerBound))

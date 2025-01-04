@@ -7,11 +7,19 @@ kotlin {
     explicitApi()
 
     compilerOptions {
-        jvmToolchain(8)
+        jvmToolchain(21) // TODO 8, or 11?
     }
 
     jvm {
+        withJava()
 
+        compilerOptions {
+            javaParameters = true
+        }
+
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
+        }
     }
 
     js {
@@ -22,6 +30,10 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(kotlin("reflect"))
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
 }

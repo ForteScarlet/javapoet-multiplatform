@@ -18,32 +18,49 @@
 
 package love.forte.javapoet
 
+import love.forte.javapoet.internal.TypeVariableNameImpl
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
 
-/**
- *
- */
 public interface TypeVariableName : TypeName {
     public val name: String
     public val bounds: List<TypeName>
 
-    // TODO fun withBounds(bounds)
+    override fun annotated(annotations: List<AnnotationSpec>): TypeVariableName
+
+    override fun annotated(vararg annotations: AnnotationSpec): TypeVariableName {
+        return annotated(annotations.asList())
+    }
+
+    override fun withoutAnnotations(): TypeVariableName
+
+    public fun withBounds(bounds: List<TypeName>): TypeVariableName
+
+    public fun withBounds(vararg bounds: TypeName): TypeVariableName {
+        return withBounds(bounds.asList())
+    }
+
+    override val isPrimitive: Boolean
+        get() = false
 }
-
-
-internal fun typeVariableNameOf(name: String, bounds: List<TypeName>): TypeVariableName = TODO()
 
 /**
  * Returns type variable named `name` without bounds.
  */
-public fun TypeVariableName(name: String): TypeVariableName = typeVariableNameOf(name, emptyList())
+public fun TypeVariableName(name: String): TypeVariableName =
+    TypeVariableNameImpl(name)
 
 /**
  * Returns type variable named `name` with `bounds`.
  */
 public fun TypeVariableName(name: String, vararg bounds: TypeName): TypeVariableName =
-    typeVariableNameOf(name, bounds.asList())
+    TypeVariableNameImpl(name, bounds.asList())
+
+/**
+ * Returns type variable named `name` with `bounds`.
+ */
+public fun TypeVariableName(name: String, bounds: Iterable<TypeName>): TypeVariableName =
+    TypeVariableNameImpl(name, bounds.toList())
 
 // TODO JVM Types, TypeVariable, TypeParameterElement, etc.

@@ -17,7 +17,7 @@ internal class AnnotationSpecImpl(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is AnnotationSpecImpl) return false
+        if (other !is AnnotationSpec) return false
 
         if (type != other.type) return false
         if (members != other.members) return false

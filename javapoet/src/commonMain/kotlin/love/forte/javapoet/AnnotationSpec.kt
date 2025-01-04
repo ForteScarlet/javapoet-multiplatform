@@ -22,7 +22,6 @@ import love.forte.javapoet.internal.AnnotationSpecImpl
 import love.forte.javapoet.internal.isSourceName
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
-import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 import kotlin.reflect.KClass
 
@@ -66,8 +65,8 @@ public interface AnnotationSpec {
         public fun builder(type: ClassName): Builder = Builder(type)
 
         // TODO
-        @JvmStatic
-        public fun builder(type: KClass<*>): Builder = builder(ClassName(type))
+        // @JvmStatic
+        // public fun builder(type: KClass<*>): Builder = builder(ClassName(type))
 
     }
 }

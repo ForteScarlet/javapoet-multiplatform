@@ -19,6 +19,7 @@
 
 package love.forte.javapoet
 
+import love.forte.javapoet.internal.ArrayTypeNameImpl
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
@@ -30,10 +31,21 @@ import kotlin.jvm.JvmName
 public interface ArrayTypeName : TypeName {
     public val componentType: TypeName
 
+    override fun annotated(annotations: List<AnnotationSpec>): ArrayTypeName
+
+    override fun annotated(vararg annotations: AnnotationSpec): ArrayTypeName {
+        return annotated(annotations.asList())
+    }
+
+    override fun withoutAnnotations(): ArrayTypeName
+
+    override val isPrimitive: Boolean
+        get() = false
 }
 
 
-public fun ArrayTypeName(componentType: TypeName): ArrayTypeName = TODO()
+public fun ArrayTypeName(componentType: TypeName): ArrayTypeName =
+    ArrayTypeNameImpl(componentType)
 
 // TODO 反射
 // public fun arrayTypeNameOf(componentType: TypeName): ArrayTypeName = TODO()

@@ -20,7 +20,7 @@ internal class ParameterSpecImpl internal constructor(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is ParameterSpecImpl) return false
+        if (other !is ParameterSpec) return false
 
         if (type != other.type) return false
         if (name != other.name) return false

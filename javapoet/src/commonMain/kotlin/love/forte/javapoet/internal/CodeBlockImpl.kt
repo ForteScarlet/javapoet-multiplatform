@@ -6,7 +6,7 @@ import love.forte.javapoet.CodeBlock
 /**
  *
  */
-internal class CodeBlockImpl internal constructor(
+internal class CodeBlockImpl(
     private val formatParts: List<String>,
     private val args: List<Any?>,
 ) : CodeBlock {

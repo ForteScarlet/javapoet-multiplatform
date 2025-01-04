@@ -15,9 +15,7 @@ internal class TypeNameImpl(
     }
 
     override fun withoutAnnotations(): TypeName {
-        if (annotations.isEmpty()) return this
-
-        return TypeNameImpl(keyword)
+        return if (annotations.isEmpty()) this else TypeNameImpl(keyword)
     }
 
     override val isPrimitive: Boolean
