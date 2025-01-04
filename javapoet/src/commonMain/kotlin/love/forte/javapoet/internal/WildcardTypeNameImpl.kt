@@ -14,6 +14,10 @@ internal class SubtypeWildcardTypeNameImpl(
         return SubtypeWildcardTypeNameImpl(lowerBounds, this.annotations + annotations)
     }
 
+    override fun emit(codeWriter: CodeWriter) {
+        TODO("Not yet implemented")
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is SubtypeWildcardTypeName) return false
@@ -46,6 +50,10 @@ internal class SupertypeWildcardTypeNameImpl(
 
     override fun annotated(annotations: List<AnnotationSpec>): WildcardTypeName {
         return SupertypeWildcardTypeNameImpl(upperBounds, this.annotations + annotations)
+    }
+
+    override fun emit(codeWriter: CodeWriter) {
+        TODO("Not yet implemented")
     }
 
     override fun equals(other: Any?): Boolean {

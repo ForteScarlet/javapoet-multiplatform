@@ -1,6 +1,7 @@
 package love.forte.javapoet.internal
 
 import love.forte.javapoet.AnnotationSpec
+import love.forte.javapoet.CodeWriter
 import love.forte.javapoet.TypeName
 import love.forte.javapoet.TypeVariableName
 
@@ -24,6 +25,10 @@ internal class TypeVariableNameImpl(
 
     override fun withBounds(bounds: List<TypeName>): TypeVariableName {
         return TypeVariableNameImpl(name, this.bounds + bounds, annotations)
+    }
+
+    override fun emit(codeWriter: CodeWriter) {
+        TODO("Not yet implemented")
     }
 
     override fun equals(other: Any?): Boolean {

@@ -2,6 +2,7 @@ package love.forte.javapoet.internal
 
 import love.forte.javapoet.AnnotationSpec
 import love.forte.javapoet.ArrayTypeName
+import love.forte.javapoet.CodeWriter
 import love.forte.javapoet.TypeName
 
 
@@ -19,6 +20,10 @@ internal class ArrayTypeNameImpl(
 
     override fun withoutAnnotations(): ArrayTypeName {
         return if (annotations.isEmpty()) this else ArrayTypeNameImpl(componentType)
+    }
+
+    override fun emit(codeWriter: CodeWriter) {
+        TODO("Not yet implemented")
     }
 
     override fun equals(other: Any?): Boolean {

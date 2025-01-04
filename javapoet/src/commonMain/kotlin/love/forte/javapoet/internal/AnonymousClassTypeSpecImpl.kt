@@ -18,6 +18,11 @@ internal class AnonymousClassTypeSpecImpl(
     override val methods: List<MethodSpec>,
     override val types: List<TypeSpec>
 ) : AnonymousClassTypeSpec {
+
+    override fun emit(codeWriter: CodeWriter) {
+        TODO("Not yet implemented")
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is AnonymousClassTypeSpec) return false

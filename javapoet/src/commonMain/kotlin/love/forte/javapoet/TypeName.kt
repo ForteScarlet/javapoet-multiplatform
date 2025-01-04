@@ -24,7 +24,7 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
-public interface TypeName {
+public interface TypeName : CodeEmitter {
 
     public val annotations: List<AnnotationSpec>
 

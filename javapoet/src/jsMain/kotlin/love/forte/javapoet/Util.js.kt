@@ -14,3 +14,20 @@ internal actual inline fun <K, V> MutableMap<K, V>.computeValueIfAbsent(key: K, 
 
     return v
 }
+
+internal actual fun <K, V> MutableMap<K, V>.computeValue(key: K, f: (K, V?) -> V?): V? {
+    val oldValue = get(key)
+
+    val newValue = f(key, oldValue)
+    if (newValue == null) {
+        if (oldValue != null || containsKey(key)) {
+            remove(key)
+            return null
+        } else {
+            return null
+        }
+    } else {
+        put(key, newValue)
+        return newValue
+    }
+}

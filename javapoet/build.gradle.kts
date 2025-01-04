@@ -7,7 +7,9 @@ kotlin {
     explicitApi()
 
     compilerOptions {
-        jvmToolchain(21) // TODO 8, or 11?
+        jvmToolchain(8) // TODO 8, or 11?
+
+        optIn.add("love.forte.javapoet.InternalApi")
     }
 
     jvm {

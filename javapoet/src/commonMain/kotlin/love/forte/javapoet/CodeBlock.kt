@@ -59,13 +59,19 @@ import kotlin.math.min
  *   is double-indented.
  * - `$]` ends a statement.
  */
-public interface CodeBlock {
+public interface CodeBlock : CodeEmitter {
 
     public val isEmpty: Boolean
 
     public fun addTo(builder: Builder)
 
     public fun toBuilder(): Builder
+
+    override fun emit(codeWriter: CodeWriter) {
+        emit(codeWriter, false)
+    }
+
+    public fun emit(codeWriter: CodeWriter, ensureTrailingNewline: Boolean = false)
 
     public class Builder internal constructor() {
         internal val formatParts: MutableList<String> = mutableListOf()
@@ -154,12 +160,13 @@ public interface CodeBlock {
                 val indexEnd = p - 1
 
                 if (c.isNoArgPlaceholder()) {
-                    check(indexStart == indexEnd) { "$$, $>, $<, $[, $], \$W, and \$Z may not have an index" }
+                    require(indexStart == indexEnd) { "$$, $>, $<, $[, $], \$W, and \$Z may not have an index" }
                     formatParts.add("$$c")
+                    continue
                 }
 
                 // Find either the indexed argument, or the relative argument. (0-based).
-                var index: Int
+                val index: Int
                 if (indexStart < indexEnd) {
                     index = format.substring(indexStart, indexEnd).toInt() - 1
                     hasIndexed = true
@@ -280,6 +287,9 @@ public interface CodeBlock {
     }
 
     public companion object {
+        // TODO 改成 %?
+        internal const val PLACE_PREFIX = "$"
+
         internal val NAMED_ARGUMENT = Regex("\\$(?<argumentName>[\\w_]+):(?<typeChar>[\\w]).*")
         internal val LOWERCASE = Regex("[a-z]+[\\w_]*")
 

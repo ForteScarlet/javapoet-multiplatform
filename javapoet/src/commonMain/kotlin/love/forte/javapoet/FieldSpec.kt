@@ -29,7 +29,7 @@ import kotlin.jvm.JvmStatic
 /**
  * A generated field declaration.
  */
-public interface FieldSpec {
+public interface FieldSpec : CodeEmitter {
 
     public val type: TypeName
 

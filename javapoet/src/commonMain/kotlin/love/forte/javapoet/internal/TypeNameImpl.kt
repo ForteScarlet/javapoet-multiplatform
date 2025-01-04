@@ -1,6 +1,7 @@
 package love.forte.javapoet.internal
 
 import love.forte.javapoet.AnnotationSpec
+import love.forte.javapoet.CodeWriter
 import love.forte.javapoet.TypeName
 import love.forte.javapoet.TypeName.Builtins.VOID
 
@@ -20,6 +21,10 @@ internal class TypeNameImpl(
 
     override val isPrimitive: Boolean
         get() = keyword != null && this != VOID
+
+    override fun emit(codeWriter: CodeWriter) {
+        TODO("Not yet implemented")
+    }
 
     override fun toString(): String {
         // TODO CodeWriter

@@ -2,7 +2,6 @@ package love.forte.javapoet.internal
 
 import love.forte.javapoet.isJavaIdentifierPart
 import love.forte.javapoet.isJavaIdentifierStart
-import love.forte.javapoet.isJavaIdentifierStartCommon
 import kotlin.jvm.JvmInline
 
 @JvmInline

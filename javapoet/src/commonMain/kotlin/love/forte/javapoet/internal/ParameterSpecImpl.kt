@@ -17,6 +17,10 @@ internal class ParameterSpecImpl internal constructor(
             builder.javadoc.add(javadoc)
         }
     }
+    
+    override fun emit(codeWriter: CodeWriter) {
+        TODO("Not yet implemented")
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

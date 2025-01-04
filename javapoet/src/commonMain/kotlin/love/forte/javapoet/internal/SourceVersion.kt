@@ -76,3 +76,4 @@ internal fun CharSequence.isSourceIdentifier(): Boolean {
 
     return true
 }
+

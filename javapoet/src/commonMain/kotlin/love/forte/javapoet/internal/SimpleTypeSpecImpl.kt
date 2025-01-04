@@ -17,6 +17,11 @@ internal class SimpleTypeSpecImpl(
     override val methods: List<MethodSpec>,
     override val types: List<TypeSpec>
 ) : SimpleTypeSpec {
+
+    override fun emit(codeWriter: CodeWriter) {
+        TODO("Not yet implemented")
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is SimpleTypeSpec) return false

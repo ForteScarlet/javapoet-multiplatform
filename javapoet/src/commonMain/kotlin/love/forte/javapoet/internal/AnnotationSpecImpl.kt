@@ -2,6 +2,7 @@ package love.forte.javapoet.internal
 
 import love.forte.javapoet.AnnotationSpec
 import love.forte.javapoet.CodeBlock
+import love.forte.javapoet.CodeWriter
 import love.forte.javapoet.TypeName
 
 
@@ -13,6 +14,10 @@ internal class AnnotationSpecImpl(
         val builder = AnnotationSpec.Builder(type)
         members.mapValuesTo(builder.members) { it.value.toMutableList() }
         return builder
+    }
+
+    override fun emit(codeWriter: CodeWriter) {
+        TODO("Not yet implemented")
     }
 
     override fun equals(other: Any?): Boolean {

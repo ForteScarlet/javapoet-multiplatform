@@ -1,9 +1,6 @@
 package love.forte.javapoet.internal
 
-import love.forte.javapoet.AnnotationSpec
-import love.forte.javapoet.ClassName
-import love.forte.javapoet.ParameterizedTypeName
-import love.forte.javapoet.TypeName
+import love.forte.javapoet.*
 
 
 /**
@@ -40,6 +37,10 @@ internal class ParameterizedTypeNameImpl(
     override fun withoutAnnotations(): ParameterizedTypeName {
         return if (annotations.isEmpty()) this
         else ParameterizedTypeNameImpl(enclosingType, rawType, typeArguments)
+    }
+
+    override fun emit(codeWriter: CodeWriter) {
+        TODO("Not yet implemented")
     }
 
     override fun equals(other: Any?): Boolean {

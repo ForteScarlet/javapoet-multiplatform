@@ -64,4 +64,55 @@ private fun Char.isIdentifierIgnorable(): Boolean {
         ) || this in CharCategory.FORMAT
 }
 
+internal expect fun <K, V> MutableMap<K, V>.computeValue(key: K, f: (K, V?) -> V?): V?
+
 internal expect fun <K, V> MutableMap<K, V>.computeValueIfAbsent(key: K, f: (K) -> V): V
+
+internal fun String.literalWithDoubleQuotes(indent: String): String {
+    val value = this
+    return buildString(length + 2) {
+        append('"')
+        value.forEachIndexed { i, c ->
+            if (c == '\'') {
+                append('\'')
+                return@forEachIndexed
+            }
+
+            // trivial case: double quotes must be escaped
+            if (c == '\"') {
+                append("\\\"")
+                return@forEachIndexed
+            }
+
+            // default case: just let character literal do its work
+            append(c.characterLiteralWithoutSingleQuotes())
+
+            // need to append indent after linefeed?
+            if (c == '\n' && i + 1 < value.length) {
+                append("\"\n").append(indent).append(indent).append("+ \"")
+            }
+        }
+        append('"')
+    }
+}
+
+internal fun Char.characterLiteralWithoutSingleQuotes(): String {
+    // see https://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6
+    return when (this) {
+        '\b' -> "\\b" /* \u0008: backspace (BS) */
+        '\t' -> "\\t" /* \u0009: horizontal tab (HT) */
+        '\n' -> "\\n" /* \u000a: linefeed (LF) */
+        '\u000c' -> "\\f" /* \f \u000c: form feed (FF) */
+        '\r' -> "\\r" /* \u000d: carriage return (CR) */
+        '\"' -> "\"" /* \u0022: double quote (") */
+        '\'' -> "\\'" /* \u0027: single quote (') */
+        '\\' -> "\\\\" /* \u005c: backslash (\) */
+        else -> if (isISOControl()) formatIsoControlCode(code) else toString()
+    }
+}
+
+internal fun formatIsoControlCode(code: Int): String =
+    "\\u${code.toHexStr().padStart(4, '0')}"
+
+internal fun Int.toHexStr(): String =
+    toUInt().toString(16)

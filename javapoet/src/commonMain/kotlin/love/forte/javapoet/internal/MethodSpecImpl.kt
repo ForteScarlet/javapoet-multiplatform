@@ -31,6 +31,10 @@ internal class MethodSpecImpl(
         }
     }
 
+    override fun emit(codeWriter: CodeWriter) {
+        TODO("Not yet implemented")
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is MethodSpecImpl) return false

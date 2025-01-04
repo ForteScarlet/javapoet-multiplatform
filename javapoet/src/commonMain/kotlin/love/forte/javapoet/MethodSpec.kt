@@ -28,7 +28,7 @@ import kotlin.jvm.JvmStatic
 /**
  * A generated constructor or method declaration.
  */
-public interface MethodSpec {
+public interface MethodSpec : CodeEmitter {
     public val name: String
     public val javadoc: CodeBlock
     public val annotations: List<AnnotationSpec>

@@ -28,7 +28,7 @@ import kotlin.reflect.KClass
 /**
  * A generated annotation on a declaration.
  */
-public interface AnnotationSpec {
+public interface AnnotationSpec : CodeEmitter {
 
     public val type: TypeName
 
