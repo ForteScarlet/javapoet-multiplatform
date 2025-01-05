@@ -8,8 +8,6 @@ kotlin {
 
     compilerOptions {
         jvmToolchain(8) // TODO 8, or 11?
-
-        optIn.add("love.forte.codepoet.java.InternalApi")
     }
 
     jvm {
@@ -31,8 +29,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(project(":codepoet-common"))
-            // implementation(kotlin("reflect"))
+            implementation(kotlin("reflect"))
         }
 
         commonTest.dependencies {
