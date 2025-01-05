@@ -33,16 +33,16 @@ public class CodeWriter private constructor(
 
     ) {
     internal var indentLevel = 0
-    private var javadoc = false
+    internal var javadoc = false
     private var comment = false
-    private var packageName: String? = null // com.squareup.javapoet.CodeWriter.NO_PACKAGE
+    internal var packageName: String? = null // com.squareup.javapoet.CodeWriter.NO_PACKAGE
 
     internal val importableTypes: MutableMap<String, ClassName> = linkedMapOf()
-    private val referencedNames: MutableSet<String> = linkedSetOf()
+    public val referencedNames: MutableSet<String> = linkedSetOf()
 
     // private val typeSpecStack: MutableList<TypeSpec> = mutableListOf()
-    private val typeSpecStack = ArrayDeque<TypeSpec>()
-    private val currentTypeVariables: Multiset<String> = Multiset()
+    internal val typeSpecStack = ArrayDeque<TypeSpec>()
+    internal val currentTypeVariables: Multiset<String> = Multiset()
 
     private var trailingNewline = false
 
@@ -126,21 +126,24 @@ public class CodeWriter private constructor(
 
     internal fun emitLiteral(value: Any?) {
         when (value) {
-            is TypeSpec -> {
-                value.emit(this)
-            }
             is AnnotationSpec -> {
-                value.emit(this) // TODO inline = true
+                value.emit(this, inline = true)
             }
-            is CodeBlock -> {
+
+            is CodeEmitter -> {
                 value.emit(this)
             }
+
             else -> emitAndIndent(value.toString())
         }
     }
 
     internal fun emit(s: String) {
         emitAndIndent(s)
+    }
+
+    internal fun emit(codeValue: CodeValue) {
+        CodeBlock(codeValue).emit(this)
     }
 
     internal fun emitAndIndent(s: String) {
@@ -234,7 +237,7 @@ public class CodeWriter private constructor(
 
 private data class IntWrapper(var value: Int = 0)
 
-private class Multiset<T> {
+internal class Multiset<T> {
     private val map = linkedMapOf<T, IntWrapper>()
 
     fun add(t: T) {
@@ -271,3 +274,14 @@ internal inline fun CodeWriter.inPackage(packageName: String, block: CodeWriter.
     block()
     popPackage()
 }
+
+internal inline fun CodeWriter.emit(ensureTrailingNewline: Boolean, format: String, block: CodeValueBuilderDsl = {}) {
+    CodeBlock(format, block).emit(this, ensureTrailingNewline)
+}
+
+internal inline fun CodeWriter.emit(format: String, block: CodeValueBuilderDsl = {}) {
+    CodeBlock(format, block).emit(this)
+}
+
+internal fun CodeEmitter.emitToString(): String =
+    buildString { emit(CodeWriter.create(this)) }

@@ -62,7 +62,6 @@ internal class AnonymousClassTypeSpecImpl(
     }
 
     override fun toString(): String {
-        // TODO toString
-        return super.toString()
+        return emitToString()
     }
 }

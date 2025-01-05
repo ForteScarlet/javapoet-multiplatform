@@ -41,13 +41,13 @@ public interface ArrayTypeName : TypeName {
 
     override val isPrimitive: Boolean
         get() = false
-}
 
+    override fun emit(codeWriter: CodeWriter) {
+        emit(codeWriter, false)
+    }
+
+    public fun emit(codeWriter: CodeWriter, varargs: Boolean)
+}
 
 public fun ArrayTypeName(componentType: TypeName): ArrayTypeName =
     ArrayTypeNameImpl(componentType)
-
-// TODO 反射
-// public fun arrayTypeNameOf(componentType: TypeName): ArrayTypeName = TODO()
-
-// TODO xxxOf

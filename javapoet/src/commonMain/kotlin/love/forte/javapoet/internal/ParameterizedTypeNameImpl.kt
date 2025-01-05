@@ -40,7 +40,28 @@ internal class ParameterizedTypeNameImpl(
     }
 
     override fun emit(codeWriter: CodeWriter) {
-        TODO("Not yet implemented")
+        if (enclosingType != null) {
+            enclosingType.emit(codeWriter)
+            codeWriter.emit(".")
+            if (isAnnotated) {
+                codeWriter.emit(" ")
+                emitAnnotations(codeWriter)
+            }
+            codeWriter.emit(rawType.simpleName)
+        } else {
+            rawType.emit(codeWriter)
+        }
+
+        if (typeArguments.isNotEmpty()) {
+            codeWriter.emitAndIndent("<")
+            var firstParameter = true
+            for (parameter in typeArguments) {
+                if (!firstParameter) codeWriter.emitAndIndent(", ")
+                parameter.emit(codeWriter)
+                firstParameter = false
+            }
+            codeWriter.emitAndIndent(">")
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -64,7 +85,6 @@ internal class ParameterizedTypeNameImpl(
     }
 
     override fun toString(): String {
-        // TODO toString
-        return super.toString()
+        return emitToString()
     }
 }

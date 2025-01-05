@@ -1,9 +1,6 @@
 package love.forte.javapoet.internal
 
-import love.forte.javapoet.AnnotationSpec
-import love.forte.javapoet.ArrayTypeName
-import love.forte.javapoet.CodeWriter
-import love.forte.javapoet.TypeName
+import love.forte.javapoet.*
 
 
 /**
@@ -22,8 +19,9 @@ internal class ArrayTypeNameImpl(
         return if (annotations.isEmpty()) this else ArrayTypeNameImpl(componentType)
     }
 
-    override fun emit(codeWriter: CodeWriter) {
-        TODO("Not yet implemented")
+    override fun emit(codeWriter: CodeWriter, varargs: Boolean) {
+        emitLeafType(codeWriter)
+        emitBrackets(codeWriter, varargs)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -43,7 +41,32 @@ internal class ArrayTypeNameImpl(
     }
 
     override fun toString(): String {
-        // TODO toString
-        return super.toString()
+        return emitToString()
     }
+}
+
+private fun ArrayTypeName.emitLeafType(out: CodeWriter) {
+    val asArray = componentType as? ArrayTypeName
+    if (asArray != null) {
+        return asArray.emitLeafType(out)
+    }
+    return componentType.emit(out)
+}
+
+private fun ArrayTypeName.emitBrackets(out: CodeWriter, varargs: Boolean) {
+    if (isAnnotated) {
+        out.emit(" ")
+        emitAnnotations(out)
+    }
+
+    val asArray = componentType as? ArrayTypeName
+
+    if (asArray == null) {
+        // Last bracket.
+        out.emit(if (varargs) "..." else "[]")
+        return
+    }
+
+    out.emit("[]")
+    return asArray.emitBrackets(out, varargs)
 }

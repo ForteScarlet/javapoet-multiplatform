@@ -18,12 +18,12 @@
 
 package love.forte.javapoet
 
+import love.forte.javapoet.AnnotationSpec.Builder
 import love.forte.javapoet.internal.AnnotationSpecImpl
 import love.forte.javapoet.internal.isSourceName
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
-import kotlin.reflect.KClass
 
 /**
  * A generated annotation on a declaration.
@@ -36,11 +36,20 @@ public interface AnnotationSpec : CodeEmitter {
 
     public fun toBuilder(): Builder
 
+    override fun emit(codeWriter: CodeWriter) {
+        emit(codeWriter, true)
+    }
+
+    public fun emit(codeWriter: CodeWriter, inline: Boolean = true)
+
     public class Builder internal constructor(private val type: TypeName) {
         public val members: MutableMap<String, MutableList<CodeBlock>> = linkedMapOf()
 
-        public fun addMember(name: String, format: String, vararg args: Any): Builder =
-            addMember(name, CodeBlock(format, *args))
+        public fun addMember(name: String, codeValue: CodeValue): Builder =
+            addMember(name, CodeBlock(codeValue))
+
+        public fun addMember(name: String, format: String, vararg argumentParts: CodeArgumentPart): Builder =
+            addMember(name, CodeBlock(format, *argumentParts))
 
         public fun addMember(name: String, codeBlock: CodeBlock): Builder = apply {
             val values = members.computeValueIfAbsent(name) { mutableListOf() }
@@ -63,18 +72,13 @@ public interface AnnotationSpec : CodeEmitter {
 
         @JvmStatic
         public fun builder(type: ClassName): Builder = Builder(type)
-
-        // TODO
-        // @JvmStatic
-        // public fun builder(type: KClass<*>): Builder = builder(ClassName(type))
-
     }
 }
 
-public inline fun AnnotationSpec(annotation: ClassName, block: AnnotationSpec.Builder.() -> Unit = {}): AnnotationSpec =
+public inline fun AnnotationSpec(annotation: ClassName, block: Builder.() -> Unit = {}): AnnotationSpec =
     AnnotationSpec.builder(annotation).also(block).build()
 
-// public fun AnnotationSpec.toBuilder(): AnnotationSpec.Builder = TODO()
 
-// TODO Class
-
+@JvmName("addMember")
+public inline fun Builder.addMember(name: String, format: String, block: CodeValueBuilderDsl = {}): Builder =
+    addMember(name, CodeBlock(format, block))

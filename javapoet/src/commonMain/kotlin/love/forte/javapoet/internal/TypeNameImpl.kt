@@ -4,6 +4,7 @@ import love.forte.javapoet.AnnotationSpec
 import love.forte.javapoet.CodeWriter
 import love.forte.javapoet.TypeName
 import love.forte.javapoet.TypeName.Builtins.VOID
+import love.forte.javapoet.emitToString
 
 
 internal class TypeNameImpl(
@@ -23,12 +24,18 @@ internal class TypeNameImpl(
         get() = keyword != null && this != VOID
 
     override fun emit(codeWriter: CodeWriter) {
-        TODO("Not yet implemented")
+        if (keyword == null) throw AssertionError()
+
+        if (isAnnotated) {
+            codeWriter.emit("")
+            emitAnnotations(codeWriter)
+        }
+
+        codeWriter.emitAndIndent(keyword)
     }
 
     override fun toString(): String {
-        // TODO CodeWriter
-        return super.toString()
+        return emitToString()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -46,7 +53,11 @@ internal class TypeNameImpl(
         result = 31 * result + annotations.hashCode()
         return result
     }
-
-
 }
 
+internal fun TypeName.emitAnnotations(codeWriter: CodeWriter) {
+    for (annotation in annotations) {
+        annotation.emit(codeWriter, true)
+        codeWriter.emit(" ")
+    }
+}

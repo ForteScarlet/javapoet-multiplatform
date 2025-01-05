@@ -1,5 +1,6 @@
 package love.forte.javapoet
 
+import love.forte.javapoet.JavaFile.Builder
 import love.forte.javapoet.internal.JavaFileImpl
 
 
@@ -44,8 +45,12 @@ public interface JavaFile {
         private var indent: String = "    "
         private val staticImports = linkedSetOf<String>()
 
-        public fun addFileComment(format: String, vararg args: Any?): Builder = apply {
-            fileComment.add(format, *args)
+        public fun addFileComment(format: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
+            addFileComment(CodeValue(format, *argumentParts))
+        }
+
+        public fun addFileComment(codeValue: CodeValue): Builder = apply {
+            fileComment.add(codeValue)
         }
 
         public fun addFileComment(codeBlock: CodeBlock): Builder = apply {
@@ -105,3 +110,6 @@ public interface JavaFile {
     }
 }
 
+public inline fun Builder.addFileComment(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+    addFileComment(CodeValue(format, block))
+}

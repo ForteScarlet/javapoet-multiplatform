@@ -19,6 +19,7 @@
 
 package love.forte.javapoet
 
+import love.forte.javapoet.MethodSpec.Builder
 import love.forte.javapoet.internal.MethodSpecImpl
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -53,7 +54,9 @@ public interface MethodSpec : CodeEmitter {
     ) {
         internal val javadoc = CodeBlock.builder()
         internal var returnType: TypeName? = null
-        internal val code = CodeBlock.builder()
+
+        @PublishedApi
+        internal val code: CodeBlock.Builder = CodeBlock.builder()
         internal var defaultValue: CodeBlock? = null
         internal val exceptions = linkedSetOf<TypeName>()
 
@@ -64,8 +67,12 @@ public interface MethodSpec : CodeEmitter {
         public val modifiers: MutableSet<Modifier> = linkedSetOf()
         public val parameters: MutableList<ParameterSpec> = mutableListOf()
 
-        public fun addJavadoc(format: String?, vararg args: Any?): Builder = apply {
-            javadoc.add(format!!, *args)
+        public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
+            addJavadoc(CodeValue(format, *argumentParts))
+        }
+
+        public fun addJavadoc(codeValue: CodeValue): Builder = apply {
+            javadoc.add(codeValue)
         }
 
         public fun addJavadoc(block: CodeBlock): Builder = apply {
@@ -150,20 +157,23 @@ public interface MethodSpec : CodeEmitter {
             this.code.add(block)
         }
 
-        public fun addCode(format: String, vararg args: Any?): Builder = apply {
-            this.code.add(format, *args)
+        public fun addCode(codeValue: CodeValue): Builder = apply {
+            this.code.add(codeValue)
         }
 
-        public fun addNamedCode(format: String, args: Map<String, *>): Builder = apply {
-            this.code.addNamed(format, args)
+        public fun addCode(format: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
+            addCode(CodeValue(format, *argumentParts))
         }
 
-        public fun addComment(format: String, vararg args: Any?): Builder = apply {
-            this.code.add("// $format\n", *args)
+        public fun addComment(format: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
+            addCode(CodeValue("// $format\n", *argumentParts))
         }
 
-        public fun defaultValue(format: String, vararg args: Any?): Builder =
-            defaultValue(CodeBlock(format, *args))
+        public fun defaultValue(format: String, vararg argumentParts: CodeArgumentPart): Builder =
+            defaultValue(CodeValue(format, *argumentParts))
+
+        public fun defaultValue(codeValue: CodeValue): Builder =
+            defaultValue(CodeBlock(codeValue))
 
         public fun defaultValue(codeBlock: CodeBlock): Builder = apply {
             check(defaultValue == null) { "`defaultValue` was already set" }
@@ -175,8 +185,8 @@ public interface MethodSpec : CodeEmitter {
          * @param controlFlow the control flow construct and its code, such as `"if (foo == 5)"`.
          * Shouldn't contain braces or newline characters.
          */
-        public fun beginControlFlow(controlFlow: String, vararg args: Any?): Builder = apply {
-            code.beginControlFlow(controlFlow, *args)
+        public fun beginControlFlow(controlFlow: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
+            code.beginControlFlow(controlFlow, *argumentParts)
         }
 
         /**
@@ -184,15 +194,15 @@ public interface MethodSpec : CodeEmitter {
          * Shouldn't contain braces or newline characters.
          */
         public fun beginControlFlow(codeBlock: CodeBlock): Builder = apply {
-            beginControlFlow("\$L", codeBlock)
+            beginControlFlow("%V") { literal(codeBlock) }
         }
 
         /**
          * @param controlFlow the control flow construct and its code, such as `"else if (foo == 10)"`.
          * Shouldn't contain braces or newline characters.
          */
-        public fun nextControlFlow(controlFlow: String, vararg args: Any?): Builder = apply {
-            code.nextControlFlow(controlFlow, *args)
+        public fun nextControlFlow(controlFlow: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
+            code.nextControlFlow(controlFlow, *argumentParts)
         }
 
         /**
@@ -200,16 +210,19 @@ public interface MethodSpec : CodeEmitter {
          * Shouldn't contain braces or newline characters.
          */
         public fun nextControlFlow(codeBlock: CodeBlock): Builder = apply {
-            nextControlFlow("\$L", codeBlock)
+            nextControlFlow("%V") { literal(codeBlock) }
         }
 
         public fun endControlFlow(): Builder = apply {
             code.endControlFlow()
         }
 
+        public fun addStatement(format: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
+            addStatement(CodeValue(format, *argumentParts))
+        }
 
-        public fun addStatement(format: String, vararg args: Any?): Builder = apply {
-            code.addStatement(format, *args)
+        public fun addStatement(codeValue: CodeValue): Builder = apply {
+            code.addStatement(codeValue)
         }
 
         public fun addStatement(codeBlock: CodeBlock): Builder = apply {
@@ -256,3 +269,39 @@ public inline fun MethodSpec(name: String, block: MethodSpec.Builder.() -> Unit 
  */
 public inline fun MethodSpec(block: MethodSpec.Builder.() -> Unit = {}): MethodSpec =
     MethodSpec.constructorBuilder().apply(block).build()
+
+public inline fun Builder.addJavadoc(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+    addJavadoc(CodeValue(format, block))
+}
+
+public inline fun Builder.addCode(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+    addCode(CodeValue(format, block))
+}
+
+public inline fun Builder.addComment(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+    addCode(CodeValue("// $format\n", block))
+}
+
+public inline fun Builder.defaultValue(format: String, block: CodeValueBuilderDsl = {}): Builder =
+    defaultValue(CodeValue(format, block))
+
+
+/**
+ * @param controlFlow the control flow construct and its code, such as `"if (foo == 5)"`.
+ * Shouldn't contain braces or newline characters.
+ */
+public inline fun Builder.beginControlFlow(controlFlow: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+    code.beginControlFlow(controlFlow, block)
+}
+
+/**
+ * @param controlFlow the control flow construct and its code, such as `"else if (foo == 10)"`.
+ * Shouldn't contain braces or newline characters.
+ */
+public inline fun Builder.nextControlFlow(controlFlow: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+    code.nextControlFlow(controlFlow, block)
+}
+
+public inline fun Builder.addStatement(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+    addStatement(CodeValue(format, block))
+}

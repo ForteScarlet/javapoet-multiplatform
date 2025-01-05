@@ -19,6 +19,7 @@
 
 package love.forte.javapoet
 
+import love.forte.javapoet.ParameterSpec.Builder
 import love.forte.javapoet.internal.ParameterSpecImpl
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -51,8 +52,12 @@ public interface ParameterSpec : CodeEmitter {
         internal val annotations = mutableListOf<AnnotationSpec>()
         internal val modifiers = mutableSetOf<Modifier>()
 
-        public fun addJavadoc(format: String, vararg args: Any?): Builder = apply {
-            javadoc.add(format, *args)
+        public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
+            addJavadoc(CodeValue(format, *argumentParts))
+        }
+
+        public fun addJavadoc(codeValue: CodeValue): Builder = apply {
+            javadoc.add(codeValue)
         }
 
         public fun addJavadoc(block: CodeBlock): Builder = apply {
@@ -120,5 +125,9 @@ public interface ParameterSpec : CodeEmitter {
 public inline fun ParameterSpec(
     type: TypeName,
     name: String,
-    block: ParameterSpec.Builder.() -> Unit = {}
+    block: Builder.() -> Unit = {}
 ): ParameterSpec = ParameterSpec.builder(type, name).apply(block).build()
+
+public inline fun Builder.addJavadoc(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+    addJavadoc(CodeValue(format, block))
+}

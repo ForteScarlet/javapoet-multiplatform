@@ -47,8 +47,6 @@ public interface TypeName : CodeEmitter {
      */
     public val isPrimitive: Boolean
 
-    // TODO emit?
-
     public object Builtins {
         @JvmField
         public val VOID: TypeName = TypeName("void")

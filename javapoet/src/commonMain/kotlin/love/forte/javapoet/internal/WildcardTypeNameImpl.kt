@@ -15,7 +15,20 @@ internal class SubtypeWildcardTypeNameImpl(
     }
 
     override fun emit(codeWriter: CodeWriter) {
-        TODO("Not yet implemented")
+        if (lowerBounds.isNotEmpty()) {
+            lowerBounds.forEachIndexed { index, typeName ->
+                if (index == 0) {
+                    // first
+                    codeWriter.emit("? super %V") {
+                        type(typeName)
+                    }
+                } else {
+                    codeWriter.emit(" & %V") {
+                        type(typeName)
+                    }
+                }
+            }
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -35,8 +48,7 @@ internal class SubtypeWildcardTypeNameImpl(
     }
 
     override fun toString(): String {
-        // TODO toString
-        return super.toString()
+        return emitToString()
     }
 }
 
@@ -53,7 +65,28 @@ internal class SupertypeWildcardTypeNameImpl(
     }
 
     override fun emit(codeWriter: CodeWriter) {
-        TODO("Not yet implemented")
+        if (upperBounds.isNotEmpty()) {
+            var extends = false
+            upperBounds.forEachIndexed { index, typeName ->
+                if (index == 0) {
+                    // first
+                    codeWriter.emit("?")
+                }
+
+                if (typeName == TypeName.Builtins.OBJECT) {
+                    // continue
+                    return@forEachIndexed
+                }
+
+                if (!extends) {
+                    codeWriter.emit(" extends %V") { type(typeName) }
+                    extends = true
+                } else {
+                    codeWriter.emit(" & %V") { type(typeName) }
+                }
+            }
+        }
+
     }
 
     override fun equals(other: Any?): Boolean {
@@ -73,7 +106,6 @@ internal class SupertypeWildcardTypeNameImpl(
     }
 
     override fun toString(): String {
-        // TODO toString
-        return super.toString()
+        return emitToString()
     }
 }

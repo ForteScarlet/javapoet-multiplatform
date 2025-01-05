@@ -19,6 +19,7 @@
 
 package love.forte.javapoet
 
+import love.forte.javapoet.FieldSpec.Builder
 import love.forte.javapoet.internal.FieldSpecImpl
 import love.forte.javapoet.internal.isSourceName
 import kotlin.jvm.JvmMultifileClass
@@ -56,8 +57,12 @@ public interface FieldSpec : CodeEmitter {
         internal val modifiers = mutableSetOf<Modifier>()
         internal var initializer: CodeBlock? = null
 
-        public fun addJavadoc(format: String, vararg args: Any): Builder = apply {
-            javadoc.add(format, *args)
+        public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
+            addJavadoc(CodeValue(format, *argumentParts))
+        }
+
+        public fun addJavadoc(codeValue: CodeValue): Builder = apply {
+            javadoc.add(codeValue)
         }
 
         public fun addJavadoc(block: CodeBlock): Builder = apply {
@@ -94,8 +99,12 @@ public interface FieldSpec : CodeEmitter {
             modifiers.add(modifier)
         }
 
-        public fun initializer(format: String, vararg args: Any): Builder = apply {
-            initializer(CodeBlock(format, *args))
+        public fun initializer(format: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
+            initializer(CodeValue(format, *argumentParts))
+        }
+
+        public fun initializer(codeValue: CodeValue): Builder = apply {
+            initializer(CodeBlock(codeValue))
         }
 
         public fun initializer(codeBlock: CodeBlock): Builder = apply {
@@ -131,3 +140,12 @@ public interface FieldSpec : CodeEmitter {
  */
 public inline fun FieldSpec(type: TypeName, name: String, block: FieldSpec.Builder.() -> Unit = {}): FieldSpec =
     FieldSpec.builder(type, name).also(block).build()
+
+
+public inline fun Builder.addJavadoc(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+    addJavadoc(CodeValue(format, block))
+}
+
+public inline fun Builder.initializer(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+    initializer(CodeValue(format, block))
+}

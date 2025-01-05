@@ -1,5 +1,6 @@
 package love.forte.javapoet
 
+import love.forte.javapoet.CodePart.Companion.string
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -13,7 +14,7 @@ class CodeBlockTest {
     @Test
     fun testEmit() {
         val code = CodeBlock {
-            addStatement("String value = \$S", "Hello, World")
+            addStatement("String value = %V", string("Hello, World"))
         }
 
         assertEquals("String value = \"Hello, World\";\n", code.toString())

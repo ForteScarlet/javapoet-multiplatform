@@ -19,6 +19,10 @@
 
 package love.forte.javapoet
 
+import love.forte.javapoet.internal.ClassNameImpl
+import love.forte.javapoet.internal.codePointAt
+import love.forte.javapoet.internal.isLowerCase
+import love.forte.javapoet.internal.isUpperCase
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -38,12 +42,15 @@ public interface ClassName : TypeName, Comparable<ClassName> {
      * Returns the full class name of this class. Like `"java.util.Map.Entry"` for [Map.Entry].
      */
     public val canonicalName: String
+        get() = enclosingClassName?.canonicalName?.plus(".")?.plus(simpleName)
+            ?: packageName?.takeUnless { it.isEmpty() }?.plus(".")?.plus(simpleName)
+            ?: simpleName
 
     /**
      * Returns the package name, like `"java.util"` for [Map.Entry].
      * Returns the empty string for the default package.
      */
-    public val packageName: String
+    public val packageName: String?
 
     /**
      * Returns the enclosing class, like `Map` for `Map.Entry`.
@@ -63,8 +70,13 @@ public interface ClassName : TypeName, Comparable<ClassName> {
      */
     public val reflectionName: String
         get() = enclosingClassName?.reflectionName?.plus("$")?.plus(simpleName)
-            ?: packageName.takeUnless { it.isEmpty() }?.plus(".")?.plus(simpleName)
+            ?: packageName?.takeUnless { it.isEmpty() }?.plus(".")?.plus(simpleName)
             ?: simpleName
+
+    public val simpleNames: List<String>
+
+    override val isPrimitive: Boolean
+        get() = false
 
     /**
      * Returns a class that shares the same enclosing package or class.
@@ -102,7 +114,13 @@ public fun ClassName(clz: KClass<*>): ClassName {
  * Returns a class name created from the given parts. For example, calling this with package name `"java.util"`
  * and simple names `"Map"`, `"Entry"` yields [Map.Entry].
  */
-public fun ClassName(packageName: String, simpleName: String, vararg simpleNames: String): ClassName = TODO()
+public fun ClassName(packageName: String?, simpleName: String, vararg simpleNames: String): ClassName {
+    var className: ClassName = ClassNameImpl(packageName, null, simpleName)
+    for (nested in simpleNames) {
+        className = className.nestedClass(nested)
+    }
+    return className
+}
 
 /**
  * Returns a new [ClassName] instance for the given fully-qualified class name string. This
@@ -113,4 +131,30 @@ public fun ClassName(packageName: String, simpleName: String, vararg simpleNames
  * [ClassName] should be preferred as they can correctly create [ClassName]
  * instances without such restrictions.
  */
-public fun bestGuessClassName(classNameString: String): ClassName = TODO()
+public fun ClassName(bestGuessClassNameString: String): ClassName {
+
+
+    // Add the package name, like "java.util.concurrent", or "" for no package.
+    var p = 0
+    while (p < bestGuessClassNameString.length && bestGuessClassNameString.codePointAt(p).isLowerCase()) {
+        p = bestGuessClassNameString.indexOf('.', p) + 1
+        require(p != 0) {
+            "couldn't make a guess for $bestGuessClassNameString"
+        }
+    }
+
+    val packageName: String? =
+        if (p == 0) null else bestGuessClassNameString.substring(0, p - 1)
+
+    // Add class names like "Map" and "Entry".
+    var className: ClassName? = null
+
+    for (simpleName in bestGuessClassNameString.substring(p).split("\\.".toRegex()).toTypedArray()) {
+        require(simpleName.isNotEmpty() && simpleName.codePointAt(0).isUpperCase()) {
+            "couldn't make a guess for $bestGuessClassNameString"
+        }
+        className = ClassNameImpl(packageName, className, simpleName)
+    }
+
+    return className!!
+}

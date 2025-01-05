@@ -53,7 +53,6 @@ internal class FieldSpecImpl internal constructor(
     }
 
     override fun toString(): String {
-        // TODO
-        return super.toString()
+        return emitToString()
     }
 }

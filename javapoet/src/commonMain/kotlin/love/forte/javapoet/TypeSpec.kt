@@ -195,86 +195,98 @@ public sealed interface TypeSpec : CodeEmitter {
 
         protected abstract val self: B
 
-        public open fun addJavadoc(format: String, vararg args: Any?): B = self.apply {
-            javadoc.add(format, *args)
+        @JvmName("addJavadoc")
+        public inline fun addJavadoc(format: String, block: CodeValueBuilderDsl = {}): B =
+            addJavadoc(CodeValue(format, block))
+
+        public fun addJavadoc(codeValue: CodeValue): B = self.apply {
+            javadoc.add(codeValue)
         }
 
-        public open fun addJavadoc(block: CodeBlock): B = self.apply {
+        public fun addJavadoc(block: CodeBlock): B = self.apply {
             javadoc.add(block)
         }
 
-        public open fun superclass(superclass: TypeName): B = self.apply {
+        public fun superclass(superclass: TypeName): B = self.apply {
             check(kind.states.superclassSupport) { "`superclass` is not supported for kind $kind" }
             require(!superclass.isPrimitive) { "`superclass` can't be primitive." }
             this.superclass = superclass
         }
 
-        public open fun addStaticBlock(format: String, vararg args: Any?): B = self.apply {
-            this.staticBlock.add(format, *args)
+        @JvmName("addStaticBlock")
+        public inline fun addStaticBlock(format: String, block: CodeValueBuilderDsl = {}): B =
+            addStaticBlock(CodeValue(format, block))
+
+        public fun addStaticBlock(codeValue: CodeValue): B = self.apply {
+            this.staticBlock.add(codeValue)
         }
 
-        public open fun addStaticBlock(block: CodeBlock): B = self.apply {
+        public fun addStaticBlock(block: CodeBlock): B = self.apply {
             this.staticBlock.add(block)
         }
 
-        public open fun addInitializerBlock(format: String, vararg args: Any?): B = self.apply {
-            this.initializerBlock.add(format, *args)
+        @JvmName("addInitializerBlock")
+        public inline fun addInitializerBlock(format: String, block: CodeValueBuilderDsl = {}): B =
+            addInitializerBlock(CodeValue(format, block))
+
+        public fun addInitializerBlock(codeValue: CodeValue): B = self.apply {
+            this.initializerBlock.add(codeValue)
         }
 
-        public open fun addInitializerBlock(block: CodeBlock): B = self.apply {
+        public fun addInitializerBlock(block: CodeBlock): B = self.apply {
             this.initializerBlock.add(block)
         }
 
-        public open fun addAnnotations(annotations: Iterable<AnnotationSpec>): B = self.apply {
+        public fun addAnnotations(annotations: Iterable<AnnotationSpec>): B = self.apply {
             this.annotations.addAll(annotations)
         }
 
-        public open fun addAnnotations(vararg annotations: AnnotationSpec): B = self.apply {
+        public fun addAnnotations(vararg annotations: AnnotationSpec): B = self.apply {
             this.annotations.addAll(annotations)
         }
 
-        public open fun addAnnotation(annotation: AnnotationSpec): B = self.apply {
+        public fun addAnnotation(annotation: AnnotationSpec): B = self.apply {
             this.annotations.add(annotation)
         }
 
-        public open fun addAnnotation(annotation: ClassName): B =
+        public fun addAnnotation(annotation: ClassName): B =
             addAnnotation(AnnotationSpec(annotation))
 
-        public open fun addModifiers(vararg modifiers: Modifier): B = self.apply {
+        public fun addModifiers(vararg modifiers: Modifier): B = self.apply {
             this.modifiers.addAll(modifiers)
         }
 
-        public open fun addModifiers(modifiers: Iterable<Modifier>): B = self.apply {
+        public fun addModifiers(modifiers: Iterable<Modifier>): B = self.apply {
             this.modifiers.addAll(modifiers)
         }
 
-        public open fun addModifier(modifier: Modifier): B = self.apply {
+        public fun addModifier(modifier: Modifier): B = self.apply {
             this.modifiers.add(modifier)
         }
 
-        public open fun addTypeVariables(vararg typeVariables: TypeVariableName): B = self.apply {
+        public fun addTypeVariables(vararg typeVariables: TypeVariableName): B = self.apply {
             this.typeVariables.addAll(typeVariables)
         }
 
-        public open fun addTypeVariables(typeVariables: Iterable<TypeVariableName>): B = self.apply {
+        public fun addTypeVariables(typeVariables: Iterable<TypeVariableName>): B = self.apply {
             this.typeVariables.addAll(typeVariables)
         }
 
-        public open fun addTypeVariable(typeVariable: TypeVariableName): B = self.apply {
+        public fun addTypeVariable(typeVariable: TypeVariableName): B = self.apply {
             this.typeVariables.add(typeVariable)
         }
 
-        public open fun addSuperinterfaces(vararg superinterfaces: TypeName): B = self.apply {
+        public fun addSuperinterfaces(vararg superinterfaces: TypeName): B = self.apply {
             checkSuperinterfaceSupport()
             this.superinterfaces.addAll(superinterfaces)
         }
 
-        public open fun addSuperinterfaces(superinterfaces: Iterable<TypeName>): B = self.apply {
+        public fun addSuperinterfaces(superinterfaces: Iterable<TypeName>): B = self.apply {
             checkSuperinterfaceSupport()
             this.superinterfaces.addAll(superinterfaces)
         }
 
-        public open fun addSuperinterface(superinterface: TypeName): B = self.apply {
+        public fun addSuperinterface(superinterface: TypeName): B = self.apply {
             checkSuperinterfaceSupport()
             this.superinterfaces.add(superinterface)
         }
@@ -283,41 +295,41 @@ public sealed interface TypeSpec : CodeEmitter {
             check(kind.states.superinterfacesSupport) { "`superinterface` is not supported for kind $kind" }
         }
 
-        public open fun addFields(vararg fields: FieldSpec): B = self.apply {
+        public fun addFields(vararg fields: FieldSpec): B = self.apply {
             this.fields.addAll(fields)
         }
 
-        public open fun addFields(fields: Iterable<FieldSpec>): B = self.apply {
+        public fun addFields(fields: Iterable<FieldSpec>): B = self.apply {
             this.fields.addAll(fields)
         }
 
-        public open fun addField(field: FieldSpec): B = self.apply {
+        public fun addField(field: FieldSpec): B = self.apply {
             this.fields.add(field)
         }
 
         // TODO check field?
 
-        public open fun addMethods(methods: Iterable<MethodSpec>): B = self.apply {
+        public fun addMethods(methods: Iterable<MethodSpec>): B = self.apply {
             this.methods.addAll(methods)
         }
 
-        public open fun addMethods(vararg methods: MethodSpec): B = self.apply {
+        public fun addMethods(vararg methods: MethodSpec): B = self.apply {
             this.methods.addAll(methods)
         }
 
-        public open fun addMethod(method: MethodSpec): B = self.apply {
+        public fun addMethod(method: MethodSpec): B = self.apply {
             this.methods.add(method)
         }
 
-        public open fun addTypes(types: Iterable<TypeSpec>): B = self.apply {
+        public fun addTypes(types: Iterable<TypeSpec>): B = self.apply {
             this.types.addAll(types)
         }
 
-        public open fun addTypes(vararg types: TypeSpec): B = self.apply {
+        public fun addTypes(vararg types: TypeSpec): B = self.apply {
             this.types.addAll(types)
         }
 
-        public open fun addType(type: TypeSpec): B = self.apply {
+        public fun addType(type: TypeSpec): B = self.apply {
             this.types.add(type)
         }
 
@@ -327,6 +339,9 @@ public sealed interface TypeSpec : CodeEmitter {
 
     public companion object
 }
+
+public val TypeSpec.nestedTypesSimpleNames: Set<String>
+    get() = types.mapTo(linkedSetOf()) { it.name!! }
 
 /**
  * A generated `class` or `interface`.
