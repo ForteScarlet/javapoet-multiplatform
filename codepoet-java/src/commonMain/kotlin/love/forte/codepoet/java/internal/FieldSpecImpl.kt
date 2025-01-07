@@ -24,8 +24,18 @@ internal class FieldSpecImpl internal constructor(
         }
     }
 
-    override fun emit(codeWriter: CodeWriter) {
-        TODO("Not yet implemented")
+    override fun emit(codeWriter: CodeWriter, implicitModifiers: Set<Modifier>) {
+        codeWriter.emitJavadoc(javadoc)
+        codeWriter.emitAnnotations(annotations, false)
+        codeWriter.emitModifiers(modifiers, implicitModifiers)
+        codeWriter.emit("%V $name") {
+            type(type)
+        }
+        if (!initializer.isEmpty) {
+            codeWriter.emit(" = ")
+            initializer.emit(codeWriter)
+        }
+        codeWriter.emit(";\n")
     }
 
     override fun equals(other: Any?): Boolean {

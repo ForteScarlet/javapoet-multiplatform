@@ -10,7 +10,7 @@ import love.forte.codepoet.java.*
 internal class RecordTypeSpecImpl(
     override val name: String,
     override val kind: TypeSpec.Kind,
-    override val mainConstructor: MethodSpec,
+    override val mainConstructorParameters: List<ParameterSpec>,
     override val javadoc: CodeBlock,
     override val annotations: List<AnnotationSpec>,
     override val modifiers: Set<Modifier>,
@@ -23,8 +23,43 @@ internal class RecordTypeSpecImpl(
     override val types: List<TypeSpec>
 ) : RecordTypeSpec {
 
-    override fun emit(codeWriter: CodeWriter) {
-        TODO("Not yet implemented")
+    override fun emit(codeWriter: CodeWriter, implicitModifiers: Set<Modifier>) {
+        // TODO
+        doEmit(codeWriter) {
+            // Push an empty type (specifically without nested types) for type-resolution.
+            codeWriter.pushType(this.toVirtualTypeSpec(name))
+            codeWriter.emitJavadoc(javadoc)
+            codeWriter.emitAnnotations(annotations, false)
+            codeWriter.emitModifiers(modifiers, implicitModifiers + kind.asMemberModifiers)
+            codeWriter.emit("record $name")
+            codeWriter.emitTypeVariables(typeVariables)
+
+            emitSupers(codeWriter)
+
+            codeWriter.popType()
+
+            // main constructor
+            codeWriter.emit("(")
+
+            var firstMainConstructorParameter = true
+            for (mainConstructorParameter in mainConstructorParameters) {
+                if (!firstMainConstructorParameter) {
+                    codeWriter.emit(", ")
+                }
+                mainConstructorParameter.emit(codeWriter)
+                firstMainConstructorParameter = false
+            }
+
+            codeWriter.emit(")")
+
+            codeWriter.emit(" {\n")
+
+            emitMembers(codeWriter)
+
+            codeWriter.popTypeVariables(typeVariables)
+
+            codeWriter.emit("}\n")
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -33,7 +68,7 @@ internal class RecordTypeSpecImpl(
 
         if (name != other.name) return false
         if (kind != other.kind) return false
-        if (mainConstructor != other.mainConstructor) return false
+        if (mainConstructorParameters != other.mainConstructorParameters) return false
         if (javadoc != other.javadoc) return false
         if (annotations != other.annotations) return false
         if (modifiers != other.modifiers) return false
@@ -51,7 +86,7 @@ internal class RecordTypeSpecImpl(
     override fun hashCode(): Int {
         var result = name.hashCode()
         result = 31 * result + kind.hashCode()
-        result = 31 * result + mainConstructor.hashCode()
+        result = 31 * result + mainConstructorParameters.hashCode()
         result = 31 * result + javadoc.hashCode()
         result = 31 * result + annotations.hashCode()
         result = 31 * result + modifiers.hashCode()

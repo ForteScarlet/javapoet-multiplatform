@@ -17,7 +17,6 @@ package love.forte.codepoet.java
 
 import love.forte.codepoet.java.internal.LineWrapper
 import love.forte.codepoet.java.internal.isSourceIdentifier
-import kotlin.js.JsName
 
 
 @InternalApi
@@ -97,6 +96,68 @@ public class CodeWriter private constructor(
         } finally {
             comment = false
         }
+    }
+
+    internal fun emitJavadoc(javadoc: CodeBlock) {
+        if (javadoc.isEmpty) return
+
+        emit("/**\n")
+        this.javadoc = true
+        try {
+            javadoc.emit(this, true)
+        } finally {
+            this.javadoc = false
+        }
+
+        emit(" */\n")
+    }
+
+    internal fun emitAnnotations(annotations: Iterable<AnnotationSpec>, inline: Boolean) {
+        for (annotation in annotations) {
+            annotation.emit(this, inline)
+            emit(if (inline) " " else "\n")
+        }
+    }
+
+    internal fun emitModifiers(modifiers: Set<Modifier>, implicitModifiers: Set<Modifier> = emptySet()) {
+        if (modifiers.isEmpty()) return
+
+        for (modifier in modifiers) {
+            if (modifier in implicitModifiers) continue
+            emitAndIndent(modifier.name.lowercase())
+            emitAndIndent(" ")
+        }
+    }
+
+    internal fun emitTypeVariables(typeVariables: List<TypeVariableName>) {
+        if (typeVariables.isEmpty()) return
+
+        typeVariables.forEach { typeVariable -> currentTypeVariables.add(typeVariable.name) }
+
+        emit("<")
+        var firstTypeVariable = true
+        for (typeVariable in typeVariables) {
+            if (!firstTypeVariable) emit(", ")
+            emitAnnotations(typeVariable.annotations, true)
+            emit("%V") { literal(typeVariable.name) }
+            var firstBound = true
+            for (bound in typeVariable.bounds) {
+                emit(if (firstBound) " extends %V" else " & %V") {
+                    type(bound)
+                }
+                firstBound = false
+            }
+            firstTypeVariable = false
+        }
+        emit(">")
+    }
+
+    internal fun popTypeVariables(typeVariables: List<TypeVariableName>) {
+        typeVariables.forEach { typeVariable -> currentTypeVariables.remove(typeVariable.name) }
+    }
+
+    internal fun emitWrappingSpace() {
+        out.wrappingSpace(indentLevel + 2)
     }
 
     internal fun extractMemberName(part: String): String {
@@ -189,6 +250,12 @@ public class CodeWriter private constructor(
         }
     }
 
+    internal fun suggestedImports(): Map<String, ClassName> {
+        val result = LinkedHashMap(importableTypes)
+        result.keys.removeAll(referencedNames)
+        return result
+    }
+
     // TODO
 
     public companion object {
@@ -268,7 +335,7 @@ internal class Multiset<T> {
 }
 
 
-internal inline fun CodeWriter.inPackage(packageName: String, block: CodeWriter.() -> Unit) {
+internal inline fun CodeWriter.inPackage(packageName: String, block: () -> Unit) {
     pushPackage(packageName)
     block()
     popPackage()

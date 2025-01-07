@@ -40,6 +40,7 @@ public interface AnnotationSpec : CodeEmitter {
         emit(codeWriter, true)
     }
 
+    @InternalApi
     public fun emit(codeWriter: CodeWriter, inline: Boolean = true)
 
     public class Builder internal constructor(private val type: TypeName) {

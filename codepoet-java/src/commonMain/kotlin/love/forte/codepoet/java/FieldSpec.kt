@@ -48,6 +48,12 @@ public interface FieldSpec : CodeEmitter {
 
     public fun toBuilder(): Builder
 
+    override fun emit(codeWriter: CodeWriter) {
+        emit(codeWriter, emptySet())
+    }
+
+    public fun emit(codeWriter: CodeWriter, implicitModifiers: Set<Modifier> = emptySet())
+
     public class Builder internal constructor(
         public val type: TypeName,
         public val name: String,

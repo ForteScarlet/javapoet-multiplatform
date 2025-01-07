@@ -14,8 +14,6 @@ internal class AnnotationTypeSpecImpl(
     override val annotations: List<AnnotationSpec>,
     override val modifiers: Set<Modifier>,
     override val typeVariables: List<TypeVariableName>,
-    override val superclass: TypeName?,
-    override val superinterfaces: List<TypeName>,
     override val fields: List<FieldSpec>,
     override val staticBlock: CodeBlock,
     override val initializerBlock: CodeBlock,
@@ -23,8 +21,29 @@ internal class AnnotationTypeSpecImpl(
     override val types: List<TypeSpec>
 ) : AnnotationTypeSpec {
 
-    override fun emit(codeWriter: CodeWriter) {
-        TODO("Not yet implemented")
+    override fun emit(codeWriter: CodeWriter, implicitModifiers: Set<Modifier>) {
+        doEmit(codeWriter) {
+            // Push an empty type (specifically without nested types) for type-resolution.
+            codeWriter.pushType(this.toVirtualTypeSpec(name))
+
+            codeWriter.emitJavadoc(javadoc)
+            codeWriter.emitAnnotations(annotations, false)
+            codeWriter.emitModifiers(modifiers, implicitModifiers + kind.asMemberModifiers)
+            codeWriter.emit("@interface %V") {
+                literal(name)
+            }
+
+            codeWriter.emitTypeVariables(typeVariables)
+
+            codeWriter.popType()
+            codeWriter.emit(" {\n")
+
+            emitMembers(codeWriter)
+
+            codeWriter.popTypeVariables(typeVariables)
+
+            codeWriter.emit("}\n")
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -69,3 +88,4 @@ internal class AnnotationTypeSpecImpl(
         return emitToString()
     }
 }
+

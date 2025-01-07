@@ -18,8 +18,27 @@ internal class SimpleTypeSpecImpl(
     override val types: List<TypeSpec>
 ) : SimpleTypeSpec {
 
-    override fun emit(codeWriter: CodeWriter) {
-        TODO("Not yet implemented")
+    override fun emit(codeWriter: CodeWriter, implicitModifiers: Set<Modifier>) {
+        doEmit(codeWriter) {
+            // Push an empty type (specifically without nested types) for type-resolution.
+            codeWriter.pushType(this.toVirtualTypeSpec(name))
+            codeWriter.emitJavadoc(javadoc)
+            codeWriter.emitAnnotations(annotations, false)
+            codeWriter.emitModifiers(modifiers, implicitModifiers + kind.asMemberModifiers)
+            codeWriter.emit("${kind.name.lowercase()} $name")
+            codeWriter.emitTypeVariables(typeVariables)
+
+            emitSupers(codeWriter)
+
+            codeWriter.popType()
+            codeWriter.emit(" {\n")
+
+            emitMembers(codeWriter)
+
+            codeWriter.popTypeVariables(typeVariables)
+
+            codeWriter.emit("}\n")
+        }
     }
 
     override fun equals(other: Any?): Boolean {

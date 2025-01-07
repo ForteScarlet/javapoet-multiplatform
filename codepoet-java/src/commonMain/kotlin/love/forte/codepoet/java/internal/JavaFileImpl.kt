@@ -1,9 +1,12 @@
 package love.forte.codepoet.java.internal
 
-import love.forte.codepoet.java.CodeBlock
-import love.forte.codepoet.java.JavaFile
-import love.forte.codepoet.java.TypeSpec
+import love.forte.codepoet.java.*
 
+private object NullAppendable : Appendable {
+    override fun append(value: Char): Appendable = this
+    override fun append(value: CharSequence?): Appendable = this
+    override fun append(value: CharSequence?, startIndex: Int, endIndex: Int): Appendable = this
+}
 
 internal class JavaFileImpl(
     override val fileComment: CodeBlock,
@@ -15,7 +18,71 @@ internal class JavaFileImpl(
     override val indent: String
 ) : JavaFile {
     override fun writeTo(out: Appendable) {
-        TODO("Not yet implemented")
+        // First pass: emit the entire class, just to collect the types we'll need to import.
+        val importsCollector = CodeWriter.create(
+            NullAppendable,
+            indent,
+            staticImports,
+            alwaysQualify
+        )
+        emit(importsCollector)
+        val suggestedImports: Map<String, ClassName> = importsCollector.suggestedImports()
+
+        val codeWriter = CodeWriter.create(
+            out,
+            indent,
+            suggestedImports,
+            staticImports,
+            alwaysQualify
+        )
+
+        emit(codeWriter)
+    }
+
+
+    override fun emit(codeWriter: CodeWriter) {
+        codeWriter.inPackage(packageName) {
+            if (!fileComment.isEmpty) {
+                codeWriter.emitComment(fileComment)
+            }
+
+            if (packageName.isNotEmpty()) {
+                codeWriter.emit("package $packageName;\n")
+                codeWriter.emit("\n")
+            }
+
+            if (staticImports.isNotEmpty()) {
+                for (signature in staticImports) {
+                    codeWriter.emit("import static $signature;\n")
+                }
+                codeWriter.emit("\n")
+            }
+
+            var importedTypesCount = 0
+            val importedTypeSet = LinkedHashSet(codeWriter.importedTypes.values)
+
+            for (className in importedTypeSet) {
+                // TODO what about nested types like java.util.Map.Entry?
+                if (skipJavaLangImports
+                    && className.packageName == "java.lang"
+                    && !alwaysQualify.contains(className.simpleName)
+                ) {
+                    continue
+                }
+                codeWriter.emit("import %V;\n") {
+                    literal(className.withoutAnnotations())
+                }
+                importedTypesCount++
+            }
+
+            if (importedTypesCount > 0) {
+                codeWriter.emit("\n")
+            }
+
+            type.emit(codeWriter, emptySet())
+        }
+
+
     }
 
     override fun equals(other: Any?): Boolean {

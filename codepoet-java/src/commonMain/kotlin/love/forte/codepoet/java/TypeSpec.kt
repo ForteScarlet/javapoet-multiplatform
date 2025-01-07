@@ -76,12 +76,21 @@ public sealed interface TypeSpec : CodeEmitter {
     // val nestedTypesSimpleNames: Set<String>? = null
     // val alwaysQualifiedNames: Set<String>? = null
 
+    override fun emit(codeWriter: CodeWriter) {
+        emit(codeWriter, emptySet())
+    }
+
+    public fun emit(codeWriter: CodeWriter, implicitModifiers: Set<Modifier> = emptySet())
 
     /**
      * Type kind
      */
     public enum class Kind(
         internal val states: States = States(0),
+        internal val implicitFieldModifiers: Set<Modifier> = emptySet(),
+        internal val implicitMethodModifiers: Set<Modifier> = emptySet(),
+        internal val implicitTypeModifiers: Set<Modifier> = emptySet(),
+        internal val asMemberModifiers: Set<Modifier> = emptySet(),
     ) {
         CLASS(
             states = States(
@@ -92,16 +101,24 @@ public sealed interface TypeSpec : CodeEmitter {
         INTERFACE(
             states = States(
                 State.SUPERINTERFACES_SUPPORT,
-            )
+            ),
+            implicitFieldModifiers = setOf(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL),
+            implicitMethodModifiers = setOf(Modifier.PUBLIC, Modifier.ABSTRACT),
+            implicitTypeModifiers = setOf(Modifier.PUBLIC, Modifier.STATIC),
+            asMemberModifiers = setOf(Modifier.STATIC),
         ),
         ENUM(
             states = States(
                 State.SUPERINTERFACES_SUPPORT,
-            )
+            ),
+            asMemberModifiers = setOf(Modifier.STATIC),
         ),
         ANNOTATION(
-            states = States(
-            )
+            states = States(),
+            implicitFieldModifiers = setOf(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL),
+            implicitMethodModifiers = setOf(Modifier.PUBLIC, Modifier.ABSTRACT),
+            implicitTypeModifiers = setOf(Modifier.PUBLIC, Modifier.STATIC),
+            asMemberModifiers = setOf(Modifier.STATIC),
         ),
         RECORD(
             states = States(
@@ -128,14 +145,22 @@ public sealed interface TypeSpec : CodeEmitter {
         SEALED_INTERFACE(
             states = States(
                 State.SUPERINTERFACES_SUPPORT,
-            )
+            ),
+            implicitFieldModifiers = setOf(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL),
+            implicitMethodModifiers = setOf(Modifier.PUBLIC, Modifier.ABSTRACT),
+            implicitTypeModifiers = setOf(Modifier.PUBLIC, Modifier.STATIC),
+            asMemberModifiers = setOf(Modifier.STATIC),
         ),
 
         // non-sealed interface Service permits Car, Truck
         NON_SEALED_INTERFACE(
             states = States(
                 State.SUPERINTERFACES_SUPPORT,
-            )
+            ),
+            implicitFieldModifiers = setOf(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL),
+            implicitMethodModifiers = setOf(Modifier.PUBLIC, Modifier.ABSTRACT),
+            implicitTypeModifiers = setOf(Modifier.PUBLIC, Modifier.STATIC),
+            asMemberModifiers = setOf(Modifier.STATIC),
         );
 
         @JvmInline
@@ -403,6 +428,12 @@ public interface AnonymousClassTypeSpec : TypeSpec {
 
     public val anonymousTypeArguments: CodeBlock
 
+    override fun emit(codeWriter: CodeWriter, implicitModifiers: Set<Modifier>) {
+        emit(codeWriter, null, implicitModifiers)
+    }
+
+    public fun emit(codeWriter: CodeWriter, enumName: String? = null, implicitModifiers: Set<Modifier> = emptySet())
+
     public class Builder(
         public val anonymousTypeArguments: CodeBlock,
     ) : TypeSpec.Builder<Builder, AnonymousClassTypeSpec>(Kind.CLASS, null) {
@@ -441,6 +472,12 @@ public interface AnonymousClassTypeSpec : TypeSpec {
 public interface AnnotationTypeSpec : TypeSpec {
     override val name: String
 
+    override val superclass: TypeName?
+        get() = null
+
+    override val superinterfaces: List<TypeName>
+        get() = emptyList()
+
     public class Builder(
         name: String,
     ) : TypeSpec.Builder<Builder, AnnotationTypeSpec>(Kind.ANNOTATION, name) {
@@ -452,6 +489,14 @@ public interface AnnotationTypeSpec : TypeSpec {
             // TODO check method must be public abstract
             // TODO check field must be public static (no private)
 
+            check(superclass == null) {
+                "`superclass` must be null for annotation type."
+            }
+
+            check(superinterfaces.isEmpty()) {
+                "`superinterfaces` must be empty for annotation type."
+            }
+
             return AnnotationTypeSpecImpl(
                 name = name!!,
                 kind = kind,
@@ -459,8 +504,6 @@ public interface AnnotationTypeSpec : TypeSpec {
                 annotations = annotations.toList(),
                 modifiers = LinkedHashSet(modifiers),
                 typeVariables = typeVariables.toList(),
-                superclass = superclass,
-                superinterfaces = superinterfaces.toList(),
                 fields = fields.toList(),
                 staticBlock = staticBlock.build(),
                 initializerBlock = initializerBlock.build(),
@@ -482,6 +525,8 @@ public interface AnnotationTypeSpec : TypeSpec {
  *
  */
 public interface EnumTypeSpec : TypeSpec {
+    override val name: String
+
     override val superclass: TypeName?
         get() = null
 
@@ -642,7 +687,7 @@ public interface RecordTypeSpec : TypeSpec {
     override val superclass: TypeName?
         get() = null
 
-    public val mainConstructor: MethodSpec
+    public val mainConstructorParameters: List<ParameterSpec>
 
     /*
      * Init constructor:
@@ -670,20 +715,25 @@ public interface RecordTypeSpec : TypeSpec {
         override val self: Builder
             get() = this
 
-        private var mainConstructor: MethodSpec? = null
+        private var mainConstructorParameters = mutableListOf<ParameterSpec>()
 
-        public fun mainConstructor(method: MethodSpec): Builder = apply {
-            mainConstructor = method
+        public fun addMainConstructorParameter(mainConstructorParameter: ParameterSpec): Builder = apply {
+            mainConstructorParameters.add(mainConstructorParameter)
+        }
+
+        public fun addMainConstructorParameters(vararg mainConstructorParams: ParameterSpec): Builder = apply {
+            mainConstructorParameters.addAll(mainConstructorParams)
+        }
+
+        public fun addMainConstructorParameters(mainConstructorParams: Iterable<ParameterSpec>): Builder = apply {
+            mainConstructorParameters.addAll(mainConstructorParams)
         }
 
         override fun build(): RecordTypeSpec {
-
-            mainConstructor ?: MethodSpec()
-
             return RecordTypeSpecImpl(
                 name = name!!,
                 kind = kind,
-                mainConstructor = mainConstructor ?: MethodSpec(),
+                mainConstructorParameters = mainConstructorParameters.toList(),
                 javadoc = javadoc.build(),
                 annotations = annotations.toList(),
                 modifiers = LinkedHashSet(modifiers),

@@ -19,8 +19,34 @@ internal class AnonymousClassTypeSpecImpl(
     override val types: List<TypeSpec>
 ) : AnonymousClassTypeSpec {
 
-    override fun emit(codeWriter: CodeWriter) {
-        TODO("Not yet implemented")
+    override fun emit(codeWriter: CodeWriter, enumName: String?, implicitModifiers: Set<Modifier>) {
+        doEmit(codeWriter) {
+            if (enumName != null) {
+                javadoc.emit(codeWriter)
+                codeWriter.emitAnnotations(annotations, false)
+                codeWriter.emit(enumName)
+                if (!anonymousTypeArguments.isEmpty) {
+                    codeWriter.emit("(")
+                    anonymousTypeArguments.emit(codeWriter)
+                    codeWriter.emit(")")
+                }
+                if (fields.isEmpty() && methods.isEmpty() && types.isEmpty()) {
+                    return
+                }
+                codeWriter.emit(" {\n")
+            } else {
+                val supertype = superinterfaces.firstOrNull()
+                    ?: superclass
+
+                codeWriter.emit("new %V(") { type(supertype!!) }
+                anonymousTypeArguments.emit(codeWriter)
+                codeWriter.emit(") {\n")
+            }
+
+            emitMembers(codeWriter)
+            codeWriter.popTypeVariables(typeVariables)
+            codeWriter.emit("}")
+        }
     }
 
     override fun equals(other: Any?): Boolean {

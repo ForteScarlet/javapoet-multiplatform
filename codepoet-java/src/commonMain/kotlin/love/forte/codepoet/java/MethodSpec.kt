@@ -49,6 +49,12 @@ public interface MethodSpec : CodeEmitter {
 
     public fun toBuilder(): Builder
 
+    override fun emit(codeWriter: CodeWriter) {
+        emit(codeWriter, null, emptySet())
+    }
+
+    public fun emit(codeWriter: CodeWriter, name: String? = null, implicitModifiers: Set<Modifier> = emptySet())
+
     public class Builder internal constructor(
         public var name: String,
     ) {

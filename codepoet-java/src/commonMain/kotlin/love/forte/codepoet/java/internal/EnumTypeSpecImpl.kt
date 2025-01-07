@@ -4,9 +4,9 @@ import love.forte.codepoet.java.*
 
 
 internal class EnumTypeSpecImpl(
-    override val name: String?,
+    override val name: String,
     override val kind: TypeSpec.Kind,
-    override val enumConstants: Map<String, TypeSpec>,
+    override val enumConstants: Map<String, AnonymousClassTypeSpec>,
     override val javadoc: CodeBlock,
     override val annotations: List<AnnotationSpec>,
     override val modifiers: Set<Modifier>,
@@ -19,8 +19,50 @@ internal class EnumTypeSpecImpl(
     override val types: List<TypeSpec>
 ) : EnumTypeSpec {
 
-    override fun emit(codeWriter: CodeWriter) {
-        TODO("Not yet implemented")
+    override fun emit(codeWriter: CodeWriter, implicitModifiers: Set<Modifier>) {
+        doEmit(codeWriter) {
+            codeWriter.pushType(this.toVirtualTypeSpec(name))
+
+            javadoc.emit(codeWriter)
+            codeWriter.emitAnnotations(annotations, false)
+            codeWriter.emitModifiers(modifiers, implicitModifiers + kind.asMemberModifiers)
+            codeWriter.emit("enum %V") {
+                literal(name)
+            }
+            codeWriter.emitTypeVariables(typeVariables)
+
+            // implements
+            codeWriter.emitImplements(superinterfaces)
+
+            codeWriter.popType()
+            codeWriter.emit(" {\n")
+
+            emitMembers(codeWriter) { firstMember, notFirst ->
+                val needsSeparator = fields.isNotEmpty() || methods.isNotEmpty() || types.isNotEmpty()
+                val i = enumConstants.entries.iterator()
+                while (i.hasNext()) {
+                    val enumConstant = i.next()
+                    if (!firstMember) {
+                        codeWriter.emit("\n")
+                    }
+
+                    enumConstant.value.emit(codeWriter, enumConstant.key)
+                    notFirst()
+                    if (i.hasNext()) {
+                        codeWriter.emit(",\n")
+                    } else if (!needsSeparator) {
+                        codeWriter.emit("\n")
+                    }
+                }
+
+                if (needsSeparator) {
+                    codeWriter.emit(";\n")
+                }
+            }
+
+            codeWriter.popTypeVariables(typeVariables)
+            codeWriter.emit("}\n")
+        }
     }
 
     override fun equals(other: Any?): Boolean {

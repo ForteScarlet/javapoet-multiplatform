@@ -18,7 +18,7 @@ internal class ParameterSpecImpl internal constructor(
         }
     }
     
-    override fun emit(codeWriter: CodeWriter) {
+    override fun emit(codeWriter: CodeWriter, vararg: Boolean) {
         TODO("Not yet implemented")
     }
 

@@ -31,8 +31,104 @@ internal class MethodSpecImpl(
         }
     }
 
-    override fun emit(codeWriter: CodeWriter) {
-        TODO("Not yet implemented")
+    override fun emit(codeWriter: CodeWriter, name: String?, implicitModifiers: Set<Modifier>) {
+        javadocWithParameters().emit(codeWriter)
+        codeWriter.emitAnnotations(annotations, false)
+        codeWriter.emitModifiers(modifiers, implicitModifiers)
+
+        if (typeVariables.isNotEmpty()) {
+            codeWriter.emitTypeVariables(typeVariables)
+            codeWriter.emit(" ")
+        }
+
+        if (isConstructor) {
+            codeWriter.emit("$name(%V") {
+                zeroWidthSpace()
+            }
+        } else {
+            codeWriter.emit("%V $name(%V") {
+                type(returnType ?: TypeName.Builtins.VOID)
+                zeroWidthSpace()
+            }
+        }
+
+        var firstParameter = true
+        val i = parameters.iterator()
+        while (i.hasNext()) {
+            val parameter = i.next()
+            if (!firstParameter) {
+                codeWriter.emit(",")
+                codeWriter.emitWrappingSpace()
+            }
+
+            parameter.emit(codeWriter, !i.hasNext() && isVarargs)
+            firstParameter = false
+        }
+
+        codeWriter.emit(")")
+
+        if (!defaultValue.isEmpty) {
+            codeWriter.emit(" default ")
+            defaultValue.emit(codeWriter)
+        }
+
+        if (!exceptions.isEmpty()) {
+            codeWriter.emitWrappingSpace()
+            codeWriter.emit("throws")
+            var firstException = true
+            for (exception in exceptions) {
+                if (!firstException) codeWriter.emit(",")
+                codeWriter.emitWrappingSpace()
+                codeWriter.emit("%V") {
+                    type(exception)
+                }
+
+                firstException = false
+            }
+        }
+
+        when {
+            hasModifier(Modifier.ABSTRACT) -> {
+                codeWriter.emit(";\n")
+            }
+            hasModifier(Modifier.NATIVE) -> {
+                // Code is allowed to support stuff like GWT JSNI.
+                code.emit(codeWriter)
+                codeWriter.emit(";\n")
+            }
+            else -> {
+                codeWriter.emit(" {\n")
+
+                codeWriter.indent()
+                code.emit(codeWriter, true)
+                codeWriter.unindent()
+
+                codeWriter.emit("}\n")
+            }
+        }
+        codeWriter.popTypeVariables(typeVariables)
+    }
+
+    private fun javadocWithParameters(): CodeBlock {
+        if (parameters.isEmpty()) return javadoc
+
+        val builder = javadoc.toBuilder()
+        var emitTagNewline = true
+        for (parameter in parameters) {
+            val parameterDoc = parameter.javadoc
+            if (parameterDoc.isEmpty) {
+                continue
+            }
+
+            // Emit a new line before @param section only if the method javadoc is present.
+            if (emitTagNewline && !javadoc.isEmpty) builder.add("\n")
+            emitTagNewline = false
+            builder.add("@param ${parameter.name} %V") {
+                literal(parameterDoc)
+            }
+        }
+
+        return builder.build()
     }
 
     override fun equals(other: Any?): Boolean {

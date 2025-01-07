@@ -20,7 +20,6 @@
 package love.forte.codepoet.java
 
 import love.forte.codepoet.java.ParameterSpec.Builder
-import love.forte.codepoet.java.internal.ParameterSpecImpl
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
@@ -43,6 +42,13 @@ public interface ParameterSpec : CodeEmitter {
     public val javadoc: CodeBlock
 
     public fun toBuilder(): Builder
+
+    override fun emit(codeWriter: CodeWriter) {
+        emit(codeWriter, false)
+    }
+
+    public fun emit(codeWriter: CodeWriter, vararg: Boolean = false)
+
 
     public class Builder internal constructor(
         public val type: TypeName,

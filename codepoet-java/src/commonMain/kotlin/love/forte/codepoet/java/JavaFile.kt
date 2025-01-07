@@ -8,7 +8,7 @@ import love.forte.codepoet.java.internal.JavaFileImpl
  *
  * @author ForteScarlet
  */
-public interface JavaFile {
+public interface JavaFile : CodeEmitter {
 
     public val fileComment: CodeBlock
     public val packageName: String
