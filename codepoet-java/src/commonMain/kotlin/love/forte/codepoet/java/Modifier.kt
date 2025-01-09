@@ -37,29 +37,125 @@ public enum class Modifier {
 
     /** The modifier `public` */
     PUBLIC,
+
     /** The modifier `protected` */
     PROTECTED,
+
     /** The modifier `private` */
     PRIVATE,
+
     /** The modifier `abstract` */
     ABSTRACT,
 
     /** The modifier `default` */
     DEFAULT,
+
     /** The modifier `static` */
     STATIC,
+
     /** The modifier `final` */
     FINAL,
+
     /** The modifier `transient` */
     TRANSIENT,
+
     /** The modifier `volatile` */
     VOLATILE,
+
     /** The modifier `synchronized` */
     SYNCHRONIZED,
+
     /** The modifier `native` */
     NATIVE,
+
     /** The modifier `strictfp` */
     STRICTFP;
 
     override fun toString(): String = name.lowercase()
+}
+
+internal class ModifierSet(private var value: Int = 0) : Set<Modifier> {
+    override val size: Int
+        get() = value.countOneBits()
+
+    override fun contains(element: Modifier): Boolean {
+        return value and element.ordinal == element.ordinal
+    }
+
+    override fun containsAll(elements: Collection<Modifier>): Boolean {
+        return elements.all { contains(it) }
+    }
+
+    fun add(element: Modifier) {
+        value = value or (1 shl element.ordinal)
+    }
+
+    fun addAll(vararg elements: Modifier) {
+        elements.forEach { add(it) }
+    }
+
+    fun addAll(elements: Iterable<Modifier>) {
+        if (elements is ModifierSet) {
+            value = value or elements.value
+        } else {
+            elements.forEach { add(it) }
+        }
+    }
+
+    fun remove(element: Modifier) {
+        value or (1 shl element.ordinal)
+    }
+
+    override fun toString(): String {
+        if (isEmpty()) return "[]"
+
+        return joinToString(", ", prefix = "[", postfix = "]") { it.name }
+    }
+
+
+    override fun isEmpty(): Boolean = value == 0
+
+    override fun iterator(): Iterator<Modifier> {
+        if (isEmpty()) return EMPTY_ITERATOR
+
+        return iterator {
+            var bits = value
+            var lowestBit = bits.takeLowestOneBit()
+            do {
+                val index = (lowestBit and -1).countTrailingZeroBits()
+                yield(Modifier.entries[index])
+                bits = bits xor lowestBit
+                lowestBit = bits.takeLowestOneBit()
+            } while (bits > 0 && lowestBit > 0)
+        }
+    }
+
+    fun copy(): ModifierSet = ModifierSet(value)
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Set<*>) return false
+
+        if (other is ModifierSet) return value == other.value
+
+        // Other sets
+
+        if (other.size != size) return false
+
+        return other.all { it in this }
+    }
+
+    override fun hashCode(): Int {
+        return value
+    }
+
+    companion object {
+        private val EMPTY_ITERATOR = object : Iterator<Modifier> {
+            override fun hasNext(): Boolean = false
+
+            override fun next(): Modifier {
+                throw NoSuchElementException("No next modifier found.")
+            }
+        }
+    }
 }
