@@ -26,7 +26,6 @@ import love.forte.codepoet.java.internal.isUpperCase
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
-import kotlin.reflect.KClass
 
 
 /**
@@ -104,10 +103,6 @@ public interface ClassName : TypeName, Comparable<ClassName> {
     }
 }
 
-// expect?
-public fun ClassName(clz: KClass<*>): ClassName {
-    TODO()
-}
 
 
 /**

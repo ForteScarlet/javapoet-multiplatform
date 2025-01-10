@@ -1,9 +1,8 @@
-import com.squareup.javapoet.CodeBlock
-import com.squareup.javapoet.FieldSpec
-import com.squareup.javapoet.MethodSpec
-import com.squareup.javapoet.TypeName
-import com.squareup.javapoet.TypeSpec
+import com.squareup.javapoet.*
+import javax.annotation.processing.RoundEnvironment
+import javax.lang.model.SourceVersion
 import javax.lang.model.element.Modifier
+import javax.lang.model.element.TypeElement
 import kotlin.test.Test
 
 /**
@@ -14,6 +13,18 @@ class TypeSpecTest {
 
     @Test
     fun testAnonymousTypeArguments() {
+
+        SourceVersion.RELEASE_0
+
+        object : javax.annotation.processing.AbstractProcessor() {
+            override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment?): Boolean {
+
+                TODO("Not yet implemented")
+            }
+
+
+        }
+
         println(
             TypeSpec
                 .classBuilder("MyAnno")

@@ -25,7 +25,11 @@ kotlin {
     }
 
     js {
-        nodejs()
+        nodejs {
+            testTask {
+                useMocha()
+            }
+        }
         binaries.library()
     }
 
