@@ -37,11 +37,31 @@ internal class ClassNameImpl(
     }
 
     override fun annotated(annotations: List<AnnotationSpec>): TypeName {
+        if (annotations.isEmpty()) return this
         return ClassNameImpl(packageName, enclosingClassName, simpleName, this.annotations + annotations)
     }
 
     override fun withoutAnnotations(): TypeName {
         return ClassNameImpl(packageName, enclosingClassName, simpleName)
+    }
+
+    override fun unbox(): TypeName {
+        if (packageName == ClassName.JAVA_LANG_PACKAGE && enclosingClassName == null) {
+            return when (simpleName) {
+                ClassName.Builtins.BOXED_VOID_SIMPLE_NAME -> TypeName.Builtins.VOID
+                ClassName.Builtins.BOXED_BOOLEAN_SIMPLE_NAME -> TypeName.Builtins.BOOLEAN
+                ClassName.Builtins.BOXED_BYTE_SIMPLE_NAME -> TypeName.Builtins.BYTE
+                ClassName.Builtins.BOXED_SHORT_SIMPLE_NAME -> TypeName.Builtins.SHORT
+                ClassName.Builtins.BOXED_INT_SIMPLE_NAME -> TypeName.Builtins.INT
+                ClassName.Builtins.BOXED_LONG_SIMPLE_NAME -> TypeName.Builtins.LONG
+                ClassName.Builtins.BOXED_CHAR_SIMPLE_NAME -> TypeName.Builtins.CHAR
+                ClassName.Builtins.BOXED_FLOAT_SIMPLE_NAME -> TypeName.Builtins.FLOAT
+                ClassName.Builtins.BOXED_DOUBLE_SIMPLE_NAME -> TypeName.Builtins.DOUBLE
+                else -> throw IllegalStateException("Can't unbox $this")
+            }.annotated(annotations)
+        }
+
+        throw IllegalStateException("Can't unbox $this")
     }
 
     override fun emit(codeWriter: CodeWriter) {

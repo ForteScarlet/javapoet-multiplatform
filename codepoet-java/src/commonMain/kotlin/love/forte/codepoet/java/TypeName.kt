@@ -19,18 +19,21 @@
 
 package love.forte.codepoet.java
 
-import love.forte.codepoet.java.internal.TypeNameImpl
+import love.forte.codepoet.java.internal.PrimitiveTypeNameImpl
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
-public interface TypeName : CodeEmitter {
-
+/**
+ * A type name.
+ */
+public sealed interface TypeName : CodeEmitter {
     public val annotations: List<AnnotationSpec>
 
     public fun annotated(annotations: List<AnnotationSpec>): TypeName
 
     public fun annotated(vararg annotations: AnnotationSpec): TypeName {
+        if (annotations.isEmpty()) return this
         return annotated(annotations.asList())
     }
 
@@ -47,69 +50,63 @@ public interface TypeName : CodeEmitter {
      */
     public val isPrimitive: Boolean
 
+    /**
+     * If this type is one of the primitive types ([Builtins.VOID], [Builtins.INT], etc.),
+     * return the boxed type ([ClassName.Builtins.BOXED_VOID], [ClassName.Builtins.BOXED_INT], etc.).
+     * Otherwise, return itself.
+     */
+    public fun box(): TypeName {
+        // Only primitive TypeNames implement this fun.
+        return this
+    }
+
+    public fun unbox(): TypeName {
+        // Only ClassNames and primitive TypeNames implement this fun.
+        throw UnsupportedOperationException("Can't unbox $this")
+    }
+
     public object Builtins {
         @JvmField
-        public val VOID: TypeName = TypeName("void")
+        public val VOID: TypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.VOID)
 
         @JvmField
-        public val BOOLEAN: TypeName = TypeName("boolean")
+        public val BOOLEAN: TypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.BOOLEAN)
 
         @JvmField
-        public val BYTE: TypeName = TypeName("byte")
+        public val BYTE: TypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.BYTE)
 
         @JvmField
-        public val SHORT: TypeName = TypeName("short")
+        public val SHORT: TypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.SHORT)
 
         @JvmField
-        public val INT: TypeName = TypeName("int")
+        public val INT: TypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.INT)
 
         @JvmField
-        public val LONG: TypeName = TypeName("long")
+        public val LONG: TypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.LONG)
 
         @JvmField
-        public val CHAR: TypeName = TypeName("char")
+        public val CHAR: TypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.CHAR)
 
         @JvmField
-        public val FLOAT: TypeName = TypeName("float")
+        public val FLOAT: TypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.FLOAT)
 
         @JvmField
-        public val DOUBLE: TypeName = TypeName("double")
-
-        @JvmField
-        public val OBJECT: TypeName = ClassName.Builtins.OBJECT
-    }
-
-    public companion object {
-        // private val BOXED_VOID: ClassName = ClassName("java.lang", "Void")
-        // private val BOXED_BOOLEAN: ClassName = ClassName("java.lang", "Boolean")
-        // private val BOXED_BYTE: ClassName = ClassName("java.lang", "Byte")
-        // private val BOXED_SHORT: ClassName = ClassName("java.lang", "Short")
-        // private val BOXED_INT: ClassName = ClassName("java.lang", "Integer")
-        // private val BOXED_LONG: ClassName = ClassName("java.lang", "Long")
-        // private val BOXED_CHAR: ClassName = ClassName("java.lang", "Character")
-        // private val BOXED_FLOAT: ClassName = ClassName("java.lang", "Float")
-        // private val BOXED_DOUBLE: ClassName = ClassName("java.lang", "Double")
+        public val DOUBLE: TypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.DOUBLE)
     }
 }
 
+internal interface PrimitiveTypeName : TypeName {
+    val keyword: String
 
-private fun TypeName(keyword: String): TypeName = when (keyword) {
-    "void" -> TypeName.Builtins.VOID
-    "boolean" -> TypeName.Builtins.BOOLEAN
-    "byte" -> TypeName.Builtins.BYTE
-    "short" -> TypeName.Builtins.SHORT
-    "int" -> TypeName.Builtins.INT
-    "long" -> TypeName.Builtins.LONG
-    "char" -> TypeName.Builtins.CHAR
-    "float" -> TypeName.Builtins.FLOAT
-    "double" -> TypeName.Builtins.DOUBLE
-    else -> TypeNameImpl(keyword)
-}
-
-private fun TypeName(keyword: String, annotations: List<AnnotationSpec>): TypeName {
-    if (annotations.isEmpty()) {
-        return TypeName(keyword)
+    companion object {
+        const val VOID = "void"
+        const val BOOLEAN = "boolean"
+        const val BYTE = "byte"
+        const val SHORT = "short"
+        const val INT = "int"
+        const val LONG = "long"
+        const val CHAR = "char"
+        const val FLOAT = "float"
+        const val DOUBLE = "double"
     }
-
-    return TypeNameImpl(keyword, annotations)
 }

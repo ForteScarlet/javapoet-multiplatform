@@ -29,6 +29,8 @@ internal class ParameterizedTypeNameImpl(
     }
 
     override fun annotated(annotations: List<AnnotationSpec>): ParameterizedTypeName {
+        if (annotations.isEmpty()) return this
+
         return ParameterizedTypeNameImpl(
             enclosingType, rawType, typeArguments, this.annotations + annotations
         )

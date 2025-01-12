@@ -17,12 +17,12 @@ package love.forte.codepoet.java
 
 import kotlin.reflect.KClass
 
-public fun ClassName(clz: KClass<*>): ClassName {
-    return ClassName(clz.java)
+public fun ClassName(type: KClass<*>): ClassName {
+    return ClassName(type.java)
 }
 
-public fun ClassName(javaClass: Class<*>): ClassName {
-    var java = javaClass
+public fun ClassName(type: Class<*>): ClassName {
+    var java = type
     require(!java.isPrimitive) { "Primitive types cannot be represented as a ClassName" }
     require(Void.TYPE != java) { "'void' type cannot be represented as a ClassName" }
     require(!java.isArray) { "Array types cannot be represented as a ClassName" }

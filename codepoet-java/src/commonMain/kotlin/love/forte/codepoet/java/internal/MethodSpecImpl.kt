@@ -91,11 +91,13 @@ internal class MethodSpecImpl(
             hasModifier(Modifier.ABSTRACT) -> {
                 codeWriter.emit(";\n")
             }
+
             hasModifier(Modifier.NATIVE) -> {
                 // Code is allowed to support stuff like GWT JSNI.
                 code.emit(codeWriter)
                 codeWriter.emit(";\n")
             }
+
             else -> {
                 codeWriter.emit(" {\n")
 

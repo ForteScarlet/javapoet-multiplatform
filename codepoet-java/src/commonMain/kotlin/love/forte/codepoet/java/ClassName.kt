@@ -93,16 +93,73 @@ public interface ClassName : TypeName, Comparable<ClassName> {
 
     public object Builtins {
         @JvmField
-        public val OBJECT: ClassName = ClassName("java.lang", "Object")
+        public val OBJECT: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, "Object")
 
+        @JvmField
+        public val STRING: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, "String")
+
+        // primitives
+
+        internal const val BOXED_VOID_SIMPLE_NAME = "Void"
+
+        @JvmField
+        public val BOXED_VOID: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, BOXED_VOID_SIMPLE_NAME)
+
+        internal const val BOXED_BOOLEAN_SIMPLE_NAME = "Boolean"
+
+        @JvmField
+        public val BOXED_BOOLEAN: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, BOXED_BOOLEAN_SIMPLE_NAME)
+
+        internal const val BOXED_BYTE_SIMPLE_NAME = "Byte"
+
+        @JvmField
+        public val BOXED_BYTE: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, BOXED_BYTE_SIMPLE_NAME)
+
+        internal const val BOXED_SHORT_SIMPLE_NAME = "Short"
+
+        @JvmField
+        public val BOXED_SHORT: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, BOXED_SHORT_SIMPLE_NAME)
+
+        internal const val BOXED_INT_SIMPLE_NAME = "Integer"
+
+        @JvmField
+        public val BOXED_INT: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, BOXED_INT_SIMPLE_NAME)
+
+        internal const val BOXED_LONG_SIMPLE_NAME = "Long"
+
+        @JvmField
+        public val BOXED_LONG: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, BOXED_LONG_SIMPLE_NAME)
+
+        internal const val BOXED_CHAR_SIMPLE_NAME = "Character"
+
+        @JvmField
+        public val BOXED_CHAR: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, BOXED_CHAR_SIMPLE_NAME)
+
+        internal const val BOXED_FLOAT_SIMPLE_NAME = "Float"
+
+        @JvmField
+        public val BOXED_FLOAT: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, BOXED_FLOAT_SIMPLE_NAME)
+
+        internal const val BOXED_DOUBLE_SIMPLE_NAME = "Double"
+
+        @JvmField
+        public val BOXED_DOUBLE: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, BOXED_DOUBLE_SIMPLE_NAME)
+
+        // Annotations
+
+        @JvmField
+        public val OVERRIDE: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, "Override")
+
+        @JvmField
+        public val SUPPRESS_WARNINGS: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, "SuppressWarnings")
     }
 
     public companion object {
+        internal const val JAVA_LANG_PACKAGE = "java.lang"
         // OBJECT?
 
     }
 }
-
 
 
 /**

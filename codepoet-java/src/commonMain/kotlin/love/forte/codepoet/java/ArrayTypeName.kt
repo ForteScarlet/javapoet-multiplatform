@@ -34,6 +34,7 @@ public interface ArrayTypeName : TypeName {
     override fun annotated(annotations: List<AnnotationSpec>): ArrayTypeName
 
     override fun annotated(vararg annotations: AnnotationSpec): ArrayTypeName {
+        if (annotations.isEmpty()) return this
         return annotated(annotations.asList())
     }
 

@@ -30,6 +30,8 @@ public interface TypeVariableName : TypeName {
     override fun annotated(annotations: List<AnnotationSpec>): TypeVariableName
 
     override fun annotated(vararg annotations: AnnotationSpec): TypeVariableName {
+        if (annotations.isEmpty()) return this
+
         return annotated(annotations.asList())
     }
 

@@ -11,6 +11,8 @@ internal class SubtypeWildcardTypeNameImpl(
     }
 
     override fun annotated(annotations: List<AnnotationSpec>): WildcardTypeName {
+        if (annotations.isEmpty()) return this
+
         return SubtypeWildcardTypeNameImpl(lowerBounds, this.annotations + annotations)
     }
 
@@ -61,6 +63,8 @@ internal class SupertypeWildcardTypeNameImpl(
     }
 
     override fun annotated(annotations: List<AnnotationSpec>): WildcardTypeName {
+        if (annotations.isEmpty()) return this
+
         return SupertypeWildcardTypeNameImpl(upperBounds, this.annotations + annotations)
     }
 
@@ -73,7 +77,7 @@ internal class SupertypeWildcardTypeNameImpl(
                     codeWriter.emit("?")
                 }
 
-                if (typeName == TypeName.Builtins.OBJECT) {
+                if (typeName == ClassName.Builtins.OBJECT) {
                     // continue
                     return@forEachIndexed
                 }

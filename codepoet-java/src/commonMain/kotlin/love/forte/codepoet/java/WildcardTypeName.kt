@@ -33,6 +33,7 @@ public sealed interface WildcardTypeName : TypeName {
     override fun annotated(annotations: List<AnnotationSpec>): WildcardTypeName
 
     override fun annotated(vararg annotations: AnnotationSpec): WildcardTypeName {
+        if (annotations.isEmpty()) return this
         return annotated(annotations.asList())
     }
 
@@ -54,7 +55,13 @@ public interface SupertypeWildcardTypeName : WildcardTypeName {
 }
 
 public fun SubtypeWildcardTypeName(upperBound: TypeName): SubtypeWildcardTypeName =
-    SubtypeWildcardTypeNameImpl(listOf(upperBound))
+    SubtypeWildcardTypeName(listOf(upperBound))
 
 public fun SupertypeWildcardTypeName(lowerBound: TypeName): SupertypeWildcardTypeName =
-    SupertypeWildcardTypeNameImpl(listOf(lowerBound))
+    SupertypeWildcardTypeName(listOf(lowerBound))
+
+internal fun SubtypeWildcardTypeName(upperBounds: List<TypeName>): SubtypeWildcardTypeName =
+    SubtypeWildcardTypeNameImpl(upperBounds)
+
+internal fun SupertypeWildcardTypeName(lowerBounds: List<TypeName>): SupertypeWildcardTypeName =
+    SupertypeWildcardTypeNameImpl(lowerBounds)

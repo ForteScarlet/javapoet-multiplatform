@@ -12,6 +12,8 @@ internal class ArrayTypeNameImpl(
     override val annotations: List<AnnotationSpec> = emptyList(),
 ) : ArrayTypeName {
     override fun annotated(annotations: List<AnnotationSpec>): ArrayTypeName {
+        if (annotations.isEmpty()) return this
+
         return ArrayTypeNameImpl(componentType, this.annotations + annotations)
     }
 

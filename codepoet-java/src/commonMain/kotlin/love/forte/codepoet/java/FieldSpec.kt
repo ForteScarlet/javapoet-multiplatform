@@ -60,7 +60,7 @@ public interface FieldSpec : CodeEmitter {
     ) {
         internal val javadoc = CodeBlock.builder()
         internal val annotations = mutableListOf<AnnotationSpec>()
-        internal val modifiers = mutableSetOf<Modifier>()
+        internal val modifiers = ModifierSet()
         internal var initializer: CodeBlock? = null
 
         public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
@@ -94,7 +94,7 @@ public interface FieldSpec : CodeEmitter {
         // TODO addAnnotation(Class)
 
         public fun addModifiers(vararg modifiers: Modifier): Builder = apply {
-            this.modifiers.addAll(modifiers)
+            this.modifiers.addAll(*modifiers)
         }
 
         public fun addModifiers(modifiers: Iterable<Modifier>): Builder = apply {
@@ -144,7 +144,7 @@ public interface FieldSpec : CodeEmitter {
 /**
  * @see FieldSpec.builder
  */
-public inline fun FieldSpec(type: TypeName, name: String, block: FieldSpec.Builder.() -> Unit = {}): FieldSpec =
+public inline fun FieldSpec(type: TypeName, name: String, block: Builder.() -> Unit = {}): FieldSpec =
     FieldSpec.builder(type, name).also(block).build()
 
 

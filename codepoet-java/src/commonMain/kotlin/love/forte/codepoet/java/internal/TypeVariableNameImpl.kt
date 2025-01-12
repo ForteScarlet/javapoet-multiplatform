@@ -13,6 +13,8 @@ internal class TypeVariableNameImpl(
     override val annotations: List<AnnotationSpec> = emptyList()
 ) : TypeVariableName {
     override fun annotated(annotations: List<AnnotationSpec>): TypeVariableName {
+        if (annotations.isEmpty()) return this
+
         return TypeVariableNameImpl(name, bounds, this.annotations + annotations)
     }
 
