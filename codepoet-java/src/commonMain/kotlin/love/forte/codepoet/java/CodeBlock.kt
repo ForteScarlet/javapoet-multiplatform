@@ -175,32 +175,23 @@ public inline fun CodeBlock(format: String, block: CodeValueBuilderDsl = {}): Co
 public inline fun CodeBlock(block: Builder.() -> Unit): CodeBlock =
     CodeBlock.builder().also(block).build()
 
-// join?
-// public fun Iterable<CodeBlock>.join(separator: String): CodeBlock = TODO()
-
-// TODO Stream joining
-
 // Builders
 
-@JvmName("add")
 public inline fun Builder.add(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
     add(CodeValue(format, block))
 }
 
-@JvmName("addStatement")
 public inline fun Builder.addStatement(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
     addStatement(CodeValue(format, block))
 }
 
 
-@JvmName("beginControlFlow")
 public inline fun Builder.beginControlFlow(controlFlow: String, block: CodeValueBuilderDsl = {}): Builder =
     apply {
         add("$controlFlow {\n") { block() }
         indent()
     }
 
-@JvmName("nextControlFlow")
 public inline fun Builder.nextControlFlow(controlFlow: String, block: CodeValueBuilderDsl = {}): Builder =
     apply {
         unindent()
@@ -212,7 +203,6 @@ public inline fun Builder.nextControlFlow(controlFlow: String, block: CodeValueB
  * @param controlFlow the optional control flow construct and its code, such as
  * `"while(foo == 20)"`. Only used for `"do/while"` control flows.
  */
-@JvmName("endControlFlow")
 public inline fun Builder.endControlFlow(controlFlow: String, block: CodeValueBuilderDsl = {}): Builder =
     apply {
         unindent()

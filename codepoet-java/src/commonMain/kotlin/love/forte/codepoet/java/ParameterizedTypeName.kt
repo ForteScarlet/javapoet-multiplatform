@@ -78,6 +78,7 @@ public interface ParameterizedTypeName : TypeName {
  */
 
 /** Returns a parameterized type, applying [typeArguments] to [rawType]. */
+@JvmName("of")
 public fun ParameterizedTypeName(rawType: ClassName, vararg typeArguments: TypeName): ParameterizedTypeName {
     return ParameterizedTypeNameImpl(null, rawType, typeArguments.asList())
 }

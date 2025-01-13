@@ -22,7 +22,6 @@ package love.forte.codepoet.java
 import love.forte.codepoet.java.FieldSpec.Builder
 import java.lang.reflect.Type
 
-
 public inline fun FieldSpec(type: Type, name: String, block: Builder.() -> Unit = {}): FieldSpec {
     return FieldSpec(TypeName(type), name, block)
 }

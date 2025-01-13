@@ -1,10 +1,10 @@
 /*
- *     Copyright (c) 2021-2024. ForteScarlet.
+ *     Copyright (c) 2023-2024. ForteScarlet.
  *
  *     Project    https://github.com/simple-robot/simpler-robot
  *     Email      ForteScarlet@163.com
  *
- *     This file is part of the Simple Robot Library (Alias: simple-robot, simbot, etc.).
+ *     This file is part of the Simple Robot Library.
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published by
@@ -20,21 +20,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-rootProject.name = "javapoet-multiplatform"
 
-pluginManagement {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
     }
 }
-
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
-}
-
-include(":codepoet-common")
-include(":codepoet-java")
-include(":codepoet-java-apt")
-
-include(":codepoet-tests:codepoet-java-apt-test")

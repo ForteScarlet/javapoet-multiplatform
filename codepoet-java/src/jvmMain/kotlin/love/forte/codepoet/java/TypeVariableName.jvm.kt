@@ -18,30 +18,12 @@
 
 package love.forte.codepoet.java
 
-import java.lang.reflect.Type
+import love.forte.codepoet.java.internal.TypeVariableName
 import java.lang.reflect.TypeVariable
 
+@JvmName("of")
 public fun TypeVariableName(type: TypeVariable<*>): TypeVariableName {
     return TypeVariableName(type, linkedMapOf())
 }
 
 public fun TypeVariable<*>.toTypeVariableName(): TypeVariableName = TypeVariableName(this)
-
-internal fun TypeVariableName(
-    type: TypeVariable<*>,
-    map: MutableMap<Type, TypeVariableName>
-): TypeVariableName {
-    return map[type] ?: run {
-        val bounds = mutableListOf<TypeName>()
-
-        for (bound in type.bounds) {
-            if (bound != Object::class.java) {
-                bounds.add(TypeName(bound, map))
-            }
-        }
-
-        TypeVariableName(type.name, bounds).also {
-            map[type] = it
-        }
-    }
-}

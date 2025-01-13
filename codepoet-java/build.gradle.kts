@@ -1,15 +1,21 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlinxBinaryCompatibilityValidator)
 }
 
+configJavaCompileWithModule("love.forte.codepoet.java")
+
 kotlin {
     explicitApi()
 
     compilerOptions {
-        jvmToolchain(8) // TODO 8, or 11?
+        jvmToolchain(11)
 
         optIn.add("love.forte.codepoet.java.InternalApi")
+
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
     jvm {
@@ -17,6 +23,8 @@ kotlin {
 
         compilerOptions {
             javaParameters = true
+            jvmTarget = JvmTarget.JVM_11
+            freeCompilerArgs.addAll("-Xjvm-default=all", "-Xjsr305=strict")
         }
 
         testRuns["test"].executionTask.configure {

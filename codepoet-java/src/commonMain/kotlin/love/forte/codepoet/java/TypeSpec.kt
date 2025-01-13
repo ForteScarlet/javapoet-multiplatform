@@ -748,3 +748,12 @@ public interface RecordTypeSpec : TypeSpec {
         }
     }
 }
+
+
+public inline fun SimpleTypeSpec(
+    kind: Kind,
+    name: String,
+    block: SimpleTypeSpec.Builder.() -> Unit = {}
+): SimpleTypeSpec {
+    return SimpleTypeSpec.Builder(kind, name).also(block).build()
+}

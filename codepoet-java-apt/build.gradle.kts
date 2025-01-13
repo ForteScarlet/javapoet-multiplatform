@@ -1,46 +1,30 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlinxBinaryCompatibilityValidator)
 }
 
+configJavaCompileWithModule("love.forte.codepoet.java.apt")
+
 kotlin {
     explicitApi()
 
     compilerOptions {
-        jvmToolchain(8) // TODO 8, or 11?
+        javaParameters = true
+        jvmTarget = JvmTarget.JVM_11
+        jvmToolchain(11)
 
         optIn.add("love.forte.codepoet.java.InternalApi")
+
+        freeCompilerArgs.addAll("-Xjvm-default=all", "-Xjsr305=strict")
     }
 
-    jvm {
-        withJava()
-
-        compilerOptions {
-            javaParameters = true
-        }
-
-        testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
-        }
+    dependencies {
+        api(project(":codepoet-java"))
     }
+}
 
-    js {
-        nodejs {
-            testTask {
-                useMocha()
-            }
-        }
-        binaries.library()
-    }
-
-    sourceSets {
-        commonMain.dependencies {
-            api(project(":codepoet-common"))
-            // implementation(kotlin("reflect"))
-        }
-
-        commonTest.dependencies {
-            implementation(kotlin("test"))
-        }
-    }
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

@@ -30,7 +30,7 @@ package love.forte.codepoet.java
  *
  * see `javax.lang.model.element.Modifier`
  */
-public enum class Modifier {
+public expect enum class Modifier {
 
     // See JLS sections 8.1.1, 8.3.1, 8.4.3, 8.8.3, and 9.1.1.
     // java.lang.reflect.Modifier includes INTERFACE, but that's a VMism.
@@ -70,10 +70,12 @@ public enum class Modifier {
 
     /** The modifier `strictfp` */
     STRICTFP;
-
-    override fun toString(): String = name.lowercase()
 }
 
+/**
+ * 始终按照 [Modifier] 的 [Modifier.ordinal] 进行排序的 [Set] 实现。
+ * 类似 TreeSet 或 SortedSet。
+ */
 internal class ModifierSet(private var value: Int = 0) : Set<Modifier> {
     override val size: Int
         get() = value.countOneBits()

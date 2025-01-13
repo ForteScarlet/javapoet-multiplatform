@@ -80,6 +80,5 @@ public inline fun AnnotationSpec(annotation: ClassName, block: Builder.() -> Uni
     AnnotationSpec.builder(annotation).also(block).build()
 
 
-@JvmName("addMember")
 public inline fun Builder.addMember(name: String, format: String, block: CodeValueBuilderDsl = {}): Builder =
     addMember(name, CodeBlock(format, block))

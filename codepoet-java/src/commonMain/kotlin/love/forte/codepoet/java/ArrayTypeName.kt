@@ -51,5 +51,6 @@ public interface ArrayTypeName : TypeName {
     public fun emit(codeWriter: CodeWriter, varargs: Boolean)
 }
 
+@JvmName("of")
 public fun ArrayTypeName(componentType: TypeName): ArrayTypeName =
     ArrayTypeNameImpl(componentType)

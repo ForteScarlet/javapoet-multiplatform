@@ -17,10 +17,12 @@ package love.forte.codepoet.java
 
 import kotlin.reflect.KClass
 
+@JvmName("of")
 public fun ClassName(type: KClass<*>): ClassName {
     return ClassName(type.java)
 }
 
+@JvmName("of")
 public fun ClassName(type: Class<*>): ClassName {
     var java = type
     require(!java.isPrimitive) { "Primitive types cannot be represented as a ClassName" }

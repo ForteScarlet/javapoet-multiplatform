@@ -3,11 +3,13 @@ plugins {
     alias(libs.plugins.kotlinxBinaryCompatibilityValidator)
 }
 
+configJavaCompileWithModule("love.forte.codepoet.common")
+
 kotlin {
     explicitApi()
 
     compilerOptions {
-        jvmToolchain(8) // TODO 8, or 11?
+        jvmToolchain(11)
     }
 
     jvm {

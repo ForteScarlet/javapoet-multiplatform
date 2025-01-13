@@ -1,5 +1,5 @@
 /*
- *     Copyright (c) 2021-2024. ForteScarlet.
+ *     Copyright (c) 2024. ForteScarlet.
  *
  *     Project    https://github.com/simple-robot/simpler-robot
  *     Email      ForteScarlet@163.com
@@ -20,21 +20,20 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-rootProject.name = "javapoet-multiplatform"
 
-pluginManagement {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
+plugins {
+    `kotlin-dsl`
+    idea
+}
+
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+idea {
+    module {
+        isDownloadSources = true
     }
 }
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
-}
-
-include(":codepoet-common")
-include(":codepoet-java")
-include(":codepoet-java-apt")
-
-include(":codepoet-tests:codepoet-java-apt-test")

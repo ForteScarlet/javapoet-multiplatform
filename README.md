@@ -10,37 +10,28 @@ Source file generation can be useful when doing things such as annotation proces
 with metadata files (e.g., database schemas, protocol formats). By generating code, you eliminate
 the need to write boilerplate while also keeping a single source of truth for the metadata.
 
-
 Deprecated
 ----------
 
 As of 2020-10-10, Square's JavaPoet project is deprecated. We're proud of our work but we haven't
 kept up on maintaining it.
 
-If you'd like an alternative that supports the latest Java language features, one option is
-[Palantir's JavaPoet](https://github.com/palantir/javapoet).
-
 To switch to that project, you'll need new Maven coordinates:
 
 ```diff
 - javapoet = { module = "com.squareup:javapoet", version = "1.13.0" }
-+ javapoet = { module = "com.palantir.javapoet:javapoet", version = "0.5.0" }
++ javapoet = { module = "love.forte.codepoet:codepoet-java", version = "TODO" }
 ```
 
 And new imports:
 
 ```
 sed -i "" \
-  's/com.squareup.javapoet.\([A-Za-z]*\)/com.palantir.javapoet.\1/g' \
+  's/com.squareup.javapoet.\([A-Za-z]*\)/love.forte.codepoet.java.\1/g' \
   `find . -name "*.kt" -or -name "*.java"`
 ```
 
-And you might need to track some API changes where fields became functions:
-
-```diff
-- javaFile.packageName
-+ javaFile.packageName()
-```
+And you might need to track some API changes.
 
 ### Example
 

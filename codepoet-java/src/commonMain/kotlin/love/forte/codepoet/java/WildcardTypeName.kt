@@ -54,14 +54,18 @@ public interface SupertypeWildcardTypeName : WildcardTypeName {
         get() = emptyList()
 }
 
+@JvmName("of")
 public fun SubtypeWildcardTypeName(upperBound: TypeName): SubtypeWildcardTypeName =
     SubtypeWildcardTypeName(listOf(upperBound))
 
+@JvmName("of")
 public fun SupertypeWildcardTypeName(lowerBound: TypeName): SupertypeWildcardTypeName =
     SupertypeWildcardTypeName(listOf(lowerBound))
 
-internal fun SubtypeWildcardTypeName(upperBounds: List<TypeName>): SubtypeWildcardTypeName =
+@JvmName("of")
+public fun SubtypeWildcardTypeName(upperBounds: List<TypeName>): SubtypeWildcardTypeName =
     SubtypeWildcardTypeNameImpl(upperBounds)
 
-internal fun SupertypeWildcardTypeName(lowerBounds: List<TypeName>): SupertypeWildcardTypeName =
+@JvmName("of")
+public fun SupertypeWildcardTypeName(lowerBounds: List<TypeName>): SupertypeWildcardTypeName =
     SupertypeWildcardTypeNameImpl(lowerBounds)

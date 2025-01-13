@@ -50,19 +50,20 @@ public interface TypeVariableName : TypeName {
 /**
  * Returns type variable named `name` without bounds.
  */
+@JvmName("of")
 public fun TypeVariableName(name: String): TypeVariableName =
     TypeVariableNameImpl(name)
 
 /**
  * Returns type variable named `name` with `bounds`.
  */
+@JvmName("of")
 public fun TypeVariableName(name: String, vararg bounds: TypeName): TypeVariableName =
     TypeVariableNameImpl(name, bounds.asList())
 
 /**
  * Returns type variable named `name` with `bounds`.
  */
+@JvmName("of")
 public fun TypeVariableName(name: String, bounds: Iterable<TypeName>): TypeVariableName =
     TypeVariableNameImpl(name, bounds.toList())
-
-// TODO JVM Types, TypeVariable, TypeParameterElement, etc.

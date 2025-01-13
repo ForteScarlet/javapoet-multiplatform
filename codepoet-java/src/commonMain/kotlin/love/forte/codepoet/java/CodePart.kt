@@ -107,6 +107,9 @@ public sealed class CodePart {
 
 }
 
+/**
+ * @see CodePart.Companion
+ */
 public sealed class CodeArgumentPart : CodePart() {
     /**
      * Skip this `%V`, Just write `%V` itself.

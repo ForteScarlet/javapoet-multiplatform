@@ -19,15 +19,13 @@
 
 package love.forte.codepoet.java
 
+import love.forte.codepoet.java.internal.ArrayTypeName
 import java.lang.reflect.GenericArrayType
-import java.lang.reflect.Type
 
+@JvmName("of")
 public fun ArrayTypeName(type: GenericArrayType): ArrayTypeName {
     return ArrayTypeName(type, linkedMapOf())
 }
 
 public fun GenericArrayType.toArrayTypeName(): ArrayTypeName = ArrayTypeName(this)
 
-internal fun ArrayTypeName(type: GenericArrayType, map: MutableMap<Type, TypeVariableName>): ArrayTypeName {
-    return ArrayTypeName(TypeName(type.genericComponentType, map))
-}
