@@ -35,6 +35,6 @@ plugins {
 
 include(":codepoet-common")
 include(":codepoet-java")
-include(":codepoet-java-apt")
+// include(":codepoet-java-apt")
 
-include(":codepoet-tests:codepoet-java-apt-test")
+// include(":codepoet-tests:codepoet-java-apt-test")

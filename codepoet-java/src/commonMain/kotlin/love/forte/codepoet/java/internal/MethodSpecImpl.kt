@@ -46,7 +46,7 @@ internal class MethodSpecImpl(
                 zeroWidthSpace()
             }
         } else {
-            codeWriter.emit("%V $name(%V") {
+            codeWriter.emit("%V ${this.name}(%V") {
                 type(returnType ?: TypeName.Builtins.VOID)
                 zeroWidthSpace()
             }

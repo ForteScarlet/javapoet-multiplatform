@@ -267,13 +267,13 @@ public interface MethodSpec : CodeEmitter {
 /**
  * @see MethodSpec.methodBuilder
  */
-public inline fun MethodSpec(name: String, block: MethodSpec.Builder.() -> Unit = {}): MethodSpec =
+public inline fun MethodSpec(name: String, block: Builder.() -> Unit = {}): MethodSpec =
     MethodSpec.methodBuilder(name).apply(block).build()
 
 /**
  * @see MethodSpec.constructorBuilder
  */
-public inline fun MethodSpec(block: MethodSpec.Builder.() -> Unit = {}): MethodSpec =
+public inline fun MethodSpec(block: Builder.() -> Unit = {}): MethodSpec =
     MethodSpec.constructorBuilder().apply(block).build()
 
 public inline fun Builder.addJavadoc(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {

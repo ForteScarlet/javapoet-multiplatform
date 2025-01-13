@@ -62,7 +62,7 @@ public interface JavaFile : CodeEmitter {
         public val type: TypeSpec,
     ) {
         private val fileComment = CodeBlock.builder()
-        private var skipJavaLangImports: Boolean = false
+        private var skipJavaLangImports: Boolean = true
         private var indent: String = "    "
         private val staticImports = linkedSetOf<String>()
 
@@ -97,9 +97,6 @@ public interface JavaFile : CodeEmitter {
                 staticImports.add(className.canonicalName + "." + name)
             }
         }
-
-        public fun skipJavaLangImports(): Builder =
-            skipJavaLangImports(true)
 
         public fun skipJavaLangImports(skipJavaLangImports: Boolean): Builder = apply {
             this.skipJavaLangImports = skipJavaLangImports

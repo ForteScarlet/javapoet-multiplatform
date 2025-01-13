@@ -6,10 +6,10 @@ import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.withType
 import org.gradle.process.CommandLineArgumentProvider
 
-inline fun Project.configJavaCompileWithModule(
+fun Project.configJavaCompileWithModule(
     moduleName: String? = null,
     compatibility: String = "11",
-    crossinline block: JavaCompile.() -> Unit = {}
+    block: JavaCompile.() -> Unit = {}
 ) {
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"

@@ -4,5 +4,5 @@ module love.forte.codepoet.java {
     requires java.compiler;
 
     exports love.forte.codepoet.java;
-    exports love.forte.codepoet.java.internal to love.forte.codepoet.java.apt;
+    exports love.forte.codepoet.java.internal; // to love.forte.codepoet.java.apt;
 }

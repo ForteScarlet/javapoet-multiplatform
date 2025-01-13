@@ -19,7 +19,16 @@ internal class ParameterSpecImpl internal constructor(
     }
     
     override fun emit(codeWriter: CodeWriter, vararg: Boolean) {
-        TODO("Not yet implemented")
+        codeWriter.emitAnnotations(annotations, true)
+        codeWriter.emitModifiers(modifiers)
+
+        if (vararg) {
+            (type as ArrayTypeName).emit(codeWriter, true)
+        } else {
+            type.emit(codeWriter)
+        }
+
+        codeWriter.emit(" $name")
     }
 
     override fun equals(other: Any?): Boolean {

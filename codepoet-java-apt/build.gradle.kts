@@ -1,20 +1,15 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.kotlinxBinaryCompatibilityValidator)
 }
 
 configJavaCompileWithModule("love.forte.codepoet.java.apt")
 
 kotlin {
     explicitApi()
+    jvmToolchain(11)
 
     compilerOptions {
         javaParameters = true
-        jvmTarget = JvmTarget.JVM_11
-        jvmToolchain(11)
-
         optIn.add("love.forte.codepoet.java.InternalApi")
 
         freeCompilerArgs.addAll("-Xjvm-default=all", "-Xjsr305=strict")
@@ -22,6 +17,8 @@ kotlin {
 
     dependencies {
         api(project(":codepoet-java"))
+
+        testImplementation(kotlin("test-junit5"))
     }
 }
 

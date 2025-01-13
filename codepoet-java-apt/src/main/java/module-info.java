@@ -1,7 +1,7 @@
 module love.forte.codepoet.java.apt {
     requires kotlin.stdlib;
-    requires love.forte.codepoet.java;
     requires java.compiler;
+    requires transitive love.forte.codepoet.java;
 
     exports love.forte.codepoet.java.apt;
 }

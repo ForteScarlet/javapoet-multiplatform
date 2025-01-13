@@ -1,20 +1,34 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlinxBinaryCompatibilityValidator)
 }
 
 configJavaCompileWithModule("love.forte.codepoet.java")
 
 kotlin {
     explicitApi()
+    jvmToolchain(11)
+
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        common {
+            withJvm()
+            group("non-jvm") {
+                withNative()
+                withWasmWasi()
+
+                group("js-based") {
+                    withJs()
+                    withWasmJs()
+                }
+            }
+        }
+    }
+
 
     compilerOptions {
-        jvmToolchain(11)
-
         optIn.add("love.forte.codepoet.java.InternalApi")
-
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
@@ -23,7 +37,6 @@ kotlin {
 
         compilerOptions {
             javaParameters = true
-            jvmTarget = JvmTarget.JVM_11
             freeCompilerArgs.addAll("-Xjvm-default=all", "-Xjsr305=strict")
         }
 
@@ -33,18 +46,13 @@ kotlin {
     }
 
     js {
-        nodejs {
-            testTask {
-                useMocha()
-            }
-        }
+        nodejs()
         binaries.library()
     }
 
     sourceSets {
         commonMain.dependencies {
             api(project(":codepoet-common"))
-            // implementation(kotlin("reflect"))
         }
 
         commonTest.dependencies {
