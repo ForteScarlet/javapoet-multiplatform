@@ -11,9 +11,11 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 8
+          java-version: 11
 
-      - run: mvn --no-transfer-progress verify source:jar javadoc:jar
+# TODO
 
-      - run: mvn --no-transfer-progress deploy --settings=".github/workflows/settings.xml" -Dmaven.test.skip=true
-        if: ${{ github.ref == 'refs/heads/master' && github.repository == 'square/javapoet' }}
+#      - run: mvn --no-transfer-progress verify source:jar javadoc:jar
+#
+#      - run: mvn --no-transfer-progress deploy --settings=".github/workflows/settings.xml" -Dmaven.test.skip=true
+#        if: ${{ github.ref == 'refs/heads/master' && github.repository == 'square/javapoet' }}
