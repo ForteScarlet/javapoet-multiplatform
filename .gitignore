@@ -3,6 +3,7 @@
 .settings
 .checkstyle
 eclipsebin
+.kotlin
 
 bin
 gen
