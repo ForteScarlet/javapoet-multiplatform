@@ -166,7 +166,6 @@ public interface ClassName : TypeName, Comparable<ClassName> {
  * Returns a class name created from the given parts. For example, calling this with package name `"java.util"`
  * and simple names `"Map"`, `"Entry"` yields [Map.Entry].
  */
-@JvmName("of")
 public fun ClassName(packageName: String?, simpleName: String, vararg simpleNames: String): ClassName {
     var className: ClassName = ClassNameImpl(packageName, null, simpleName)
     for (nested in simpleNames) {

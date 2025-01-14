@@ -48,7 +48,7 @@ public interface CodeBlock : CodeEmitter {
 
     public fun emit(codeWriter: CodeWriter, ensureTrailingNewline: Boolean = false)
 
-    public class Builder internal constructor() {
+    public class Builder internal constructor() : BuilderDsl {
         internal val codeParts: MutableList<CodePart> = mutableListOf()
 
         public val isEmpty: Boolean

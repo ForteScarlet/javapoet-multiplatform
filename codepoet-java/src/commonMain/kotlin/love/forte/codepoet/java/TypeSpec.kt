@@ -200,7 +200,7 @@ public sealed interface TypeSpec : CodeEmitter {
     public sealed class Builder<B : Builder<B, T>, T : TypeSpec>(
         public val kind: Kind,
         public val name: String?,
-    ) {
+    ) : ModifierBuilderContainer<B> {
         init {
             check(name == null || name.isSourceName()) { "Invalid `name`: $name" }
         }
@@ -220,10 +220,6 @@ public sealed interface TypeSpec : CodeEmitter {
 
         protected abstract val self: B
 
-        @JvmName("addJavadoc")
-        public inline fun addJavadoc(format: String, block: CodeValueBuilderDsl = {}): B =
-            addJavadoc(CodeValue(format, block))
-
         public fun addJavadoc(codeValue: CodeValue): B = self.apply {
             javadoc.add(codeValue)
         }
@@ -238,10 +234,6 @@ public sealed interface TypeSpec : CodeEmitter {
             this.superclass = superclass
         }
 
-        @JvmName("addStaticBlock")
-        public inline fun addStaticBlock(format: String, block: CodeValueBuilderDsl = {}): B =
-            addStaticBlock(CodeValue(format, block))
-
         public fun addStaticBlock(codeValue: CodeValue): B = self.apply {
             this.staticBlock.add(codeValue)
         }
@@ -249,10 +241,6 @@ public sealed interface TypeSpec : CodeEmitter {
         public fun addStaticBlock(block: CodeBlock): B = self.apply {
             this.staticBlock.add(block)
         }
-
-        @JvmName("addInitializerBlock")
-        public inline fun addInitializerBlock(format: String, block: CodeValueBuilderDsl = {}): B =
-            addInitializerBlock(CodeValue(format, block))
 
         public fun addInitializerBlock(codeValue: CodeValue): B = self.apply {
             this.initializerBlock.add(codeValue)
@@ -277,15 +265,15 @@ public sealed interface TypeSpec : CodeEmitter {
         public fun addAnnotation(annotation: ClassName): B =
             addAnnotation(AnnotationSpec(annotation))
 
-        public fun addModifiers(vararg modifiers: Modifier): B = self.apply {
+        override fun addModifiers(vararg modifiers: Modifier): B = self.apply {
             this.modifiers.addAll(modifiers)
         }
 
-        public fun addModifiers(modifiers: Iterable<Modifier>): B = self.apply {
+        override fun addModifiers(modifiers: Iterable<Modifier>): B = self.apply {
             this.modifiers.addAll(modifiers)
         }
 
-        public fun addModifier(modifier: Modifier): B = self.apply {
+        override fun addModifier(modifier: Modifier): B = self.apply {
             this.modifiers.add(modifier)
         }
 
@@ -749,6 +737,7 @@ public interface RecordTypeSpec : TypeSpec {
     }
 }
 
+// factories
 
 public inline fun SimpleTypeSpec(
     kind: Kind,
@@ -757,3 +746,117 @@ public inline fun SimpleTypeSpec(
 ): SimpleTypeSpec {
     return SimpleTypeSpec.Builder(kind, name).also(block).build()
 }
+
+public inline fun AnonymousClassTypeSpec(
+    anonymousTypeArguments: CodeBlock,
+    block: AnonymousClassTypeSpec.Builder.() -> Unit = {},
+): AnonymousClassTypeSpec {
+    return AnonymousClassTypeSpec.Builder(anonymousTypeArguments).also(block).build()
+}
+
+public inline fun AnnotationTypeSpec(
+    name: String,
+    block: AnnotationTypeSpec.Builder.() -> Unit = {},
+): AnnotationTypeSpec {
+    return AnnotationTypeSpec.Builder(name).also(block).build()
+}
+
+public inline fun EnumTypeSpec(
+    name: String?,
+    block: EnumTypeSpec.Builder.() -> Unit = {},
+): EnumTypeSpec {
+    return EnumTypeSpec.Builder(name).also(block).build()
+}
+
+public inline fun NonSealedTypeSpec(
+    kind: Kind,
+    name: String,
+    block: NonSealedTypeSpec.Builder.() -> Unit = {},
+): NonSealedTypeSpec {
+    return NonSealedTypeSpec.Builder(kind, name).also(block).build()
+}
+
+public inline fun SealedTypeSpec(
+    kind: Kind,
+    name: String,
+    block: SealedTypeSpec.Builder.() -> Unit = {},
+): SealedTypeSpec {
+    return SealedTypeSpec.Builder(kind, name).also(block).build()
+}
+
+public inline fun RecordTypeSpec(
+    name: String,
+    block: RecordTypeSpec.Builder.() -> Unit = {},
+): RecordTypeSpec {
+    return RecordTypeSpec.Builder(name).also(block).build()
+}
+
+// extensions
+
+public inline fun TypeSpec.Builder<*, *>.addJavadoc(format: String, block: CodeValueBuilderDsl = {}) {
+    addJavadoc(CodeValue(format, block))
+}
+
+
+public inline fun TypeSpec.Builder<*, *>.addStaticBlock(format: String, block: CodeValueBuilderDsl = {}) {
+    addStaticBlock(CodeValue(format, block))
+}
+
+
+public inline fun TypeSpec.Builder<*, *>.addInitializerBlock(
+    format: String,
+    block: CodeValueBuilderDsl = {}
+) {
+    addInitializerBlock(CodeValue(format, block))
+}
+
+public inline fun TypeSpec.Builder<*, *>.addAnnotation(
+    annotation: ClassName,
+    block: AnnotationSpec.Builder.() -> Unit = {}
+) {
+    addAnnotation(AnnotationSpec(annotation, block))
+}
+
+public inline fun TypeSpec.Builder<*, *>.addField(
+    type: TypeName,
+    name: String,
+    block: FieldSpec.Builder.() -> Unit = {}
+) {
+    addField(FieldSpec(type, name, block))
+}
+
+public inline fun TypeSpec.Builder<*, *>.addMethod(
+    name: String,
+    block: MethodSpec.Builder.() -> Unit = {}
+) {
+    addMethod(MethodSpec(name, block))
+}
+
+public inline fun TypeSpec.Builder<*, *>.addMethod(
+    block: MethodSpec.Builder.() -> Unit = {}
+) {
+    addMethod(MethodSpec(block))
+}
+
+public inline fun EnumTypeSpec.Builder.addEnumConstant(
+    name: String,
+    anonymousTypeArguments: CodeBlock,
+    block: AnonymousClassTypeSpec.Builder.() -> Unit = {}
+) {
+    addEnumConstant(
+        name,
+        AnonymousClassTypeSpec(anonymousTypeArguments, block)
+    )
+}
+
+public inline fun RecordTypeSpec.Builder.addMainConstructorParameter(
+    type: TypeName,
+    name: String,
+    block: ParameterSpec.Builder.() -> Unit = {}
+) {
+    addMainConstructorParameter(
+        ParameterSpec(type, name, block)
+    )
+}
+
+

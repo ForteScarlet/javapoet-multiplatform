@@ -5,10 +5,10 @@ plugins {
 }
 
 configJavaCompileWithModule("love.forte.codepoet.java")
+// configJavaCompileWithModule(null, "1.8")
 
 kotlin {
     explicitApi()
-    jvmToolchain(11)
 
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     applyDefaultHierarchyTemplate {
@@ -32,9 +32,9 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
+    jvmToolchain(11)
     jvm {
         withJava()
-
         compilerOptions {
             javaParameters = true
             freeCompilerArgs.addAll("-Xjvm-default=all", "-Xjsr305=strict")
@@ -46,17 +46,27 @@ kotlin {
     }
 
     js {
-        nodejs()
+        nodejs {
+            testTask {
+                useMocha {
+                    timeout = "30s"
+                }
+            }
+        }
         binaries.library()
     }
 
     sourceSets {
         commonMain.dependencies {
-            api(project(":codepoet-common"))
+            // api(project(":codepoet-common"))
         }
 
         commonTest.dependencies {
             implementation(kotlin("test"))
+        }
+
+        jvmTest.dependencies {
+            implementation(kotlin("test-junit5"))
         }
     }
 }

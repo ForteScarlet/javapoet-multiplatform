@@ -103,8 +103,6 @@ public sealed class CodePart {
         @JvmStatic
         public fun zeroWidthSpace(): CodeArgumentPart = CodeArgumentPart.ZeroWidthSpace
     }
-
-
 }
 
 /**

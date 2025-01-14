@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  *     Copyright (c) 2024. ForteScarlet.
  *
@@ -37,3 +39,10 @@ idea {
     }
 }
 
+kotlin {
+    jvmToolchain(11)
+    compilerOptions {
+        javaParameters = true
+        jvmTarget = JvmTarget.JVM_11
+    }
+}

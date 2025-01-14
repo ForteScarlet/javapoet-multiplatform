@@ -53,7 +53,7 @@ public interface ParameterSpec : CodeEmitter {
     public class Builder internal constructor(
         public val type: TypeName,
         public val name: String
-    ) {
+    ) : ModifierBuilderContainer<Builder> {
         internal val javadoc = CodeBlock.builder()
         internal val annotations = mutableListOf<AnnotationSpec>()
         internal val modifiers = mutableSetOf<Modifier>()
@@ -85,17 +85,17 @@ public interface ParameterSpec : CodeEmitter {
         public fun addAnnotation(annotation: ClassName): Builder =
             addAnnotation(AnnotationSpec(annotation))
 
-        public fun addModifiers(vararg modifiers: Modifier): Builder = apply {
+        override fun addModifiers(vararg modifiers: Modifier): Builder = apply {
             modifiers.forEach { checkModifier(it) }
             this.modifiers.addAll(modifiers)
         }
 
-        public fun addModifiers(modifiers: Iterable<Modifier>): Builder = apply {
+        override fun addModifiers(modifiers: Iterable<Modifier>): Builder = apply {
             modifiers.forEach { checkModifier(it) }
             this.modifiers.addAll(modifiers)
         }
 
-        public fun addModifier(modifier: Modifier): Builder = apply {
+        override fun addModifier(modifier: Modifier): Builder = apply {
             checkModifier(modifier)
             modifiers.add(modifier)
         }

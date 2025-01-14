@@ -1,4 +1,5 @@
 plugins {
+    idea
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlinxBinaryCompatibilityValidator)
@@ -23,6 +24,10 @@ apiValidation {
             "love.forte.codepoet.java.InternalApi",
         ),
     )
+}
 
-    apiDumpDirectory = "api"
+idea {
+    module {
+        isDownloadSources = true
+    }
 }

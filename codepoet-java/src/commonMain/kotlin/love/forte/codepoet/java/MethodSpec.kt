@@ -57,7 +57,7 @@ public interface MethodSpec : CodeEmitter {
 
     public class Builder internal constructor(
         public var name: String,
-    ) {
+    ) : ModifierBuilderContainer<Builder> {
         internal val javadoc = CodeBlock.builder()
         internal var returnType: TypeName? = null
 
@@ -97,15 +97,15 @@ public interface MethodSpec : CodeEmitter {
             this.annotations.addAll(annotations)
         }
 
-        public fun addModifier(modifier: Modifier): Builder = apply {
+        override fun addModifier(modifier: Modifier): Builder = apply {
             modifiers.add(modifier)
         }
 
-        public fun addModifiers(modifiers: Iterable<Modifier>): Builder = apply {
+        override fun addModifiers(modifiers: Iterable<Modifier>): Builder = apply {
             this.modifiers.addAll(modifiers)
         }
 
-        public fun addModifiers(vararg modifiers: Modifier): Builder = apply {
+        override fun addModifiers(vararg modifiers: Modifier): Builder = apply {
             this.modifiers.addAll(modifiers)
         }
 

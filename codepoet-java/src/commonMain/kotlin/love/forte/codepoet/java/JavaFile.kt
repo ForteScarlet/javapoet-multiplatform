@@ -23,6 +23,7 @@ import love.forte.codepoet.java.JavaFile.Builder
 import love.forte.codepoet.java.internal.JavaFileImpl
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
+import kotlin.jvm.JvmStatic
 
 
 /**
@@ -60,7 +61,7 @@ public interface JavaFile : CodeEmitter {
     public class Builder internal constructor(
         public val packageName: String,
         public val type: TypeSpec,
-    ) {
+    ) : BuilderDsl {
         private val fileComment = CodeBlock.builder()
         private var skipJavaLangImports: Boolean = true
         private var indent: String = "    "
@@ -126,8 +127,19 @@ public interface JavaFile : CodeEmitter {
             )
         }
     }
+
+    public companion object {
+
+        @JvmStatic
+        public fun builder(packageName: String, type: TypeSpec): Builder =
+            Builder(packageName, type)
+
+    }
 }
 
 public inline fun Builder.addFileComment(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
     addFileComment(CodeValue(format, block))
 }
+
+public inline fun JavaFile(packageName: String, type: TypeSpec, block: Builder.() -> Unit = {}): JavaFile =
+    JavaFile.builder(packageName, type).also(block).build()

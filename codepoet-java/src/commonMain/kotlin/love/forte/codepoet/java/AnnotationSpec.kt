@@ -43,7 +43,7 @@ public interface AnnotationSpec : CodeEmitter {
     @InternalApi
     public fun emit(codeWriter: CodeWriter, inline: Boolean = true)
 
-    public class Builder internal constructor(private val type: TypeName) {
+    public class Builder internal constructor(private val type: TypeName) : BuilderDsl {
         public val members: MutableMap<String, MutableList<CodeBlock>> = linkedMapOf()
 
         public fun addMember(name: String, codeValue: CodeValue): Builder =

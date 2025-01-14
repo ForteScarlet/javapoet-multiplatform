@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
 }
@@ -13,6 +15,7 @@ kotlin {
 
         compilerOptions {
             javaParameters = true
+            jvmTarget = JvmTarget.JVM_11
             freeCompilerArgs.addAll("-Xjvm-default=all", "-Xjsr305=strict")
         }
 
@@ -33,6 +36,10 @@ kotlin {
 
         commonTest.dependencies {
             implementation(kotlin("test"))
+        }
+
+        jvmTest.dependencies {
+            implementation(kotlin("test-junit5"))
         }
     }
 }

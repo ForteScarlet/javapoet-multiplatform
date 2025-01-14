@@ -32,7 +32,7 @@ public interface CodeValue : CodeEmitter {
 
     public fun emit(codeWriter: CodeWriter, ensureTrailingNewline: Boolean)
 
-    public class Builder internal constructor(public val format: String) {
+    public class Builder internal constructor(public val format: String) : BuilderDsl {
         private val arguments = mutableListOf<CodeArgumentPart>()
 
         /**

@@ -57,7 +57,7 @@ public interface FieldSpec : CodeEmitter {
     public class Builder internal constructor(
         public val type: TypeName,
         public val name: String,
-    ) {
+    ) : ModifierBuilderContainer<Builder> {
         internal val javadoc = CodeBlock.builder()
         internal val annotations = mutableListOf<AnnotationSpec>()
         internal val modifiers = ModifierSet()
@@ -93,15 +93,15 @@ public interface FieldSpec : CodeEmitter {
 
         // TODO addAnnotation(Class)
 
-        public fun addModifiers(vararg modifiers: Modifier): Builder = apply {
+        override fun addModifiers(vararg modifiers: Modifier): Builder = apply {
             this.modifiers.addAll(*modifiers)
         }
 
-        public fun addModifiers(modifiers: Iterable<Modifier>): Builder = apply {
+        override fun addModifiers(modifiers: Iterable<Modifier>): Builder = apply {
             this.modifiers.addAll(modifiers)
         }
 
-        public fun addModifier(modifier: Modifier): Builder = apply {
+        override fun addModifier(modifier: Modifier): Builder = apply {
             modifiers.add(modifier)
         }
 
