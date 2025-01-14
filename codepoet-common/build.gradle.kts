@@ -1,14 +1,12 @@
+import jdk.tools.jlink.resources.plugins
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
+    kotlin("multiplatform")
 }
-
-configJavaCompileWithModule("love.forte.codepoet.common")
 
 kotlin {
     explicitApi()
-    jvmToolchain(11)
 
     jvm {
         withJava()
@@ -42,4 +40,9 @@ kotlin {
             implementation(kotlin("test-junit5"))
         }
     }
+}
+
+
+configJavaCompile {
+    configJavaModule("love.forte.codepoet.common", sourceSets["main"].output.asPath)
 }

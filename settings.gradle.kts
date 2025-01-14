@@ -20,20 +20,25 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-rootProject.name = "javapoet-multiplatform"
 
 pluginManagement {
     repositories {
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
 }
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
 }
 
-include(":codepoet-common")
+rootProject.name = "javapoet-multiplatform"
+
+// include(":codepoet-common")
 include(":codepoet-java")
 // include(":codepoet-java-apt")
 

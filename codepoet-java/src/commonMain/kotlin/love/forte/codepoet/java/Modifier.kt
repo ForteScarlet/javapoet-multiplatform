@@ -164,27 +164,62 @@ internal class ModifierSet(private var value: Int = 0) : Set<Modifier> {
     }
 }
 
-public interface ModifierBuilderContainer<B : ModifierBuilderContainer<B>> : BuilderDsl {
-    public fun addModifier(modifier: Modifier): B
-    public fun addModifiers(vararg modifiers: Modifier): B
-    public fun addModifiers(modifiers: Iterable<Modifier>): B
+public interface ModifierBuilderContainer : BuilderDsl {
+    public fun addModifier(modifier: Modifier): ModifierBuilderContainer
+    public fun addModifiers(vararg modifiers: Modifier): ModifierBuilderContainer
+    public fun addModifiers(modifiers: Iterable<Modifier>): ModifierBuilderContainer
 }
 
 @JvmInline
 public value class ModifierOp
-@PublishedApi internal constructor(private val container: ModifierBuilderContainer<*>) {
-    public fun public() { container.addModifier(Modifier.PUBLIC) }
-    public fun protected() { container.addModifier(Modifier.PROTECTED) }
-    public fun private() { container.addModifier(Modifier.PRIVATE) }
-    public fun abstract() { container.addModifier(Modifier.ABSTRACT) }
-    public fun default() { container.addModifier(Modifier.DEFAULT) }
-    public fun static() { container.addModifier(Modifier.STATIC) }
-    public fun final() { container.addModifier(Modifier.FINAL) }
-    public fun transient() { container.addModifier(Modifier.TRANSIENT) }
-    public fun volatile() { container.addModifier(Modifier.VOLATILE) }
-    public fun synchronized() { container.addModifier(Modifier.SYNCHRONIZED) }
-    public fun native() { container.addModifier(Modifier.NATIVE) }
-    public fun strictfp() { container.addModifier(Modifier.STRICTFP) }
+@PublishedApi internal constructor(private val container: ModifierBuilderContainer) {
+    public fun public() {
+        container.addModifier(Modifier.PUBLIC)
+    }
+
+    public fun protected() {
+        container.addModifier(Modifier.PROTECTED)
+    }
+
+    public fun private() {
+        container.addModifier(Modifier.PRIVATE)
+    }
+
+    public fun abstract() {
+        container.addModifier(Modifier.ABSTRACT)
+    }
+
+    public fun default() {
+        container.addModifier(Modifier.DEFAULT)
+    }
+
+    public fun static() {
+        container.addModifier(Modifier.STATIC)
+    }
+
+    public fun final() {
+        container.addModifier(Modifier.FINAL)
+    }
+
+    public fun transient() {
+        container.addModifier(Modifier.TRANSIENT)
+    }
+
+    public fun volatile() {
+        container.addModifier(Modifier.VOLATILE)
+    }
+
+    public fun synchronized() {
+        container.addModifier(Modifier.SYNCHRONIZED)
+    }
+
+    public fun native() {
+        container.addModifier(Modifier.NATIVE)
+    }
+
+    public fun strictfp() {
+        container.addModifier(Modifier.STRICTFP)
+    }
 }
 
 /**
@@ -198,6 +233,6 @@ public value class ModifierOp
  * }
  * ```
  */
-public inline fun ModifierBuilderContainer<*>.modifiers(block: ModifierOp.() -> Unit) {
+public inline fun ModifierBuilderContainer.modifiers(block: ModifierOp.() -> Unit) {
     ModifierOp(this).block()
 }

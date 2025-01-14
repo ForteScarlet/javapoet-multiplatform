@@ -57,7 +57,7 @@ public interface MethodSpec : CodeEmitter {
 
     public class Builder internal constructor(
         public var name: String,
-    ) : ModifierBuilderContainer<Builder> {
+    ) : ModifierBuilderContainer {
         internal val javadoc = CodeBlock.builder()
         internal var returnType: TypeName? = null
 

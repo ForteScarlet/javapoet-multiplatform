@@ -57,7 +57,7 @@ public interface FieldSpec : CodeEmitter {
     public class Builder internal constructor(
         public val type: TypeName,
         public val name: String,
-    ) : ModifierBuilderContainer<Builder> {
+    ) : ModifierBuilderContainer {
         internal val javadoc = CodeBlock.builder()
         internal val annotations = mutableListOf<AnnotationSpec>()
         internal val modifiers = ModifierSet()

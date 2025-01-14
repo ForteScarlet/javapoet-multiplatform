@@ -5,6 +5,8 @@
 eclipsebin
 .kotlin
 
+.gradle
+
 bin
 gen
 build

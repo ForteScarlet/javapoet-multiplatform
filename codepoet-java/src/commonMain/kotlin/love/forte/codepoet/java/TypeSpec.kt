@@ -200,7 +200,7 @@ public sealed interface TypeSpec : CodeEmitter {
     public sealed class Builder<B : Builder<B, T>, T : TypeSpec>(
         public val kind: Kind,
         public val name: String?,
-    ) : ModifierBuilderContainer<B> {
+    ) : ModifierBuilderContainer {
         init {
             check(name == null || name.isSourceName()) { "Invalid `name`: $name" }
         }

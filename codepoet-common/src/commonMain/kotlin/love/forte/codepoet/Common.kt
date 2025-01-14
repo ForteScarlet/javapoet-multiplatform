@@ -1,6 +1,5 @@
 package love.forte.codepoet
 
-
 /**
  *
  * @author ForteScarlet

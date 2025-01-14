@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 /*
  *     Copyright (c) 2024. ForteScarlet.
  *
@@ -25,7 +23,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     `kotlin-dsl`
-    idea
 }
 
 repositories {
@@ -33,16 +30,9 @@ repositories {
     gradlePluginPortal()
 }
 
-idea {
-    module {
-        isDownloadSources = true
-    }
-}
+val kotlinVersion: String = libs.versions.kotlin.get()
 
-kotlin {
-    jvmToolchain(11)
-    compilerOptions {
-        javaParameters = true
-        jvmTarget = JvmTarget.JVM_11
-    }
+dependencies {
+    implementation(kotlin("gradle-plugin", kotlinVersion))
+    implementation(libs.bundles.dokka)
 }
