@@ -7,16 +7,16 @@ import java.lang.reflect.Type
 import java.lang.reflect.TypeVariable
 
 @InternalApi
-public fun TypeVariableName(
-    type: TypeVariable<*>,
+public fun TypeVariable<*>.toTypeVariableName(
     map: MutableMap<Type, TypeVariableName>
 ): TypeVariableName {
+    val type = this
     return map[type] ?: run {
         val bounds = mutableListOf<TypeName>()
 
         for (bound in type.bounds) {
             if (bound != Object::class.java) {
-                bounds.add(TypeName(bound, map))
+                bounds.add(bound.toTypeName(map))
             }
         }
 

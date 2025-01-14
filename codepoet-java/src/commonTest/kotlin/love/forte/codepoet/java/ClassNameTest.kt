@@ -2,7 +2,6 @@ package love.forte.codepoet.java
 
 import kotlin.test.Test
 
-
 /**
  *
  * @author ForteScarlet
@@ -13,6 +12,11 @@ class ClassNameTest {
     fun justTest() {
         println(ClassName::class)
         println(ClassName.Builtins.STRING)
+
+        // println(formatIsoControlCode(68))
+        // println('a'.characterLiteralWithoutSingleQuotes())
+        // println("ABC".literalWithDoubleQuotes(" "))
+
         println(ClassName(packageName = "java.lang", simpleName = "String"))
     }
 

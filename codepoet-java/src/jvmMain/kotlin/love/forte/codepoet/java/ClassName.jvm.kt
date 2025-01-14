@@ -22,13 +22,17 @@ package love.forte.codepoet.java
 import kotlin.reflect.KClass
 
 @JvmName("of")
-public fun ClassName(type: KClass<*>): ClassName {
-    return ClassName(type.java)
+public fun KClass<*>.toClassName(): ClassName {
+    return java.toClassName()
+}
+
+public inline fun <reified T> ClassName(): ClassName {
+    return T::class.java.toClassName()
 }
 
 @JvmName("of")
-public fun ClassName(type: Class<*>): ClassName {
-    var java = type
+public fun Class<*>.toClassName(): ClassName {
+    var java = this
     require(!java.isPrimitive) { "Primitive types cannot be represented as a ClassName" }
     require(Void.TYPE != java) { "'void' type cannot be represented as a ClassName" }
     require(!java.isArray) { "Array types cannot be represented as a ClassName" }
@@ -49,5 +53,5 @@ public fun ClassName(type: Class<*>): ClassName {
         return ClassName(packageName, name)
     }
 
-    return ClassName(java.enclosingClass).nestedClass(name)
+    return java.enclosingClass.toClassName().nestedClass(name)
 }

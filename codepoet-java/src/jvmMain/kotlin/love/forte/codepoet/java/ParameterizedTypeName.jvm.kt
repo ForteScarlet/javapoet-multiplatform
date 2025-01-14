@@ -19,19 +19,15 @@
 
 package love.forte.codepoet.java
 
-import love.forte.codepoet.java.internal.ParameterizedTypeName
 import love.forte.codepoet.java.internal.ParameterizedTypeNameImpl
+import love.forte.codepoet.java.internal.toParameterizedTypeName
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 @JvmName("of")
-public fun ParameterizedTypeName(rawType: Class<*>, vararg typeArguments: Type): ParameterizedTypeName {
-    return ParameterizedTypeNameImpl(null, ClassName(rawType), typeArguments.map { TypeName(it) })
+public fun Class<*>.toParameterizedTypeName(vararg typeArguments: Type): ParameterizedTypeName {
+    return ParameterizedTypeNameImpl(null, this.toClassName(), typeArguments.map { it.toTypeName() })
 }
 
-@JvmName("of")
-public fun ParameterizedTypeName(type: ParameterizedType): ParameterizedTypeName {
-    return ParameterizedTypeName(type, linkedMapOf())
-}
-
-public fun ParameterizedType.toParameterizedTypeName(): ParameterizedTypeName = ParameterizedTypeName(this)
+public fun ParameterizedType.toParameterizedTypeName(): ParameterizedTypeName =
+    toParameterizedTypeName(linkedMapOf())

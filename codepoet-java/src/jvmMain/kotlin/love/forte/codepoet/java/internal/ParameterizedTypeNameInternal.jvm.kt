@@ -1,19 +1,20 @@
 package love.forte.codepoet.java.internal
 
-import love.forte.codepoet.java.ClassName
 import love.forte.codepoet.java.InternalApi
 import love.forte.codepoet.java.ParameterizedTypeName
 import love.forte.codepoet.java.TypeVariableName
+import love.forte.codepoet.java.toClassName
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 @InternalApi
-public fun ParameterizedTypeName(
-    type: ParameterizedType,
+public fun ParameterizedType.toParameterizedTypeName(
     map: MutableMap<Type, TypeVariableName>
 ): ParameterizedTypeName {
-    val rawType = ClassName(type.rawType as Class<*>)
+    val type = this
+
+    val rawType = (type.rawType as Class<*>).toClassName()
     val ownerType = if (
         type.ownerType is ParameterizedType
         && !Modifier.isStatic((type.rawType as Class<*>).modifiers)
@@ -23,11 +24,8 @@ public fun ParameterizedTypeName(
         null
     }
 
-    val typeArguments = type.actualTypeArguments.map { TypeName(it, map) }
+    val typeArguments = type.actualTypeArguments.map { it.toTypeName(map) }
 
-    return if (ownerType != null) {
-        ParameterizedTypeName(ownerType, map).nestedClass(rawType.simpleName, typeArguments)
-    } else {
-        ParameterizedTypeNameImpl(null, rawType, typeArguments)
-    }
+    return ownerType?.toParameterizedTypeName(map)?.nestedClass(rawType.simpleName, typeArguments)
+        ?: ParameterizedTypeNameImpl(null, rawType, typeArguments)
 }

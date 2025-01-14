@@ -19,13 +19,8 @@
 
 package love.forte.codepoet.java
 
-import love.forte.codepoet.java.internal.TypeName
+import love.forte.codepoet.java.internal.toTypeName
 import java.lang.reflect.Type
 
-@JvmName("of")
-public fun TypeName(type: Type): TypeName {
-    return TypeName(type, linkedMapOf())
-}
-
-public fun Type.toTypeName(): TypeName = TypeName(this)
+public fun Type.toTypeName(): TypeName = toTypeName(linkedMapOf())
 

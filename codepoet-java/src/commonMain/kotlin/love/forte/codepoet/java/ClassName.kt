@@ -92,6 +92,8 @@ public interface ClassName : TypeName, Comparable<ClassName> {
     override fun compareTo(other: ClassName): Int = canonicalName.compareTo(other.canonicalName)
 
     public object Builtins {
+        internal const val JAVA_LANG_PACKAGE = "java.lang"
+
         @JvmField
         public val OBJECT: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, "Object")
 
@@ -101,6 +103,7 @@ public interface ClassName : TypeName, Comparable<ClassName> {
         // primitives
 
         internal const val BOXED_VOID_SIMPLE_NAME = "Void"
+
 
         @JvmField
         public val BOXED_VOID: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, BOXED_VOID_SIMPLE_NAME)
@@ -152,12 +155,6 @@ public interface ClassName : TypeName, Comparable<ClassName> {
 
         @JvmField
         public val SUPPRESS_WARNINGS: ClassName = ClassNameImpl(JAVA_LANG_PACKAGE, null, "SuppressWarnings")
-    }
-
-    public companion object {
-        internal const val JAVA_LANG_PACKAGE = "java.lang"
-        // OBJECT?
-
     }
 }
 

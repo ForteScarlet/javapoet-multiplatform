@@ -32,8 +32,8 @@ public fun SupertypeWildcardTypeName(lowerBound: Type): SupertypeWildcardTypeNam
 
 @JvmName("of")
 public fun SubtypeWildcardTypeName(upperBounds: List<Type>): SubtypeWildcardTypeName =
-    SubtypeWildcardTypeNameImpl(upperBounds.map { TypeName(it) })
+    SubtypeWildcardTypeNameImpl(upperBounds.map { it.toTypeName() })
 
 @JvmName("of")
 public fun SupertypeWildcardTypeName(lowerBounds: List<Type>): SupertypeWildcardTypeName =
-    SupertypeWildcardTypeNameImpl(lowerBounds.map { TypeName(it) })
+    SupertypeWildcardTypeNameImpl(lowerBounds.map { it.toTypeName() })

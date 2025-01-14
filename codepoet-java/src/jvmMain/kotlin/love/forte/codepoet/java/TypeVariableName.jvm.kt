@@ -18,12 +18,8 @@
 
 package love.forte.codepoet.java
 
-import love.forte.codepoet.java.internal.TypeVariableName
+import love.forte.codepoet.java.internal.toTypeVariableName
 import java.lang.reflect.TypeVariable
 
-@JvmName("of")
-public fun TypeVariableName(type: TypeVariable<*>): TypeVariableName {
-    return TypeVariableName(type, linkedMapOf())
-}
-
-public fun TypeVariable<*>.toTypeVariableName(): TypeVariableName = TypeVariableName(this)
+public fun TypeVariable<*>.toTypeVariableName(): TypeVariableName =
+    toTypeVariableName(linkedMapOf())

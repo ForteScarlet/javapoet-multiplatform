@@ -1,37 +1,52 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 plugins {
-    kotlin("multiplatform")
+    alias(libs.plugins.kotlinMultiplatform)
+    // alias(libs.plugins.kotlinxBinaryCompatibilityValidator)
 }
+
+// tasks.withType<JavaCompile> {
+//     options.encoding = "UTF-8"
+//     sourceCompatibility = "1.8"
+//     targetCompatibility = "1.8"
+//
+//     val moduleName = "love.forte.codepoet.java"
+//
+//     // options.compilerArgumentProviders.add(
+//     //     CommandLineArgumentProvider {
+//     //         // Provide compiled Kotlin classes to javac – needed for Java/Kotlin mixed sources to work
+//     //         listOf("--patch-module", "$moduleName=${sourceSets["main"].output.asPath}")
+//     //     }
+//     // )
+// }
+
+// apiValidation {
+//     nonPublicMarkers.addAll(
+//         listOf("love.forte.codepoet.java.InternalApi")
+//     )
+// }
 
 kotlin {
     explicitApi()
 
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    applyDefaultHierarchyTemplate {
-        common {
-            withJvm()
-            group("non-jvm") {
-                withNative()
+    // @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    // applyDefaultHierarchyTemplate {
+    //     withCompilations { true }
+    //
+    //     common {
+    //         withJvm()
+    //         group("non-jvm") {
+    //             withNative()
+    //
+    //             group("js-based") {
+    //                 withJs()
+    //                 withWasmJs()
+    //             }
+    //         }
+    //     }
+    // }
 
-                group("js-based") {
-                    withJs()
-                    withWasmJs()
-                }
-            }
-        }
-    }
-
-
-    compilerOptions {
-        optIn.add("love.forte.codepoet.java.InternalApi")
-        freeCompilerArgs.add("-Xexpect-actual-classes")
-    }
-
-    jvmToolchain(11)
+    jvmToolchain(8)
     jvm {
         withJava()
-
         compilerOptions {
             javaParameters = true
             freeCompilerArgs.addAll("-Xjvm-default=all", "-Xjsr305=strict")
@@ -47,6 +62,11 @@ kotlin {
         binaries.library()
     }
 
+    compilerOptions {
+        optIn.add("love.forte.codepoet.java.InternalApi")
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -60,9 +80,11 @@ kotlin {
             }
         }
 
+        jvmTest {
+            dependencies {
+                implementation(kotlin("test-junit5"))
+            }
+        }
     }
 }
 
-configJavaCompile {
-    configJavaModule("love.forte.codepoet.java", sourceSets["main"].output.asPath)
-}

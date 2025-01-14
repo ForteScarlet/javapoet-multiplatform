@@ -13,8 +13,14 @@ private val CHAR_CLASS = Char::class.javaPrimitiveType!!
 private val FLOAT_CLASS = Float::class.javaPrimitiveType!!
 
 @InternalApi
+@Deprecated("no", ReplaceWith("type.toTypeName(map)"))
 public fun TypeName(type: Type, map: MutableMap<Type, TypeVariableName>): TypeName {
-    return when (type) {
+    return type.toTypeName(map)
+}
+
+@InternalApi
+public fun Type.toTypeName(map: MutableMap<Type, TypeVariableName>): TypeName {
+    return when (val type = this) {
         is Class<*> -> {
             when (type) {
                 VOID_CLASS -> return TypeName.Builtins.VOID
@@ -28,29 +34,29 @@ public fun TypeName(type: Type, map: MutableMap<Type, TypeVariableName>): TypeNa
             }
 
             if (type.isArray) {
-                ArrayTypeName(TypeName(type.componentType, map))
+                ArrayTypeName(type.componentType.toTypeName(map))
             } else {
-                ClassName(type)
+                type.toClassName()
             }
         }
 
-        is ParameterizedType -> ParameterizedTypeName(type, map)
+        is ParameterizedType -> type.toParameterizedTypeName(map)
 
         is WildcardType -> {
             val lowerBounds = type.lowerBounds
 
             if (lowerBounds.isNotEmpty()) {
-                SupertypeWildcardTypeName(lowerBounds.map { TypeName(it) })
+                SupertypeWildcardTypeName(lowerBounds.map { it.toTypeName() })
             } else {
                 SubtypeWildcardTypeName(
-                    type.upperBounds.map { TypeName(it) }.ifEmpty { listOf(ClassName.Builtins.OBJECT) }
+                    type.upperBounds.map { it.toTypeName() }.ifEmpty { listOf(ClassName.Builtins.OBJECT) }
                 )
             }
         }
 
-        is TypeVariable<*> -> TypeVariableName(type, map)
+        is TypeVariable<*> -> type.toTypeVariableName(map)
 
-        is GenericArrayType -> ArrayTypeName(type, map)
+        is GenericArrayType -> type.toArrayTypeName(map)
 
         else -> throw IllegalArgumentException("Unexpected type $type")
     }

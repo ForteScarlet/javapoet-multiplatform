@@ -46,7 +46,7 @@ internal class ClassNameImpl(
     }
 
     override fun unbox(): TypeName {
-        if (packageName == ClassName.JAVA_LANG_PACKAGE && enclosingClassName == null) {
+        if (packageName == ClassName.Builtins.JAVA_LANG_PACKAGE && enclosingClassName == null) {
             return when (simpleName) {
                 ClassName.Builtins.BOXED_VOID_SIMPLE_NAME -> TypeName.Builtins.VOID
                 ClassName.Builtins.BOXED_BOOLEAN_SIMPLE_NAME -> TypeName.Builtins.BOOLEAN
