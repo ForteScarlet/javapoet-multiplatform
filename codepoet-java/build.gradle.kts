@@ -26,6 +26,7 @@ plugins {
 
 kotlin {
     explicitApi()
+    applyDefaultHierarchyTemplate()
 
     // @OptIn(ExperimentalKotlinGradlePluginApi::class)
     // applyDefaultHierarchyTemplate {
@@ -52,9 +53,9 @@ kotlin {
             freeCompilerArgs.addAll("-Xjvm-default=all", "-Xjsr305=strict")
         }
 
-        testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
-        }
+        // testRuns["test"].executionTask.configure {
+        //     useJUnitPlatform()
+        // }
     }
 
     js {
@@ -88,3 +89,6 @@ kotlin {
     }
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}

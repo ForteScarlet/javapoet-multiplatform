@@ -21,7 +21,6 @@ package love.forte.codepoet.java
 
 import kotlin.reflect.KClass
 
-@JvmName("of")
 public fun KClass<*>.toClassName(): ClassName {
     return java.toClassName()
 }
@@ -30,7 +29,6 @@ public inline fun <reified T> ClassName(): ClassName {
     return T::class.java.toClassName()
 }
 
-@JvmName("of")
 public fun Class<*>.toClassName(): ClassName {
     var java = this
     require(!java.isPrimitive) { "Primitive types cannot be represented as a ClassName" }
