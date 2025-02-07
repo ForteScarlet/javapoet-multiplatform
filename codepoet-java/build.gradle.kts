@@ -24,9 +24,15 @@ plugins {
 //     )
 // }
 
+
 kotlin {
     explicitApi()
     applyDefaultHierarchyTemplate()
+
+    compilerOptions {
+        optIn.add("love.forte.codepoet.java.InternalApi")
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
 
     // @OptIn(ExperimentalKotlinGradlePluginApi::class)
     // applyDefaultHierarchyTemplate {
@@ -47,15 +53,15 @@ kotlin {
 
     jvmToolchain(8)
     jvm {
-        withJava()
+        // withJava()
         compilerOptions {
-            javaParameters = true
-            freeCompilerArgs.addAll("-Xjvm-default=all", "-Xjsr305=strict")
+            // javaParameters = true
+            // freeCompilerArgs.addAll("-Xjvm-default=all", "-Xjsr305=strict")
         }
 
-        // testRuns["test"].executionTask.configure {
-        //     useJUnitPlatform()
-        // }
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
+        }
     }
 
     js {
@@ -63,10 +69,6 @@ kotlin {
         binaries.library()
     }
 
-    compilerOptions {
-        optIn.add("love.forte.codepoet.java.InternalApi")
-        freeCompilerArgs.add("-Xexpect-actual-classes")
-    }
 
     sourceSets {
         commonMain {
@@ -89,6 +91,6 @@ kotlin {
     }
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+// tasks.withType<Test> {
+//     useJUnitPlatform()
+// }

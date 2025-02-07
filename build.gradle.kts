@@ -1,6 +1,6 @@
 plugins {
-    idea
-    alias(libs.plugins.kotlinMultiplatform) apply false
+    // idea
+    // alias(libs.plugins.kotlinMultiplatform) apply false
 }
 
 allprojects {
@@ -12,8 +12,8 @@ allprojects {
     }
 }
 
-idea {
-    module {
-        isDownloadSources = true
-    }
-}
+// idea {
+//     module {
+//         isDownloadSources = true
+//     }
+// }

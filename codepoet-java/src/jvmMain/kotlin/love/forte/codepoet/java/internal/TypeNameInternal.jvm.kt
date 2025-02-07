@@ -13,12 +13,6 @@ private val CHAR_CLASS = Char::class.javaPrimitiveType!!
 private val FLOAT_CLASS = Float::class.javaPrimitiveType!!
 
 @InternalApi
-@Deprecated("no", ReplaceWith("type.toTypeName(map)"))
-public fun TypeName(type: Type, map: MutableMap<Type, TypeVariableName>): TypeName {
-    return type.toTypeName(map)
-}
-
-@InternalApi
 public fun Type.toTypeName(map: MutableMap<Type, TypeVariableName>): TypeName {
     return when (val type = this) {
         is Class<*> -> {

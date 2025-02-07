@@ -22,18 +22,14 @@ import love.forte.codepoet.java.internal.SubtypeWildcardTypeNameImpl
 import love.forte.codepoet.java.internal.SupertypeWildcardTypeNameImpl
 import java.lang.reflect.Type
 
-@JvmName("of")
-public fun SubtypeWildcardTypeName(upperBound: Type): SubtypeWildcardTypeName =
-    SubtypeWildcardTypeName(listOf(upperBound))
+public fun Type.toSubtypeWildcardTypeName(): SubtypeWildcardTypeName =
+    listOf(this).toSubtypeWildcardTypeName()
 
-@JvmName("of")
-public fun SupertypeWildcardTypeName(lowerBound: Type): SupertypeWildcardTypeName =
-    SupertypeWildcardTypeName(listOf(lowerBound))
+public fun Type.toSupertypeWildcardTypeName(): SupertypeWildcardTypeName =
+    listOf(this).toSupertypeWildcardTypeName()
 
-@JvmName("of")
-public fun SubtypeWildcardTypeName(upperBounds: List<Type>): SubtypeWildcardTypeName =
-    SubtypeWildcardTypeNameImpl(upperBounds.map { it.toTypeName() })
+public fun Iterable<Type>.toSubtypeWildcardTypeName(): SubtypeWildcardTypeName =
+    SubtypeWildcardTypeNameImpl(this.map { it.toTypeName() })
 
-@JvmName("of")
-public fun SupertypeWildcardTypeName(lowerBounds: List<Type>): SupertypeWildcardTypeName =
-    SupertypeWildcardTypeNameImpl(lowerBounds.map { it.toTypeName() })
+public fun Iterable<Type>.toSupertypeWildcardTypeName(): SupertypeWildcardTypeName =
+    SupertypeWildcardTypeNameImpl(this.map { it.toTypeName() })

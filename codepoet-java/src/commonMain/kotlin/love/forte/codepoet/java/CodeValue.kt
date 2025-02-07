@@ -58,7 +58,7 @@ public interface CodeValue : CodeEmitter {
 
         public fun build(): CodeValue {
             if (arguments.isEmpty()) {
-                return CodeValue(listOf(CodeSimplePart(format)))
+                return CodeValueImpl(listOf(CodeSimplePart(format)))
             }
 
             val argumentsStack = ArrayDeque(arguments)

@@ -25,9 +25,9 @@ public fun KClass<*>.toClassName(): ClassName {
     return java.toClassName()
 }
 
-public inline fun <reified T> ClassName(): ClassName {
-    return T::class.java.toClassName()
-}
+// public inline fun <reified T> ClassName(): ClassName {
+//     return T::class.java.toClassName()
+// }
 
 public fun Class<*>.toClassName(): ClassName {
     var java = this
