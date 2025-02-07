@@ -9,9 +9,7 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 @InternalApi
-public fun ParameterizedType.toParameterizedTypeName(
-    map: MutableMap<Type, TypeVariableName>
-): ParameterizedTypeName {
+public fun ParameterizedType.toParameterizedTypeName(map: MutableMap<Type, TypeVariableName>): ParameterizedTypeName {
     val type = this
 
     val rawType = (type.rawType as Class<*>).toClassName()

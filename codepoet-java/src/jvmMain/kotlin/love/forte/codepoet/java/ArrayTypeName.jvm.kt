@@ -22,6 +22,9 @@ package love.forte.codepoet.java
 import love.forte.codepoet.java.internal.toArrayTypeName
 import java.lang.reflect.GenericArrayType
 
+/**
+ * Create an [ArrayTypeName] from [GenericArrayType].
+ */
 public fun GenericArrayType.toArrayTypeName(): ArrayTypeName {
     return toArrayTypeName(linkedMapOf())
 }

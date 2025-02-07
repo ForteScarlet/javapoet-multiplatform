@@ -24,7 +24,6 @@ import love.forte.codepoet.java.internal.toParameterizedTypeName
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-@JvmName("of")
 public fun Class<*>.toParameterizedTypeName(vararg typeArguments: Type): ParameterizedTypeName {
     return ParameterizedTypeNameImpl(null, this.toClassName(), typeArguments.map { it.toTypeName() })
 }

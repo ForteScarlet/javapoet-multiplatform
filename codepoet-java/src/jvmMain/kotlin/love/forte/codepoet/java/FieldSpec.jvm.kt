@@ -22,6 +22,9 @@ package love.forte.codepoet.java
 import love.forte.codepoet.java.FieldSpec.Builder
 import java.lang.reflect.Type
 
+/**
+ * Create a [FieldSpec] from [Type] with [Builder][block].
+ */
 public inline fun Type.toFieldSpec(name: String, block: Builder.() -> Unit = {}): FieldSpec {
     return FieldSpec(this.toTypeName(), name, block)
 }

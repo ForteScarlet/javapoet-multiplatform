@@ -7,9 +7,7 @@ import java.lang.reflect.Type
 import java.lang.reflect.TypeVariable
 
 @InternalApi
-public fun TypeVariable<*>.toTypeVariableName(
-    map: MutableMap<Type, TypeVariableName>
-): TypeVariableName {
+public fun TypeVariable<*>.toTypeVariableName(map: MutableMap<Type, TypeVariableName>): TypeVariableName {
     val type = this
     return map[type] ?: run {
         val bounds = mutableListOf<TypeName>()
