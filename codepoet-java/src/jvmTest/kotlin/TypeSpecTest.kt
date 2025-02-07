@@ -1,5 +1,6 @@
 import love.forte.codepoet.java.*
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 /**
  *
@@ -9,7 +10,9 @@ class TypeSpecTest {
 
     @Test
     fun testPrintTypeSpec() {
-        val simpleType = SimpleTypeSpec(TypeSpec.Kind.CLASS, "MyAnno") {
+        val simpleType = SimpleTypeSpec(TypeSpec.Kind.CLASS, "MyClass") {
+            modifiers += Modifier.PUBLIC
+
             addMethod("methodPub") {
                 modifiers { public() }
             }
@@ -29,12 +32,27 @@ class TypeSpecTest {
                     static()
                     final()
                 }
+                initializer("2")
             }
-
-            addInitializerBlock("int a = 1;\n")
         }
 
         println(simpleType)
+
+        assertEquals(
+            """
+                public class MyClass {
+                    public static final int valuePub = 1;
+
+                    private static final int valuePri = 2;
+
+                    public void methodPub() {
+                    }
+                }
+                
+            """.trimIndent(),
+            simpleType.toString()
+        )
+
     }
 
 }
