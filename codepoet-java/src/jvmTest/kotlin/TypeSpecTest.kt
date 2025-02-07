@@ -1,3 +1,4 @@
+import love.forte.codepoet.java.*
 import kotlin.test.Test
 
 /**
@@ -7,29 +8,33 @@ import kotlin.test.Test
 class TypeSpecTest {
 
     @Test
-    fun testAnonymousTypeArguments() {
+    fun testPrintTypeSpec() {
+        val simpleType = SimpleTypeSpec(TypeSpec.Kind.CLASS, "MyAnno") {
+            addMethod("methodPub") {
+                modifiers { public() }
+            }
 
-        // println(
-        //     TypeSpec
-        //         .classBuilder("MyAnno")
-        //         .addMethod(
-        //             MethodSpec.methodBuilder("methodPub")
-        //             .addModifiers(Modifier.PUBLIC).build())
-        //         .addField(
-        //             FieldSpec.builder(
-        //                 TypeName.INT, "valuePub",
-        //             Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL
-        //         ).initializer("1").build())
-        //         .addField(
-        //             FieldSpec.builder(
-        //                 TypeName.INT, "valuePri",
-        //             Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL
-        //         ).initializer("1").build())
-        //         .addInitializerBlock(CodeBlock.of("int a = 1;\n"))
-        //         .build()
-        // )
+            addField(TypeName.Builtins.INT, "valuePub") {
+                modifiers {
+                    public()
+                    static()
+                    final()
+                }
+                initializer("1")
+            }
 
+            addField(TypeName.Builtins.INT, "valuePri") {
+                modifiers {
+                    private()
+                    static()
+                    final()
+                }
+            }
 
+            addInitializerBlock("int a = 1;\n")
+        }
+
+        println(simpleType)
     }
 
 }
