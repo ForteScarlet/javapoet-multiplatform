@@ -5,6 +5,9 @@ import kotlin.jvm.JvmStatic
 
 /**
  * A part of [CodeValue].
+ *
+ * @see CodeSimplePart
+ * @see CodeArgumentPart
  */
 public sealed class CodePart {
     public companion object {
@@ -20,7 +23,7 @@ public sealed class CodePart {
          * Emits a `literal` value with no escaping.
          * Arguments for literals may be
          * strings, primitives, [type declarations][TypeSpec],
-         * [annotations][AnnotationSpec] and even other [code blocks][CodeBlock]
+         * [annotations][AnnotationSpec] and even other [code values][CodeValue]
          * or [code emitters][CodeEmitter].
          */
         @JvmStatic
@@ -102,6 +105,13 @@ public sealed class CodePart {
          */
         @JvmStatic
         public fun zeroWidthSpace(): CodeArgumentPart = CodeArgumentPart.ZeroWidthSpace
+
+        /**
+         * Other [CodeValue].
+         */
+        @JvmStatic
+        public fun otherCodeValue(value: CodeValue): CodeArgumentPart =
+            CodeArgumentPart.OtherCodeValue(value)
     }
 }
 
@@ -118,7 +128,7 @@ public sealed class CodeArgumentPart : CodePart() {
      * `%L` emits a `literal` value with no escaping.
      * Arguments for literals may be
      * strings, primitives, [type declarations][TypeSpec],
-     * [annotations][AnnotationSpec] and even other [code blocks][CodeBlock]
+     * [annotations][AnnotationSpec] and even other [code values][CodeValue]
      * or [code emitters][CodeEmitter].
      */
     internal data class Literal(val value: Any?) : CodeArgumentPart()
@@ -203,6 +213,11 @@ public sealed class CodeArgumentPart : CodePart() {
      * `%Z` acts as a zero-width space. This prefers to wrap lines before 100 columns.
      */
     internal data object ZeroWidthSpace : CodeArgumentPart()
+
+    /**
+     * Other Code Value.
+     */
+    internal data class OtherCodeValue(val value: CodeValue) : CodeArgumentPart()
 }
 
 internal data class CodeSimplePart(val value: String) : CodePart()

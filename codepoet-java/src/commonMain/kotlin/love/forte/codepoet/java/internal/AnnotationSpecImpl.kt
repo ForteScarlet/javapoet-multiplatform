@@ -5,7 +5,7 @@ import love.forte.codepoet.java.*
 
 internal class AnnotationSpecImpl(
     override val type: TypeName,
-    override val members: Map<String, List<CodeBlock>>,
+    override val members: Map<String, List<CodeValue>>,
 ) : AnnotationSpec {
     override fun toBuilder(): AnnotationSpec.Builder {
         val builder = AnnotationSpec.Builder(type)
@@ -37,9 +37,9 @@ internal class AnnotationSpecImpl(
             codeWriter.emit("@%V($whitespace") { type(type) }
             codeWriter.indent(2)
             val i
-                : Iterator<Map.Entry<String, List<CodeBlock>>> = members.entries.iterator()
+                : Iterator<Map.Entry<String, List<CodeValue>>> = members.entries.iterator()
             while (i.hasNext()) {
-                val entry: Map.Entry<String, List<CodeBlock>> = i.next()
+                val entry: Map.Entry<String, List<CodeValue>> = i.next()
                 codeWriter.emit("%V = ") { literal(entry.key) }
                 emitAnnotationValues(codeWriter, whitespace, memberSeparator, entry.value)
                 if (i.hasNext()) codeWriter.emit(memberSeparator)
@@ -53,7 +53,7 @@ internal class AnnotationSpecImpl(
         codeWriter: CodeWriter,
         whitespace: String,
         memberSeparator: String,
-        values: List<CodeBlock>
+        values: List<CodeValue>
     ) {
         if (values.size == 1) {
             codeWriter.indent(2)

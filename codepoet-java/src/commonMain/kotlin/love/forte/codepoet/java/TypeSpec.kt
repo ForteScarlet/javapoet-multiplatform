@@ -41,7 +41,7 @@ import kotlin.jvm.JvmName
 public sealed interface TypeSpec : CodeEmitter {
     public val name: String?
     public val kind: Kind
-    public val javadoc: CodeBlock
+    public val javadoc: CodeValue
     public val annotations: List<AnnotationSpec>
     public val modifiers: Set<Modifier>
 
@@ -64,9 +64,9 @@ public sealed interface TypeSpec : CodeEmitter {
 
     public val fields: List<FieldSpec>
 
-    public val staticBlock: CodeBlock
+    public val staticBlock: CodeValue
 
-    public val initializerBlock: CodeBlock
+    public val initializerBlock: CodeValue
 
     public val methods: List<MethodSpec>
 
@@ -205,10 +205,10 @@ public sealed interface TypeSpec : CodeEmitter {
             check(name == null || name.isSourceName()) { "Invalid `name`: $name" }
         }
 
-        internal val javadoc = CodeBlock.builder()
+        internal val javadoc = CodeValue.builder()
         internal var superclass: TypeName? = null
-        internal val staticBlock = CodeBlock.builder()
-        internal val initializerBlock = CodeBlock.builder()
+        internal val staticBlock = CodeValue.builder()
+        internal val initializerBlock = CodeValue.builder()
 
         public val annotations: MutableList<AnnotationSpec> = mutableListOf()
         public val modifiers: MutableSet<Modifier> = linkedSetOf()
@@ -224,10 +224,6 @@ public sealed interface TypeSpec : CodeEmitter {
             javadoc.add(codeValue)
         }
 
-        public fun addJavadoc(block: CodeBlock): B = self.apply {
-            javadoc.add(block)
-        }
-
         public fun superclass(superclass: TypeName): B = self.apply {
             check(kind.states.superclassSupport) { "`superclass` is not supported for kind $kind" }
             require(!superclass.isPrimitive) { "`superclass` can't be primitive." }
@@ -238,16 +234,8 @@ public sealed interface TypeSpec : CodeEmitter {
             this.staticBlock.add(codeValue)
         }
 
-        public fun addStaticBlock(block: CodeBlock): B = self.apply {
-            this.staticBlock.add(block)
-        }
-
         public fun addInitializerBlock(codeValue: CodeValue): B = self.apply {
             this.initializerBlock.add(codeValue)
-        }
-
-        public fun addInitializerBlock(block: CodeBlock): B = self.apply {
-            this.initializerBlock.add(block)
         }
 
         public fun addAnnotations(annotations: Iterable<AnnotationSpec>): B = self.apply {
@@ -414,7 +402,7 @@ public interface AnonymousClassTypeSpec : TypeSpec {
     override val name: String?
         get() = null
 
-    public val anonymousTypeArguments: CodeBlock
+    public val anonymousTypeArguments: CodeValue
 
     override fun emit(codeWriter: CodeWriter, implicitModifiers: Set<Modifier>) {
         emit(codeWriter, null, implicitModifiers)
@@ -423,7 +411,7 @@ public interface AnonymousClassTypeSpec : TypeSpec {
     public fun emit(codeWriter: CodeWriter, enumName: String? = null, implicitModifiers: Set<Modifier> = emptySet())
 
     public class Builder(
-        public val anonymousTypeArguments: CodeBlock,
+        public val anonymousTypeArguments: CodeValue,
     ) : TypeSpec.Builder<Builder, AnonymousClassTypeSpec>(Kind.CLASS, null) {
         override val self: Builder
             get() = this
@@ -748,7 +736,7 @@ public inline fun SimpleTypeSpec(
 }
 
 public inline fun AnonymousClassTypeSpec(
-    anonymousTypeArguments: CodeBlock,
+    anonymousTypeArguments: CodeValue,
     block: AnonymousClassTypeSpec.Builder.() -> Unit = {},
 ): AnonymousClassTypeSpec {
     return AnonymousClassTypeSpec.Builder(anonymousTypeArguments).also(block).build()
@@ -793,19 +781,19 @@ public inline fun RecordTypeSpec(
 
 // extensions
 
-public inline fun TypeSpec.Builder<*, *>.addJavadoc(format: String, block: CodeValueBuilderDsl = {}) {
+public inline fun TypeSpec.Builder<*, *>.addJavadoc(format: String, block: CodeValueSingleFormatBuilderDsl = {}) {
     addJavadoc(CodeValue(format, block))
 }
 
 
-public inline fun TypeSpec.Builder<*, *>.addStaticBlock(format: String, block: CodeValueBuilderDsl = {}) {
+public inline fun TypeSpec.Builder<*, *>.addStaticBlock(format: String, block: CodeValueSingleFormatBuilderDsl = {}) {
     addStaticBlock(CodeValue(format, block))
 }
 
 
 public inline fun TypeSpec.Builder<*, *>.addInitializerBlock(
     format: String,
-    block: CodeValueBuilderDsl = {}
+    block: CodeValueSingleFormatBuilderDsl = {}
 ) {
     addInitializerBlock(CodeValue(format, block))
 }
@@ -840,7 +828,7 @@ public inline fun TypeSpec.Builder<*, *>.addMethod(
 
 public inline fun EnumTypeSpec.Builder.addEnumConstant(
     name: String,
-    anonymousTypeArguments: CodeBlock,
+    anonymousTypeArguments: CodeValue,
     block: AnonymousClassTypeSpec.Builder.() -> Unit = {}
 ) {
     addEnumConstant(

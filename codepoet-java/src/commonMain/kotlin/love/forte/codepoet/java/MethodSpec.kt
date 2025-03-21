@@ -31,7 +31,7 @@ import kotlin.jvm.JvmStatic
  */
 public interface MethodSpec : CodeEmitter {
     public val name: String
-    public val javadoc: CodeBlock
+    public val javadoc: CodeValue
     public val annotations: List<AnnotationSpec>
     public val modifiers: Set<Modifier>
     public val typeVariables: List<TypeVariableName>
@@ -39,8 +39,8 @@ public interface MethodSpec : CodeEmitter {
     public val parameters: List<ParameterSpec>
     public val isVarargs: Boolean
     public val exceptions: List<TypeName>
-    public val code: CodeBlock
-    public val defaultValue: CodeBlock
+    public val code: CodeValue
+    public val defaultValue: CodeValue
 
     public fun hasModifier(modifier: Modifier): Boolean = modifier in modifiers
 
@@ -58,12 +58,12 @@ public interface MethodSpec : CodeEmitter {
     public class Builder internal constructor(
         public var name: String,
     ) : ModifierBuilderContainer {
-        internal val javadoc = CodeBlock.builder()
+        internal val javadoc = CodeValue.builder()
         internal var returnType: TypeName? = null
 
         @PublishedApi
-        internal val code: CodeBlock.Builder = CodeBlock.builder()
-        internal var defaultValue: CodeBlock? = null
+        internal val code: CodeValue.Builder = CodeValue.builder()
+        internal var defaultValue: CodeValue? = null
         internal val exceptions = linkedSetOf<TypeName>()
 
         public var isVarargs: Boolean = false
@@ -79,10 +79,6 @@ public interface MethodSpec : CodeEmitter {
 
         public fun addJavadoc(codeValue: CodeValue): Builder = apply {
             javadoc.add(codeValue)
-        }
-
-        public fun addJavadoc(block: CodeBlock): Builder = apply {
-            javadoc.add(block)
         }
 
         public fun addAnnotation(annotationSpec: AnnotationSpec): Builder = apply {
@@ -159,10 +155,6 @@ public interface MethodSpec : CodeEmitter {
         }
         // TODO exceptions KType? KClass?
 
-        public fun addCode(block: CodeBlock): Builder = apply {
-            this.code.add(block)
-        }
-
         public fun addCode(codeValue: CodeValue): Builder = apply {
             this.code.add(codeValue)
         }
@@ -178,10 +170,7 @@ public interface MethodSpec : CodeEmitter {
         public fun defaultValue(format: String, vararg argumentParts: CodeArgumentPart): Builder =
             defaultValue(CodeValue(format, *argumentParts))
 
-        public fun defaultValue(codeValue: CodeValue): Builder =
-            defaultValue(CodeBlock(codeValue))
-
-        public fun defaultValue(codeBlock: CodeBlock): Builder = apply {
+        public fun defaultValue(codeBlock: CodeValue): Builder = apply {
             check(defaultValue == null) { "`defaultValue` was already set" }
             this.defaultValue = codeBlock
         }
@@ -199,7 +188,7 @@ public interface MethodSpec : CodeEmitter {
          * @param codeBlock the control flow construct and its code, such as `"if (foo == 5)"`.
          * Shouldn't contain braces or newline characters.
          */
-        public fun beginControlFlow(codeBlock: CodeBlock): Builder = apply {
+        public fun beginControlFlow(codeBlock: CodeValue): Builder = apply {
             beginControlFlow("%V") { literal(codeBlock) }
         }
 
@@ -215,7 +204,7 @@ public interface MethodSpec : CodeEmitter {
          * @param codeBlock the control flow construct and its code, such as `"else if (foo == 10)"`.
          * Shouldn't contain braces or newline characters.
          */
-        public fun nextControlFlow(codeBlock: CodeBlock): Builder = apply {
+        public fun nextControlFlow(codeBlock: CodeValue): Builder = apply {
             nextControlFlow("%V") { literal(codeBlock) }
         }
 
@@ -231,10 +220,6 @@ public interface MethodSpec : CodeEmitter {
             code.addStatement(codeValue)
         }
 
-        public fun addStatement(codeBlock: CodeBlock): Builder = apply {
-            code.addStatement(codeBlock)
-        }
-
         public fun build(): MethodSpec {
             return MethodSpecImpl(
                 name = name,
@@ -247,7 +232,7 @@ public interface MethodSpec : CodeEmitter {
                 isVarargs = isVarargs,
                 exceptions = exceptions.toList(),
                 code = code.build(),
-                defaultValue = defaultValue ?: CodeBlock()
+                defaultValue = defaultValue ?: CodeValue.EMPTY
             )
         }
     }
@@ -276,19 +261,19 @@ public inline fun MethodSpec(name: String, block: Builder.() -> Unit = {}): Meth
 public inline fun MethodSpec(block: Builder.() -> Unit = {}): MethodSpec =
     MethodSpec.constructorBuilder().apply(block).build()
 
-public inline fun Builder.addJavadoc(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+public inline fun Builder.addJavadoc(format: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder = apply {
     addJavadoc(CodeValue(format, block))
 }
 
-public inline fun Builder.addCode(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+public inline fun Builder.addCode(format: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder = apply {
     addCode(CodeValue(format, block))
 }
 
-public inline fun Builder.addComment(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+public inline fun Builder.addComment(format: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder = apply {
     addCode(CodeValue("// $format\n", block))
 }
 
-public inline fun Builder.defaultValue(format: String, block: CodeValueBuilderDsl = {}): Builder =
+public inline fun Builder.defaultValue(format: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder =
     defaultValue(CodeValue(format, block))
 
 
@@ -296,7 +281,7 @@ public inline fun Builder.defaultValue(format: String, block: CodeValueBuilderDs
  * @param controlFlow the control flow construct and its code, such as `"if (foo == 5)"`.
  * Shouldn't contain braces or newline characters.
  */
-public inline fun Builder.beginControlFlow(controlFlow: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+public inline fun Builder.beginControlFlow(controlFlow: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder = apply {
     code.beginControlFlow(controlFlow, block)
 }
 
@@ -304,10 +289,10 @@ public inline fun Builder.beginControlFlow(controlFlow: String, block: CodeValue
  * @param controlFlow the control flow construct and its code, such as `"else if (foo == 10)"`.
  * Shouldn't contain braces or newline characters.
  */
-public inline fun Builder.nextControlFlow(controlFlow: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+public inline fun Builder.nextControlFlow(controlFlow: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder = apply {
     code.nextControlFlow(controlFlow, block)
 }
 
-public inline fun Builder.addStatement(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+public inline fun Builder.addStatement(format: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder = apply {
     addStatement(CodeValue(format, block))
 }

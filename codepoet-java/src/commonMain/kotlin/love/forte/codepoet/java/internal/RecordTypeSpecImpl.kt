@@ -11,14 +11,14 @@ internal class RecordTypeSpecImpl(
     override val name: String,
     override val kind: TypeSpec.Kind,
     override val mainConstructorParameters: List<ParameterSpec>,
-    override val javadoc: CodeBlock,
+    override val javadoc: CodeValue,
     override val annotations: List<AnnotationSpec>,
     override val modifiers: Set<Modifier>,
     override val typeVariables: List<TypeVariableName>,
     override val superinterfaces: List<TypeName>,
     override val fields: List<FieldSpec>,
-    override val staticBlock: CodeBlock,
-    override val initializerBlock: CodeBlock,
+    override val staticBlock: CodeValue,
+    override val initializerBlock: CodeValue,
     override val methods: List<MethodSpec>,
     override val types: List<TypeSpec>
 ) : RecordTypeSpec {

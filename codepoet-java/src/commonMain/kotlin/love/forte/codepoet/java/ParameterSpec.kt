@@ -39,7 +39,7 @@ public interface ParameterSpec : CodeEmitter {
 
     public fun hasModifier(modifier: Modifier): Boolean = modifier in modifiers
 
-    public val javadoc: CodeBlock
+    public val javadoc: CodeValue
 
     public fun toBuilder(): Builder
 
@@ -54,7 +54,7 @@ public interface ParameterSpec : CodeEmitter {
         public val type: TypeName,
         public val name: String
     ) : ModifierBuilderContainer {
-        internal val javadoc = CodeBlock.builder()
+        internal val javadoc = CodeValue.builder()
         internal val annotations = mutableListOf<AnnotationSpec>()
         internal val modifiers = mutableSetOf<Modifier>()
 
@@ -64,10 +64,6 @@ public interface ParameterSpec : CodeEmitter {
 
         public fun addJavadoc(codeValue: CodeValue): Builder = apply {
             javadoc.add(codeValue)
-        }
-
-        public fun addJavadoc(block: CodeBlock): Builder = apply {
-            javadoc.add(block)
         }
 
         public fun addAnnotations(vararg annotations: AnnotationSpec): Builder = apply {
@@ -134,6 +130,6 @@ public inline fun ParameterSpec(
     block: Builder.() -> Unit = {}
 ): ParameterSpec = ParameterSpec.builder(type, name).apply(block).build()
 
-public inline fun Builder.addJavadoc(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+public inline fun Builder.addJavadoc(format: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder = apply {
     addJavadoc(CodeValue(format, block))
 }

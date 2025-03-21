@@ -5,11 +5,11 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
-class CodeBlockTest {
+class CodeValueTests {
 
     @Test
     fun testEmit() {
-        val code = CodeBlock {
+        val code = CodeValue {
             addStatement("String value = %V", string("Hello, World"))
         }
 

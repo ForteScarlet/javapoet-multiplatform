@@ -32,7 +32,7 @@ import kotlin.jvm.JvmStatic
  */
 public interface JavaFile : CodeEmitter {
 
-    public val fileComment: CodeBlock
+    public val fileComment: CodeValue
     public val packageName: String
 
     // TODO types?
@@ -62,7 +62,7 @@ public interface JavaFile : CodeEmitter {
         public val packageName: String,
         public val type: TypeSpec,
     ) : BuilderDsl {
-        private val fileComment = CodeBlock.builder()
+        private val fileComment = CodeValue.builder()
         private var skipJavaLangImports: Boolean = true
         private var indent: String = "    "
         private val staticImports = linkedSetOf<String>()
@@ -73,10 +73,6 @@ public interface JavaFile : CodeEmitter {
 
         public fun addFileComment(codeValue: CodeValue): Builder = apply {
             fileComment.add(codeValue)
-        }
-
-        public fun addFileComment(codeBlock: CodeBlock): Builder = apply {
-            fileComment.add(codeBlock)
         }
 
         public fun addStaticImport(import: String): Builder = apply {
@@ -137,7 +133,7 @@ public interface JavaFile : CodeEmitter {
     }
 }
 
-public inline fun Builder.addFileComment(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+public inline fun Builder.addFileComment(format: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder = apply {
     addFileComment(CodeValue(format, block))
 }
 

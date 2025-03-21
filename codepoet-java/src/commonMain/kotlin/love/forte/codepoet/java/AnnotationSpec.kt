@@ -32,7 +32,7 @@ public interface AnnotationSpec : CodeEmitter {
 
     public val type: TypeName
 
-    public val members: Map<String, List<CodeBlock>>
+    public val members: Map<String, List<CodeValue>>
 
     public fun toBuilder(): Builder
 
@@ -44,18 +44,16 @@ public interface AnnotationSpec : CodeEmitter {
     public fun emit(codeWriter: CodeWriter, inline: Boolean = true)
 
     public class Builder internal constructor(private val type: TypeName) : BuilderDsl {
-        public val members: MutableMap<String, MutableList<CodeBlock>> = linkedMapOf()
+        public val members: MutableMap<String, MutableList<CodeValue>> = linkedMapOf()
 
-        public fun addMember(name: String, codeValue: CodeValue): Builder =
-            addMember(name, CodeBlock(codeValue))
+        public fun addMember(name: String, codeValue: CodeValue): Builder = apply {
+            val values = members.computeValueIfAbsent(name) { mutableListOf() }
+            values.add(codeValue)
+        }
 
         public fun addMember(name: String, format: String, vararg argumentParts: CodeArgumentPart): Builder =
-            addMember(name, CodeBlock(format, *argumentParts))
+            addMember(name, CodeValue(format, *argumentParts))
 
-        public fun addMember(name: String, codeBlock: CodeBlock): Builder = apply {
-            val values = members.computeValueIfAbsent(name) { mutableListOf() }
-            values.add(codeBlock)
-        }
 
         // TODO addMemberForValue(memberName: String, value: Any)
 
@@ -80,5 +78,5 @@ public inline fun AnnotationSpec(annotation: ClassName, block: Builder.() -> Uni
     AnnotationSpec.builder(annotation).also(block).build()
 
 
-public inline fun Builder.addMember(name: String, format: String, block: CodeValueBuilderDsl = {}): Builder =
-    addMember(name, CodeBlock(format, block))
+public inline fun Builder.addMember(name: String, format: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder =
+    addMember(name, CodeValue(format, block))

@@ -5,7 +5,7 @@ import love.forte.codepoet.java.*
 
 internal class MethodSpecImpl(
     override val name: String,
-    override val javadoc: CodeBlock,
+    override val javadoc: CodeValue,
     override val annotations: List<AnnotationSpec>,
     override val modifiers: Set<Modifier>,
     override val typeVariables: List<TypeVariableName>,
@@ -13,8 +13,8 @@ internal class MethodSpecImpl(
     override val parameters: List<ParameterSpec>,
     override val isVarargs: Boolean,
     override val exceptions: List<TypeName>,
-    override val code: CodeBlock,
-    override val defaultValue: CodeBlock,
+    override val code: CodeValue,
+    override val defaultValue: CodeValue,
 ) : MethodSpec {
     override fun toBuilder(): MethodSpec.Builder {
         return MethodSpec.Builder(name).also { builder ->
@@ -111,10 +111,10 @@ internal class MethodSpecImpl(
         codeWriter.popTypeVariables(typeVariables)
     }
 
-    private fun javadocWithParameters(): CodeBlock {
+    private fun javadocWithParameters(): CodeValue {
         if (parameters.isEmpty()) return javadoc
 
-        val builder = javadoc.toBuilder()
+        val builder = CodeValue.builder().add(javadoc)
         var emitTagNewline = true
         for (parameter in parameters) {
             val parameterDoc = parameter.javadoc

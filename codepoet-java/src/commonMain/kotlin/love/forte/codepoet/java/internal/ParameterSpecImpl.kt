@@ -8,7 +8,7 @@ internal class ParameterSpecImpl internal constructor(
     override val name: String,
     override val annotations: List<AnnotationSpec>,
     override val modifiers: Set<Modifier>,
-    override val javadoc: CodeBlock,
+    override val javadoc: CodeValue,
 ) : ParameterSpec {
     override fun toBuilder(): ParameterSpec.Builder {
         return ParameterSpec.builder(type, name).also { builder ->
@@ -17,7 +17,7 @@ internal class ParameterSpecImpl internal constructor(
             builder.javadoc.add(javadoc)
         }
     }
-    
+
     override fun emit(codeWriter: CodeWriter, vararg: Boolean) {
         codeWriter.emitAnnotations(annotations, true)
         codeWriter.emitModifiers(modifiers)

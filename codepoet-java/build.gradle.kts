@@ -30,6 +30,7 @@ tasks.withType<JavaCompile> {
 kotlin {
     explicitApi()
 
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
     compilerOptions {
         optIn.add("love.forte.codepoet.java.InternalApi")
         freeCompilerArgs.add("-Xexpect-actual-classes")
@@ -39,10 +40,10 @@ kotlin {
     applyDefaultHierarchyTemplate {
         common {
             withJvm()
-            group("non-jvm") {
+            group("nonJvm") {
                 withNative()
 
-                group("js-based") {
+                group("jsBased") {
                     withJs()
                     withWasmJs()
                 }

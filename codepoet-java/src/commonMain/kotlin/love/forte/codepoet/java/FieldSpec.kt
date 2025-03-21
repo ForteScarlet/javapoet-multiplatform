@@ -36,13 +36,13 @@ public interface FieldSpec : CodeEmitter {
 
     public val name: String
 
-    public val javadoc: CodeBlock
+    public val javadoc: CodeValue
 
     public val annotations: List<AnnotationSpec>
 
     public val modifiers: Set<Modifier>
 
-    public val initializer: CodeBlock
+    public val initializer: CodeValue
 
     public fun hasModifier(modifier: Modifier): Boolean = modifier in modifiers
 
@@ -58,10 +58,10 @@ public interface FieldSpec : CodeEmitter {
         public val type: TypeName,
         public val name: String,
     ) : ModifierBuilderContainer {
-        internal val javadoc = CodeBlock.builder()
+        internal val javadoc = CodeValue.builder()
         internal val annotations = mutableListOf<AnnotationSpec>()
         internal val modifiers = ModifierSet()
-        internal var initializer: CodeBlock? = null
+        internal var initializer: CodeValue? = null
 
         public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
             addJavadoc(CodeValue(format, *argumentParts))
@@ -69,10 +69,6 @@ public interface FieldSpec : CodeEmitter {
 
         public fun addJavadoc(codeValue: CodeValue): Builder = apply {
             javadoc.add(codeValue)
-        }
-
-        public fun addJavadoc(block: CodeBlock): Builder = apply {
-            javadoc.add(block)
         }
 
         public fun addAnnotations(annotationSpecs: Iterable<AnnotationSpec>): Builder = apply {
@@ -109,11 +105,7 @@ public interface FieldSpec : CodeEmitter {
             initializer(CodeValue(format, *argumentParts))
         }
 
-        public fun initializer(codeValue: CodeValue): Builder = apply {
-            initializer(CodeBlock(codeValue))
-        }
-
-        public fun initializer(codeBlock: CodeBlock): Builder = apply {
+        public fun initializer(codeBlock: CodeValue): Builder = apply {
             check(initializer == null) { "initializer was already set" }
             initializer = codeBlock
         }
@@ -125,7 +117,7 @@ public interface FieldSpec : CodeEmitter {
                 javadoc = javadoc.build(),
                 annotations = annotations.toList(),
                 modifiers = modifiers.toSet(),
-                initializer = initializer ?: CodeBlock()
+                initializer = initializer ?: CodeValue.EMPTY
             )
         }
     }
@@ -148,10 +140,10 @@ public inline fun FieldSpec(type: TypeName, name: String, block: Builder.() -> U
     FieldSpec.builder(type, name).also(block).build()
 
 
-public inline fun Builder.addJavadoc(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+public inline fun Builder.addJavadoc(format: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder = apply {
     addJavadoc(CodeValue(format, block))
 }
 
-public inline fun Builder.initializer(format: String, block: CodeValueBuilderDsl = {}): Builder = apply {
+public inline fun Builder.initializer(format: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder = apply {
     initializer(CodeValue(format, block))
 }

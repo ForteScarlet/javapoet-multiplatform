@@ -10,10 +10,10 @@ import love.forte.codepoet.java.*
 internal class FieldSpecImpl internal constructor(
     override val type: TypeName,
     override val name: String,
-    override val javadoc: CodeBlock,
+    override val javadoc: CodeValue,
     override val annotations: List<AnnotationSpec>,
     override val modifiers: Set<Modifier>,
-    override val initializer: CodeBlock
+    override val initializer: CodeValue
 ) : FieldSpec {
     override fun toBuilder(): FieldSpec.Builder {
         return FieldSpec.Builder(type, name).also { builder ->

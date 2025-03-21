@@ -1,8 +1,6 @@
 package love.forte.codepoet.java.internal
 
 import love.forte.codepoet.java.*
-import love.forte.codepoet.java.CodeSimplePart
-import love.forte.codepoet.java.literalWithDoubleQuotes
 
 
 internal data class CodeValueImpl(override val parts: List<CodePart>) : CodeValue {
@@ -97,6 +95,10 @@ internal data class CodeValueImpl(override val parts: List<CodePart>) : CodeValu
 
                 is CodeArgumentPart.ZeroWidthSpace -> {
                     codeWriter.out.zeroWidthSpace(codeWriter.indentLevel + 2)
+                }
+
+                is CodeArgumentPart.OtherCodeValue -> {
+                    codeWriter.emit(part.value)
                 }
             }
         }

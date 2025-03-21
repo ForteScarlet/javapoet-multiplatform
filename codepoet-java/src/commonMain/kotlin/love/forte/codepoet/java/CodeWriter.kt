@@ -87,7 +87,7 @@ public class CodeWriter private constructor(
         this.typeSpecStack.removeLast()
     }
 
-    internal fun emitComment(codeBlock: CodeBlock) {
+    internal fun emitComment(codeBlock: CodeValue) {
         trailingNewline = true
         comment = true
         try {
@@ -98,7 +98,7 @@ public class CodeWriter private constructor(
         }
     }
 
-    internal fun emitJavadoc(javadoc: CodeBlock) {
+    internal fun emitJavadoc(javadoc: CodeValue) {
         if (javadoc.isEmpty) return
 
         emit("/**\n")
@@ -203,7 +203,7 @@ public class CodeWriter private constructor(
     }
 
     internal fun emit(codeValue: CodeValue) {
-        CodeBlock(codeValue).emit(this)
+        codeValue.emit(this)
     }
 
     internal fun emitAndIndent(s: String) {
@@ -341,12 +341,12 @@ internal inline fun CodeWriter.inPackage(packageName: String, block: () -> Unit)
     popPackage()
 }
 
-internal inline fun CodeWriter.emit(ensureTrailingNewline: Boolean, format: String, block: CodeValueBuilderDsl = {}) {
-    CodeBlock(format, block).emit(this, ensureTrailingNewline)
+internal inline fun CodeWriter.emit(ensureTrailingNewline: Boolean, format: String, block: CodeValueSingleFormatBuilderDsl = {}) {
+    CodeValue(format, block).emit(this, ensureTrailingNewline)
 }
 
-internal inline fun CodeWriter.emit(format: String, block: CodeValueBuilderDsl = {}) {
-    CodeBlock(format, block).emit(this)
+internal inline fun CodeWriter.emit(format: String, block: CodeValueSingleFormatBuilderDsl = {}) {
+    CodeValue(format, block).emit(this)
 }
 
 internal fun CodeEmitter.emitToString(): String =

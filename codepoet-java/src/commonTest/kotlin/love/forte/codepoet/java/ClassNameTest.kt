@@ -28,14 +28,14 @@ class ClassNameTest {
 
         assertEquals(
             "import java.lang.String;",
-            CodeBlock("import %V;") {
+            CodeValue("import %V;") {
                 literal(ClassName("java.lang", "String"))
             }.toString()
         )
 
         assertEquals(
             "import java.lang.String;",
-            CodeBlock("import %V;") {
+            CodeValue("import %V;") {
                 literal(ClassName("java.lang", "String").withoutAnnotations())
             }.toString()
         )

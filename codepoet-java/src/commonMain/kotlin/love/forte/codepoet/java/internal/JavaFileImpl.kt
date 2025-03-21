@@ -9,7 +9,7 @@ private object NullAppendable : Appendable {
 }
 
 internal class JavaFileImpl(
-    override val fileComment: CodeBlock,
+    override val fileComment: CodeValue,
     override val packageName: String,
     override val type: TypeSpec,
     override val skipJavaLangImports: Boolean,

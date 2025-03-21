@@ -4,7 +4,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
-class CodeValueTest {
+class OtherCodeValueTest {
 
     @Test
     fun testCodeValueFormat() {

@@ -10,13 +10,13 @@ import love.forte.codepoet.java.*
 internal class AnnotationTypeSpecImpl(
     override val name: String,
     override val kind: TypeSpec.Kind,
-    override val javadoc: CodeBlock,
+    override val javadoc: CodeValue,
     override val annotations: List<AnnotationSpec>,
     override val modifiers: Set<Modifier>,
     override val typeVariables: List<TypeVariableName>,
     override val fields: List<FieldSpec>,
-    override val staticBlock: CodeBlock,
-    override val initializerBlock: CodeBlock,
+    override val staticBlock: CodeValue,
+    override val initializerBlock: CodeValue,
     override val methods: List<MethodSpec>,
     override val types: List<TypeSpec>
 ) : AnnotationTypeSpec {
