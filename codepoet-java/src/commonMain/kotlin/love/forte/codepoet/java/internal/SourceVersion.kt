@@ -25,6 +25,9 @@
 
 package love.forte.codepoet.java.internal
 
+import love.forte.codepoet.common.codepoint.charCount
+import love.forte.codepoet.common.codepoint.codePointAt
+
 // See javax.lang.model.SourceVersion.java
 
 private val keywords = setOf(

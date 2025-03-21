@@ -19,10 +19,10 @@
 
 package love.forte.codepoet.java
 
+import love.forte.codepoet.common.codepoint.codePointAt
+import love.forte.codepoet.common.codepoint.isLowerCase
+import love.forte.codepoet.common.codepoint.isUpperCase
 import love.forte.codepoet.java.internal.ClassNameImpl
-import love.forte.codepoet.java.internal.codePointAt
-import love.forte.codepoet.java.internal.isLowerCase
-import love.forte.codepoet.java.internal.isUpperCase
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName

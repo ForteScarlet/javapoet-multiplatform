@@ -10,7 +10,6 @@ kotlin {
 
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     compilerOptions {
-        optIn.add("love.forte.codepoet.common.codepoint.InternalCodePointApi")
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
@@ -79,7 +78,7 @@ tasks.withType<JavaCompile> {
     sourceCompatibility = "11"
     targetCompatibility = "11"
 
-    val moduleName = "love.forte.codepoet.common"
+    val moduleName = "love.forte.codepoet.kotlin"
 
     options.compilerArgumentProviders.add(
         CommandLineArgumentProvider {

@@ -35,8 +35,9 @@ plugins {
 
 rootProject.name = "javapoet-multiplatform"
 
-// include(":codepoet-common")
+include(":codepoet-common")
 include(":codepoet-java")
+include(":codepoet-kotlin")
 // include(":codepoet-java-apt")
 
 // include(":codepoet-tests:codepoet-java-apt-test")

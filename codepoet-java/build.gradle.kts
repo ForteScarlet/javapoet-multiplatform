@@ -5,21 +5,6 @@ plugins {
     // alias(libs.plugins.kotlinxBinaryCompatibilityValidator)
 }
 
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-    sourceCompatibility = "11"
-    targetCompatibility = "11"
-
-    val moduleName = "love.forte.codepoet.java"
-
-    options.compilerArgumentProviders.add(
-        CommandLineArgumentProvider {
-            // Provide compiled Kotlin classes to javac – needed for Java/Kotlin mixed sources to work
-            listOf("--patch-module", "$moduleName=${sourceSets["main"].output.asPath}")
-        }
-    )
-}
-
 // apiValidation {
 //     nonPublicMarkers.addAll(
 //         listOf("love.forte.codepoet.java.InternalApi")
@@ -32,7 +17,10 @@ kotlin {
 
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     compilerOptions {
-        optIn.add("love.forte.codepoet.java.InternalApi")
+        optIn.addAll(
+            "love.forte.codepoet.common.codepoint.InternalCodePointApi",
+            "love.forte.codepoet.java.InternalApi"
+        )
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
@@ -54,6 +42,7 @@ kotlin {
     jvmToolchain(11)
     jvm {
         withJava()
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             javaParameters = true
             freeCompilerArgs.addAll("-Xjvm-default=all", "-Xjsr305=strict")
@@ -73,7 +62,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                // api(project(":codepoet-common"))
+                api(project(":codepoet-common"))
             }
         }
 
@@ -93,4 +82,19 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+    sourceCompatibility = "11"
+    targetCompatibility = "11"
+
+    val moduleName = "love.forte.codepoet.java"
+
+    options.compilerArgumentProviders.add(
+        CommandLineArgumentProvider {
+            // Provide compiled Kotlin classes to javac – needed for Java/Kotlin mixed sources to work
+            listOf("--patch-module", "$moduleName=${sourceSets["main"].output.asPath}")
+        }
+    )
 }
