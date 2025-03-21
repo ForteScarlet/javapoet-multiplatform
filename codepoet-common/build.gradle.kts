@@ -10,7 +10,10 @@ kotlin {
 
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     compilerOptions {
-        optIn.add("love.forte.codepoet.common.codepoint.InternalCodePointApi")
+        optIn.addAll(
+            "love.forte.codepoet.common.codepoint.InternalCodePointApi",
+            "love.forte.codepoet.common.InternalCommonApi"
+        )
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 

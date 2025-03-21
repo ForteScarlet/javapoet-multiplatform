@@ -15,6 +15,7 @@
  */
 package love.forte.codepoet.java
 
+import love.forte.codepoet.common.computeValue
 import love.forte.codepoet.java.internal.LineWrapper
 import love.forte.codepoet.java.internal.isSourceIdentifier
 

@@ -64,10 +64,6 @@ private fun Char.isIdentifierIgnorable(): Boolean {
         ) || this in CharCategory.FORMAT
 }
 
-internal expect fun <K, V> MutableMap<K, V>.computeValue(key: K, f: (K, V?) -> V?): V?
-
-internal expect fun <K, V> MutableMap<K, V>.computeValueIfAbsent(key: K, f: (K) -> V): V
-
 internal fun String.literalWithDoubleQuotes(indent: String): String {
     val value = this
     return buildString(length + 2) {

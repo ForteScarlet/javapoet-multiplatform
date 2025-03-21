@@ -18,6 +18,7 @@
 
 package love.forte.codepoet.java
 
+import love.forte.codepoet.common.computeValueIfAbsent
 import love.forte.codepoet.java.AnnotationSpec.Builder
 import love.forte.codepoet.java.internal.AnnotationSpecImpl
 import love.forte.codepoet.java.internal.isSourceName

@@ -1,6 +1,7 @@
 package love.forte.codepoet.common
 
-internal actual inline fun <K, V> MutableMap<K, V>.computeValueIfAbsent(key: K, f: (K) -> V): V {
+@InternalCommonApi
+public actual inline fun <K, V> MutableMap<K, V>.computeValueIfAbsent(key: K, f: (K) -> V): V {
     val v = get(key)
     if (v == null) {
         val newValue = f(key)
@@ -12,7 +13,8 @@ internal actual inline fun <K, V> MutableMap<K, V>.computeValueIfAbsent(key: K, 
     return v
 }
 
-internal actual fun <K, V> MutableMap<K, V>.computeValue(key: K, f: (K, V?) -> V?): V? {
+@InternalCommonApi
+public actual fun <K, V> MutableMap<K, V>.computeValue(key: K, f: (K, V?) -> V?): V? {
     val oldValue = get(key)
 
     val newValue = f(key, oldValue)

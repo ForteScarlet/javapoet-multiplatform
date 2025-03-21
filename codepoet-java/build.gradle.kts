@@ -19,6 +19,7 @@ kotlin {
     compilerOptions {
         optIn.addAll(
             "love.forte.codepoet.common.codepoint.InternalCodePointApi",
+            "love.forte.codepoet.common.InternalCommonApi",
             "love.forte.codepoet.java.InternalApi"
         )
         freeCompilerArgs.add("-Xexpect-actual-classes")
