@@ -56,8 +56,6 @@ public interface JavaFile : CodeEmitter {
 
     public fun writeTo(out: Appendable)
 
-    // TODO emit
-
     public class Builder internal constructor(
         public val packageName: String,
         public val type: TypeSpec,

@@ -256,8 +256,6 @@ public class CodeWriter private constructor(
         return result
     }
 
-    // TODO
-
     public companion object {
         private const val DEFAULT_INDENT = "    "
 

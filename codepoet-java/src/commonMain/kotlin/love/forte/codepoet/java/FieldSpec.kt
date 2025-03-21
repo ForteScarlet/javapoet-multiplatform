@@ -87,8 +87,6 @@ public interface FieldSpec : CodeEmitter {
             addAnnotation(AnnotationSpec.builder(annotationSpec).build())
         }
 
-        // TODO addAnnotation(Class)
-
         override fun addModifiers(vararg modifiers: Modifier): Builder = apply {
             this.modifiers.addAll(*modifiers)
         }
