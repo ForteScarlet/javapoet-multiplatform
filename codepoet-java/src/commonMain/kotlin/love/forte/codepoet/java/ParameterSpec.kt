@@ -28,7 +28,7 @@ import kotlin.jvm.JvmStatic
 /**
  * A generated parameter declaration.
  */
-public interface ParameterSpec : CodeEmitter {
+public interface ParameterSpec : JavaCodeEmitter {
     public val type: TypeName
 
     public val name: String

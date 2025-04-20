@@ -20,7 +20,7 @@ import love.forte.codepoet.java.internal.LineWrapper
 import love.forte.codepoet.java.internal.isSourceIdentifier
 
 
-@InternalApi
+@InternalJavaCodePoetApi
 public class CodeWriter private constructor(
     internal val indentValue: String,
     internal val out: LineWrapper,
@@ -37,7 +37,7 @@ public class CodeWriter private constructor(
     internal var packageName: String? = null // com.squareup.javapoet.CodeWriter.NO_PACKAGE
 
     internal val importableTypes: MutableMap<String, ClassName> = linkedMapOf()
-    public val referencedNames: MutableSet<String> = linkedSetOf()
+    internal val referencedNames: MutableSet<String> = linkedSetOf()
 
     // private val typeSpecStack: MutableList<TypeSpec> = mutableListOf()
     internal val typeSpecStack = ArrayDeque<TypeSpec>()
@@ -191,7 +191,7 @@ public class CodeWriter private constructor(
                 value.emit(this, inline = true)
             }
 
-            is CodeEmitter -> {
+            is JavaCodeEmitter -> {
                 value.emit(this)
             }
 
@@ -348,5 +348,5 @@ internal inline fun CodeWriter.emit(format: String, block: CodeValueSingleFormat
     CodeValue(format, block).emit(this)
 }
 
-internal fun CodeEmitter.emitToString(): String =
+internal fun JavaCodeEmitter.emitToString(): String =
     buildString { emit(CodeWriter.create(this)) }

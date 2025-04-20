@@ -19,6 +19,10 @@
 
 package love.forte.codepoet.java
 
+import javax.lang.model.element.Element
+import javax.lang.model.element.PackageElement
+import javax.lang.model.element.TypeElement
+import javax.lang.model.util.SimpleElementVisitor8
 import kotlin.reflect.KClass
 
 /**
@@ -56,4 +60,29 @@ public fun Class<*>.toClassName(): ClassName {
     }
 
     return java.enclosingClass.toClassName().nestedClass(name)
+}
+
+// javax.lang.model
+
+public fun TypeElement.toClassName(): ClassName {
+    val simpleName = simpleName.toString()
+    val visitor = object : SimpleElementVisitor8<ClassName, Void?>() {
+        override fun visitPackage(packageElement: PackageElement, p: Void?): ClassName {
+            return ClassName(packageElement.qualifiedName.toString(), simpleName)
+        }
+
+        override fun visitType(typeElement: TypeElement, p: Void?): ClassName {
+            return typeElement.toClassName().nestedClass(simpleName)
+        }
+
+        override fun visitUnknown(unknown: Element?, p: Void?): ClassName? {
+            return ClassName("", simpleName)
+        }
+
+        override fun defaultAction(element: Element?, p: Void?): ClassName? {
+            throw IllegalArgumentException("Unexpected type nesting: $element")
+        }
+    }
+
+    return enclosingElement.accept(visitor, null)
 }

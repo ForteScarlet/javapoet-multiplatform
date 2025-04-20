@@ -29,7 +29,7 @@ import kotlin.jvm.JvmStatic
 /**
  * A generated annotation on a declaration.
  */
-public interface AnnotationSpec : CodeEmitter {
+public interface AnnotationSpec : JavaCodeEmitter {
 
     public val type: TypeName
 
@@ -37,11 +37,12 @@ public interface AnnotationSpec : CodeEmitter {
 
     public fun toBuilder(): Builder
 
+    @InternalJavaCodePoetApi
     override fun emit(codeWriter: CodeWriter) {
         emit(codeWriter, true)
     }
 
-    @InternalApi
+    @InternalJavaCodePoetApi
     public fun emit(codeWriter: CodeWriter, inline: Boolean = true)
 
     public class Builder internal constructor(private val type: TypeName) : BuilderDsl {

@@ -19,4 +19,4 @@ import kotlin.annotation.AnnotationTarget.*
     TYPEALIAS
 )
 @MustBeDocumented
-public annotation class InternalApi
+public annotation class InternalJavaCodePoetApi

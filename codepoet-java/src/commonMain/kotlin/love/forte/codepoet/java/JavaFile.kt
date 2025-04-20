@@ -30,7 +30,7 @@ import kotlin.jvm.JvmStatic
  *
  * @author ForteScarlet
  */
-public interface JavaFile : CodeEmitter {
+public interface JavaFile : JavaCodeEmitter {
 
     public val fileComment: CodeValue
     public val packageName: String

@@ -4,6 +4,13 @@ import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
 /**
+ * Mark a CodePart factory function in its companion object
+ * or a top-level function with a companion receiver parameter.
+ */
+@Retention(AnnotationRetention.SOURCE)
+internal annotation class CodePartFactory
+
+/**
  * A part of [CodeValue].
  *
  * @see CodeSimplePart
@@ -17,6 +24,7 @@ public sealed class CodePart {
          * Skip this `%V`, Just write `%V` itself.
          */
         @JvmStatic
+        @CodePartFactory
         public fun skip(): CodeArgumentPart = CodeArgumentPart.Skip
 
         /**
@@ -24,9 +32,10 @@ public sealed class CodePart {
          * Arguments for literals may be
          * strings, primitives, [type declarations][TypeSpec],
          * [annotations][AnnotationSpec] and even other [code values][CodeValue]
-         * or [code emitters][CodeEmitter].
+         * or [code emitters][JavaCodeEmitter].
          */
         @JvmStatic
+        @CodePartFactory
         public fun literal(value: Any?): CodeArgumentPart = CodeArgumentPart.Literal(value)
 
         /**
@@ -36,6 +45,7 @@ public sealed class CodePart {
          * [methods][MethodSpec], and [types][TypeSpec].
          */
         @JvmStatic
+        @CodePartFactory
         public fun name(name: String?): CodeArgumentPart = CodeArgumentPart.Name(name)
 
         /**
@@ -45,6 +55,7 @@ public sealed class CodePart {
          * [methods][MethodSpec], and [types][TypeSpec].
          */
         @JvmStatic
+        @CodePartFactory
         public fun name(nameValue: Any): CodeArgumentPart = CodeArgumentPart.Name(nameValue)
 
         /**
@@ -52,6 +63,7 @@ public sealed class CodePart {
          *  that. For example, `6" sandwich` is emitted `"6\" sandwich"`.
          */
         @JvmStatic
+        @CodePartFactory
         public fun string(value: String?): CodeArgumentPart = CodeArgumentPart.Str(value)
 
         /**
@@ -60,7 +72,11 @@ public sealed class CodePart {
          * and `Element` elements.
          */
         @JvmStatic
+        @CodePartFactory
         public fun type(type: TypeName): CodeArgumentPart = CodeArgumentPart.Type(type)
+        // TODO type(Class)
+        // TODO type(TypeMirror)
+        // TODO type(Element)
 
         // TODO type(Any)
 
@@ -69,6 +85,7 @@ public sealed class CodePart {
          */
         @JvmStatic
         @JvmOverloads
+        @CodePartFactory
         public fun indent(levels: Int = 1): CodeArgumentPart = CodeArgumentPart.Indent(levels)
 
         /**
@@ -76,6 +93,7 @@ public sealed class CodePart {
          */
         @JvmStatic
         @JvmOverloads
+        @CodePartFactory
         public fun unindent(levels: Int = 1): CodeArgumentPart = CodeArgumentPart.Unindent(levels)
 
 
@@ -85,12 +103,14 @@ public sealed class CodePart {
          * is double-indented.
          */
         @JvmStatic
+        @CodePartFactory
         public fun statementBegin(): CodeArgumentPart = CodeArgumentPart.StatementBegin
 
         /**
          * Ends a statement.
          */
         @JvmStatic
+        @CodePartFactory
         public fun statementEnd(): CodeArgumentPart = CodeArgumentPart.StatementEnd
 
         /**
@@ -98,18 +118,21 @@ public sealed class CodePart {
          * to wrap lines before 100 columns.
          */
         @JvmStatic
+        @CodePartFactory
         public fun wrappingSpace(): CodeArgumentPart = CodeArgumentPart.WrappingSpace
 
         /**
          * Acts as a zero-width space. This prefers to wrap lines before 100 columns.
          */
         @JvmStatic
+        @CodePartFactory
         public fun zeroWidthSpace(): CodeArgumentPart = CodeArgumentPart.ZeroWidthSpace
 
         /**
          * Other [CodeValue].
          */
         @JvmStatic
+        @CodePartFactory
         public fun otherCodeValue(value: CodeValue): CodeArgumentPart =
             CodeArgumentPart.OtherCodeValue(value)
     }
@@ -129,7 +152,7 @@ public sealed class CodeArgumentPart : CodePart() {
      * Arguments for literals may be
      * strings, primitives, [type declarations][TypeSpec],
      * [annotations][AnnotationSpec] and even other [code values][CodeValue]
-     * or [code emitters][CodeEmitter].
+     * or [code emitters][JavaCodeEmitter].
      */
     internal data class Literal(val value: Any?) : CodeArgumentPart()
 

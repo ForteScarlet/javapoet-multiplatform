@@ -47,7 +47,7 @@ public interface ArrayTypeName : TypeName {
         emit(codeWriter, false)
     }
 
-    @InternalApi
+    @InternalJavaCodePoetApi
     public fun emit(codeWriter: CodeWriter, varargs: Boolean)
 }
 

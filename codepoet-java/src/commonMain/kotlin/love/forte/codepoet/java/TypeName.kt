@@ -27,7 +27,7 @@ import kotlin.jvm.JvmName
 /**
  * A type name.
  */
-public sealed interface TypeName : CodeEmitter {
+public sealed interface TypeName : JavaCodeEmitter {
     public val annotations: List<AnnotationSpec>
 
     public fun annotated(annotations: List<AnnotationSpec>): TypeName

@@ -38,7 +38,7 @@ import kotlin.jvm.JvmName
  *
  * @author ForteScarlet
  */
-public sealed interface TypeSpec : CodeEmitter {
+public sealed interface TypeSpec : JavaCodeEmitter {
     public val name: String?
     public val kind: Kind
     public val javadoc: CodeValue

@@ -1,6 +1,6 @@
 package love.forte.codepoet.java.internal
 
-import love.forte.codepoet.java.InternalApi
+import love.forte.codepoet.java.InternalJavaCodePoetApi
 import love.forte.codepoet.java.ParameterizedTypeName
 import love.forte.codepoet.java.TypeVariableName
 import love.forte.codepoet.java.toClassName
@@ -8,7 +8,7 @@ import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-@InternalApi
+@InternalJavaCodePoetApi
 public fun ParameterizedType.toParameterizedTypeName(map: MutableMap<Type, TypeVariableName>): ParameterizedTypeName {
     val type = this
 

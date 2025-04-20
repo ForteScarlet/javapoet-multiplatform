@@ -12,7 +12,7 @@ private val LONG_CLASS = Long::class.javaPrimitiveType!!
 private val CHAR_CLASS = Char::class.javaPrimitiveType!!
 private val FLOAT_CLASS = Float::class.javaPrimitiveType!!
 
-@InternalApi
+@InternalJavaCodePoetApi
 public fun Type.toTypeName(map: MutableMap<Type, TypeVariableName>): TypeName {
     return when (val type = this) {
         is Class<*> -> {

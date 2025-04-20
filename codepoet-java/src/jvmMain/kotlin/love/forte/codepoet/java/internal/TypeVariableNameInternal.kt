@@ -1,12 +1,12 @@
 package love.forte.codepoet.java.internal
 
-import love.forte.codepoet.java.InternalApi
+import love.forte.codepoet.java.InternalJavaCodePoetApi
 import love.forte.codepoet.java.TypeName
 import love.forte.codepoet.java.TypeVariableName
 import java.lang.reflect.Type
 import java.lang.reflect.TypeVariable
 
-@InternalApi
+@InternalJavaCodePoetApi
 public fun TypeVariable<*>.toTypeVariableName(map: MutableMap<Type, TypeVariableName>): TypeVariableName {
     val type = this
     return map[type] ?: run {

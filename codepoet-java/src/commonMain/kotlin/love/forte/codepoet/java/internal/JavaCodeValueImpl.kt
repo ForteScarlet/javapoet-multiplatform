@@ -3,7 +3,7 @@ package love.forte.codepoet.java.internal
 import love.forte.codepoet.java.*
 
 
-internal data class CodeValueImpl(override val parts: List<CodePart>) : CodeValue {
+internal data class JavaCodeValueImpl(override val parts: List<CodePart>) : CodeValue {
     override fun emit(codeWriter: CodeWriter, ensureTrailingNewline: Boolean) {
         var deferredTypeName: ClassName? = null
         val iterator = parts.listIterator()
