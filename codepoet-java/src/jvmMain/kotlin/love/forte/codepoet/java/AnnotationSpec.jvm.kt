@@ -7,27 +7,14 @@ import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.util.SimpleAnnotationValueVisitor8
 
-/*
-  public static AnnotationSpec get(AnnotationMirror annotation) {
-    TypeElement element = (TypeElement) annotation.getAnnotationType().asElement();
-    AnnotationSpec.Builder builder = AnnotationSpec.builder(ClassName.get(element));
-    Visitor visitor = new Visitor(builder);
-    for (ExecutableElement executableElement : annotation.getElementValues().keySet()) {
-      String name = executableElement.getSimpleName().toString();
-      AnnotationValue value = annotation.getElementValues().get(executableElement);
-      value.accept(visitor, name);
-    }
-    return builder.build();
-  }
- */
-
 public fun AnnotationMirror.toAnnotationSpec(): AnnotationSpec {
     val element = annotationType.asElement() as TypeElement
-
-
-
     return AnnotationSpec(element.toClassName()) {
-        TODO()
+        val visitor = AnnotationMirrorVisitor(this)
+        for (executableElement in this@toAnnotationSpec.elementValues.keys) {
+            val name = executableElement.simpleName.toString()
+            this@toAnnotationSpec.elementValues[executableElement]?.accept(visitor, name)
+        }
     }
 }
 
@@ -46,8 +33,6 @@ private class AnnotationMirrorVisitor(
 
     override fun visitEnumConstant(c: VariableElement, name: String): AnnotationSpec.Builder {
         return builder.addMember(name, "%V.%V") {
-            // TODO
-            //  type(c.asType()) // TypeMirror
             type(c.asType().toTypeName())
             literal(c.simpleName)
         }
@@ -66,6 +51,7 @@ internal fun AnnotationSpec.Builder.addMemberForValue(memberName: String, value:
                 type(value.toClassName())
             }
         }
+
         is Enum<*> -> {
             addMember(memberName, "%V.%V") {
                 // TODO type(Class)
@@ -73,21 +59,25 @@ internal fun AnnotationSpec.Builder.addMemberForValue(memberName: String, value:
                 literal(value.name)
             }
         }
+
         is String -> {
             addMember(memberName, "%V") {
                 string(value)
             }
         }
+
         is Float -> {
             addMember(memberName, "%Vf") {
                 literal(value)
             }
         }
+
         is Long -> {
             addMember(memberName, "%VL") {
                 literal(value)
             }
         }
+
         is Char -> {
             addMember(memberName, "'%L'") {
                 literal((value.characterLiteralWithoutSingleQuotes()))

@@ -19,21 +19,69 @@
 
 package love.forte.codepoet.java
 
-import love.forte.codepoet.java.internal.toTypeName
+import java.lang.reflect.GenericArrayType
+import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.TypeParameterElement
-import javax.lang.model.type.ArrayType
-import javax.lang.model.type.DeclaredType
-import javax.lang.model.type.ErrorType
-import javax.lang.model.type.PrimitiveType
-import javax.lang.model.type.TypeKind
-import javax.lang.model.type.TypeMirror
-import javax.lang.model.type.TypeVariable
-import javax.lang.model.type.WildcardType
+import javax.lang.model.type.*
 import javax.lang.model.util.SimpleTypeVisitor8
 
 public fun Type.toTypeName(): TypeName = toTypeName(linkedMapOf())
+
+
+private val VOID_CLASS = Void::class.javaPrimitiveType!!
+private val BOOLEAN_CLASS = Boolean::class.javaPrimitiveType!!
+private val BYTE_CLASS = Byte::class.javaPrimitiveType!!
+private val SHORT_CLASS = Short::class.javaPrimitiveType!!
+private val INT_CLASS = Int::class.javaPrimitiveType!!
+private val LONG_CLASS = Long::class.javaPrimitiveType!!
+private val CHAR_CLASS = Char::class.javaPrimitiveType!!
+private val FLOAT_CLASS = Float::class.javaPrimitiveType!!
+
+internal fun Type.toTypeName(map: MutableMap<Type, TypeVariableName>): TypeName {
+    return when (val type = this) {
+        is Class<*> -> {
+            when (type) {
+                VOID_CLASS -> return TypeName.Builtins.VOID
+                BOOLEAN_CLASS -> return TypeName.Builtins.BOOLEAN
+                BYTE_CLASS -> return TypeName.Builtins.BYTE
+                SHORT_CLASS -> return TypeName.Builtins.SHORT
+                INT_CLASS -> return TypeName.Builtins.INT
+                LONG_CLASS -> return TypeName.Builtins.LONG
+                CHAR_CLASS -> return TypeName.Builtins.CHAR
+                FLOAT_CLASS -> return TypeName.Builtins.FLOAT
+            }
+
+            if (type.isArray) {
+                ArrayTypeName(type.componentType.toTypeName(map))
+            } else {
+                type.toClassName()
+            }
+        }
+
+        is ParameterizedType -> type.toParameterizedTypeName(map)
+
+        is java.lang.reflect.WildcardType -> {
+            val lowerBounds = type.lowerBounds
+
+            if (lowerBounds.isNotEmpty()) {
+                SupertypeWildcardTypeName(lowerBounds.map { it.toTypeName() })
+            } else {
+                SubtypeWildcardTypeName(
+                    type.upperBounds.map { it.toTypeName() }.ifEmpty { listOf(ClassName.Builtins.OBJECT) }
+                )
+            }
+        }
+
+        is java.lang.reflect.TypeVariable<*> -> type.toTypeVariableName(map)
+
+        is GenericArrayType -> type.toArrayTypeName(map)
+
+        else -> throw IllegalArgumentException("Unexpected type $type")
+    }
+}
+
 
 // javax.model.element
 
@@ -60,7 +108,8 @@ internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElemen
             val rawType = (asElement as TypeElement).toClassName()
             val enclosingType = t.enclosingType
             val enclosing = if (enclosingType.kind != TypeKind.NONE
-                && !asElement.modifiers.contains(javax.lang.model.element.Modifier.STATIC)) {
+                && !asElement.modifiers.contains(javax.lang.model.element.Modifier.STATIC)
+            ) {
                 enclosingType.accept(this, null)
             } else {
                 null

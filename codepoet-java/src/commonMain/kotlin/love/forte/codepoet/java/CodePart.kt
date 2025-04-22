@@ -75,10 +75,9 @@ public sealed class CodePart {
         @CodePartFactory
         public fun type(type: TypeName): CodeArgumentPart = CodeArgumentPart.Type(type)
         // TODO type(Class)
-        // TODO type(TypeMirror)
-        // TODO type(Element)
-
-        // TODO type(Any)
+        //  type(TypeMirror)
+        //  type(Element)
+        //  type(Any)
 
         /**
          * Increases the indentation level.
@@ -192,14 +191,14 @@ public sealed class CodeArgumentPart : CodePart() {
      */
     internal data class Type(val type: TypeName) : CodeArgumentPart() {
         companion object {
-            internal fun argToType(o: Any?): TypeName {
-                if (o is TypeName) return o
-                // TODO
-                // if (o is TypeMirror) return com.squareup.javapoet.TypeName.get(o as TypeMirror)
-                // if (o is javax.lang.model.element.Element) return com.squareup.javapoet.TypeName.get((o as javax.lang.model.element.Element).asType())
-                // if (o is java.lang.reflect.Type) return com.squareup.javapoet.TypeName.get(o as java.lang.reflect.Type)
-                throw IllegalArgumentException("expected type but was $o")
-            }
+            // internal fun argToType(o: Any?): TypeName {
+            //     if (o is TypeName) return o
+            //     // TODO
+            //     // if (o is TypeMirror) return com.squareup.javapoet.TypeName.get(o as TypeMirror)
+            //     // if (o is javax.lang.model.element.Element) return com.squareup.javapoet.TypeName.get((o as javax.lang.model.element.Element).asType())
+            //     // if (o is java.lang.reflect.Type) return com.squareup.javapoet.TypeName.get(o as java.lang.reflect.Type)
+            //     throw IllegalArgumentException("expected type but was $o")
+            // }
         }
     }
 
