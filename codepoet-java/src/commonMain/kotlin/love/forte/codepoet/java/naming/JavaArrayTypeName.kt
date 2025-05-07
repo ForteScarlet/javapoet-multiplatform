@@ -22,7 +22,6 @@ package love.forte.codepoet.java.naming
 import love.forte.codepoet.java.InternalJavaCodePoetApi
 import love.forte.codepoet.java.JavaCodeWriter
 import love.forte.codepoet.java.naming.internal.JavaArrayTypeNameImpl
-import love.forte.codepoet.java.spec.JavaAnnotationSpec
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
@@ -34,14 +33,14 @@ import kotlin.jvm.JvmName
 public interface JavaArrayTypeName : JavaTypeName {
     public val componentType: JavaTypeName
 
-    override fun annotated(annotations: List<JavaAnnotationSpec>): JavaArrayTypeName
-
-    override fun annotated(vararg annotations: JavaAnnotationSpec): JavaArrayTypeName {
-        if (annotations.isEmpty()) return this
-        return annotated(annotations.asList())
-    }
-
-    override fun withoutAnnotations(): JavaArrayTypeName
+    // override fun annotated(annotations: List<JavaAnnotationSpec>): JavaArrayTypeName
+    //
+    // override fun annotated(vararg annotations: JavaAnnotationSpec): JavaArrayTypeName {
+    //     if (annotations.isEmpty()) return this
+    //     return annotated(annotations.asList())
+    // }
+    //
+    // override fun withoutAnnotations(): JavaArrayTypeName
 
     override val isPrimitive: Boolean
         get() = false

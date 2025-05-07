@@ -19,7 +19,6 @@
 package love.forte.codepoet.java.naming
 
 import love.forte.codepoet.java.naming.internal.JavaTypeVariableNameImpl
-import love.forte.codepoet.java.spec.JavaAnnotationSpec
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
@@ -29,15 +28,15 @@ public interface JavaTypeVariableName : JavaTypeName {
     public val name: String
     public val bounds: List<JavaTypeName>
 
-    override fun annotated(annotations: List<JavaAnnotationSpec>): JavaTypeVariableName
-
-    override fun annotated(vararg annotations: JavaAnnotationSpec): JavaTypeVariableName {
-        if (annotations.isEmpty()) return this
-
-        return annotated(annotations.asList())
-    }
-
-    override fun withoutAnnotations(): JavaTypeVariableName
+    // override fun annotated(annotations: List<JavaAnnotationSpec>): JavaTypeVariableName
+    //
+    // override fun annotated(vararg annotations: JavaAnnotationSpec): JavaTypeVariableName {
+    //     if (annotations.isEmpty()) return this
+    //
+    //     return annotated(annotations.asList())
+    // }
+    //
+    // override fun withoutAnnotations(): JavaTypeVariableName
 
     public fun withBounds(bounds: List<JavaTypeName>): JavaTypeVariableName
 

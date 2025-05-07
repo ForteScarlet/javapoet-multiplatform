@@ -6,7 +6,6 @@ import love.forte.codepoet.java.JavaCodeWriter
 import love.forte.codepoet.java.emitToString
 import love.forte.codepoet.java.naming.JavaClassName
 import love.forte.codepoet.java.naming.JavaTypeName
-import love.forte.codepoet.java.spec.JavaAnnotationSpec
 import love.forte.codepoet.java.spec.JavaTypeSpec
 import love.forte.codepoet.java.spec.nestedTypesSimpleNames
 
@@ -19,7 +18,7 @@ internal class JavaClassNameImpl(
     override val packageName: String?,
     override val enclosingClassName: JavaClassName?,
     override val simpleName: String,
-    override val annotations: List<JavaAnnotationSpec> = emptyList(),
+    // override val annotations: List<JavaAnnotationSpec> = emptyList(),
 ) : JavaClassName {
     override val topLevelClassName: JavaClassName
         get() = enclosingClassName?.topLevelClassName ?: this
@@ -32,14 +31,14 @@ internal class JavaClassNameImpl(
         return JavaClassNameImpl(packageName, this, name)
     }
 
-    override fun annotated(annotations: List<JavaAnnotationSpec>): JavaTypeName {
-        if (annotations.isEmpty()) return this
-        return JavaClassNameImpl(packageName, enclosingClassName, simpleName, this.annotations + annotations)
-    }
-
-    override fun withoutAnnotations(): JavaTypeName {
-        return JavaClassNameImpl(packageName, enclosingClassName, simpleName)
-    }
+    // override fun annotated(annotations: List<JavaAnnotationSpec>): JavaTypeName {
+    //     if (annotations.isEmpty()) return this
+    //     return JavaClassNameImpl(packageName, enclosingClassName, simpleName, this.annotations + annotations)
+    // }
+    //
+    // override fun withoutAnnotations(): JavaTypeName {
+    //     return JavaClassNameImpl(packageName, enclosingClassName, simpleName)
+    // }
 
     override fun unbox(): JavaTypeName {
         if (packageName == JavaClassName.Builtins.JAVA_LANG_PACKAGE && enclosingClassName == null) {
@@ -54,7 +53,7 @@ internal class JavaClassNameImpl(
                 JavaClassName.Builtins.BOXED_FLOAT_SIMPLE_NAME -> JavaTypeName.Builtins.FLOAT
                 JavaClassName.Builtins.BOXED_DOUBLE_SIMPLE_NAME -> JavaTypeName.Builtins.DOUBLE
                 else -> throw IllegalStateException("Can't unbox $this")
-            }.annotated(annotations)
+            } // .annotated(annotations)
         }
 
         throw IllegalStateException("Can't unbox $this")
@@ -80,7 +79,7 @@ internal class JavaClassNameImpl(
                 // We've already emitted an enclosing class. Emit as we go.
                 codeWriter.emit(".")
                 simpleName = className.simpleName
-            } else if (className.isAnnotated || className === this) {
+            } else if (/*className.isAnnotated || */className === this) {
                 // We encountered the first enclosing class that must be emitted.
                 val qualifiedName: String = codeWriter.lookupName(className)
                 val dot = qualifiedName.lastIndexOf('.')
@@ -96,10 +95,10 @@ internal class JavaClassNameImpl(
                 continue
             }
 
-            if (className.isAnnotated) {
-                if (charsEmitted) codeWriter.emit(" ")
-                className.emitAnnotations(codeWriter)
-            }
+            // if (className.isAnnotated) {
+            //     if (charsEmitted) codeWriter.emit(" ")
+            //     className.emitAnnotations(codeWriter)
+            // }
 
             codeWriter.emit(simpleName)
             charsEmitted = true
@@ -113,7 +112,6 @@ internal class JavaClassNameImpl(
         if (packageName != other.packageName) return false
         if (enclosingClassName != other.enclosingClassName) return false
         if (simpleName != other.simpleName) return false
-        if (annotations != other.annotations) return false
 
         return true
     }
@@ -122,7 +120,6 @@ internal class JavaClassNameImpl(
         var result = packageName?.hashCode() ?: 0
         result = 31 * result + (enclosingClassName?.hashCode() ?: 0)
         result = 31 * result + simpleName.hashCode()
-        result = 31 * result + annotations.hashCode()
         return result
     }
 

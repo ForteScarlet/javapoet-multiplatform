@@ -20,7 +20,6 @@
 package love.forte.codepoet.java.naming
 
 import love.forte.codepoet.java.naming.internal.JavaParameterizedTypeNameImpl
-import love.forte.codepoet.java.spec.JavaAnnotationSpec
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
@@ -51,14 +50,14 @@ public interface JavaParameterizedTypeName : JavaTypeName {
     public fun nestedClass(name: String, vararg typeArguments: JavaTypeName): JavaParameterizedTypeName =
         nestedClass(name, typeArguments.asList())
 
-    override fun annotated(annotations: List<JavaAnnotationSpec>): JavaParameterizedTypeName
-
-    override fun annotated(vararg annotations: JavaAnnotationSpec): JavaParameterizedTypeName {
-        if (annotations.isEmpty()) return this
-        return annotated(annotations.asList())
-    }
-
-    override fun withoutAnnotations(): JavaParameterizedTypeName
+    // override fun annotated(annotations: List<JavaAnnotationSpec>): JavaParameterizedTypeName
+    //
+    // override fun annotated(vararg annotations: JavaAnnotationSpec): JavaParameterizedTypeName {
+    //     if (annotations.isEmpty()) return this
+    //     return annotated(annotations.asList())
+    // }
+    //
+    // override fun withoutAnnotations(): JavaParameterizedTypeName
 
     override val isPrimitive: Boolean
         get() = false

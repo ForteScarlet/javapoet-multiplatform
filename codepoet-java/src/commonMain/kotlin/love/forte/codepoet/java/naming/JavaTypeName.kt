@@ -22,7 +22,6 @@ package love.forte.codepoet.java.naming
 import love.forte.codepoet.common.naming.TypeName
 import love.forte.codepoet.java.JavaCodeEmitter
 import love.forte.codepoet.java.naming.internal.PrimitiveTypeNameImpl
-import love.forte.codepoet.java.spec.JavaAnnotationSpec
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -31,19 +30,19 @@ import kotlin.jvm.JvmName
  * A type name represented in Java。
  */
 public sealed interface JavaTypeName : TypeName, JavaCodeEmitter {
-    public val annotations: List<JavaAnnotationSpec>
-
-    public fun annotated(annotations: List<JavaAnnotationSpec>): JavaTypeName
-
-    public fun annotated(vararg annotations: JavaAnnotationSpec): JavaTypeName {
-        if (annotations.isEmpty()) return this
-        return annotated(annotations.asList())
-    }
-
-    public fun withoutAnnotations(): JavaTypeName
-
-    public val isAnnotated: Boolean
-        get() = annotations.isNotEmpty()
+    // public val annotations: List<JavaAnnotationSpec>
+    //
+    // public fun annotated(annotations: List<JavaAnnotationSpec>): JavaTypeName
+    //
+    // public fun annotated(vararg annotations: JavaAnnotationSpec): JavaTypeName {
+    //     if (annotations.isEmpty()) return this
+    //     return annotated(annotations.asList())
+    // }
+    //
+    // public fun withoutAnnotations(): JavaTypeName
+    //
+    // public val isAnnotated: Boolean
+    //     get() = annotations.isNotEmpty()
 
     /**
      * Returns true if this is a primitive type like `int`.

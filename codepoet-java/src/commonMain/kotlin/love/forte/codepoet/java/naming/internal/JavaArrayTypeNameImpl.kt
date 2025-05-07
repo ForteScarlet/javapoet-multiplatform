@@ -4,7 +4,6 @@ import love.forte.codepoet.java.JavaCodeWriter
 import love.forte.codepoet.java.emitToString
 import love.forte.codepoet.java.naming.JavaArrayTypeName
 import love.forte.codepoet.java.naming.JavaTypeName
-import love.forte.codepoet.java.spec.JavaAnnotationSpec
 
 
 /**
@@ -13,17 +12,17 @@ import love.forte.codepoet.java.spec.JavaAnnotationSpec
  */
 internal class JavaArrayTypeNameImpl(
     override val componentType: JavaTypeName,
-    override val annotations: List<JavaAnnotationSpec> = emptyList(),
+    // override val annotations: List<JavaAnnotationSpec> = emptyList(),
 ) : JavaArrayTypeName {
-    override fun annotated(annotations: List<JavaAnnotationSpec>): JavaArrayTypeName {
-        if (annotations.isEmpty()) return this
-
-        return JavaArrayTypeNameImpl(componentType, this.annotations + annotations)
-    }
-
-    override fun withoutAnnotations(): JavaArrayTypeName {
-        return if (annotations.isEmpty()) this else JavaArrayTypeNameImpl(componentType)
-    }
+    // override fun annotated(annotations: List<JavaAnnotationSpec>): JavaArrayTypeName {
+    //     if (annotations.isEmpty()) return this
+    //
+    //     return JavaArrayTypeNameImpl(componentType, this.annotations + annotations)
+    // }
+    //
+    // override fun withoutAnnotations(): JavaArrayTypeName {
+    //     return if (annotations.isEmpty()) this else JavaArrayTypeNameImpl(componentType)
+    // }
 
     override fun emit(codeWriter: JavaCodeWriter, varargs: Boolean) {
         emitLeafType(codeWriter)
@@ -35,14 +34,12 @@ internal class JavaArrayTypeNameImpl(
         if (other !is JavaArrayTypeName) return false
 
         if (componentType != other.componentType) return false
-        if (annotations != other.annotations) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = componentType.hashCode()
-        result = 31 * result + annotations.hashCode()
+        val result = componentType.hashCode()
         return result
     }
 
@@ -60,10 +57,10 @@ private fun JavaArrayTypeName.emitLeafType(out: JavaCodeWriter) {
 }
 
 private fun JavaArrayTypeName.emitBrackets(out: JavaCodeWriter, varargs: Boolean) {
-    if (isAnnotated) {
-        out.emit(" ")
-        emitAnnotations(out)
-    }
+    // if (isAnnotated) {
+    //     out.emit(" ")
+    //     emitAnnotations(out)
+    // }
 
     val asArray = componentType as? JavaArrayTypeName
 

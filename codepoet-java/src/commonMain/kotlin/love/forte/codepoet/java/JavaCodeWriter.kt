@@ -146,7 +146,8 @@ public class JavaCodeWriter private constructor(
         var firstTypeVariable = true
         for (typeVariable in typeVariables) {
             if (!firstTypeVariable) emit(", ")
-            emitAnnotations(typeVariable.annotations, true)
+            // TODO typeVariableRef
+            // emitAnnotations(typeVariable.annotations, true)
             emit("%V") { literal(typeVariable.name) }
             var firstBound = true
             for (bound in typeVariable.bounds) {

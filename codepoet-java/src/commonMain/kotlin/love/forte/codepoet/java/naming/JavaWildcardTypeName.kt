@@ -20,7 +20,6 @@ package love.forte.codepoet.java.naming
 
 import love.forte.codepoet.java.naming.internal.JavaSubtypeWildcardTypeNameImpl
 import love.forte.codepoet.java.naming.internal.JavaSupertypeWildcardTypeNameImpl
-import love.forte.codepoet.java.spec.JavaAnnotationSpec
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
@@ -29,14 +28,14 @@ public sealed interface JavaWildcardTypeName : JavaTypeName {
     public val upperBounds: List<JavaTypeName> // ? extends T1 & T2
     public val lowerBounds: List<JavaTypeName> // ? super T1 & T2
 
-    override fun withoutAnnotations(): JavaWildcardTypeName
-
-    override fun annotated(annotations: List<JavaAnnotationSpec>): JavaWildcardTypeName
-
-    override fun annotated(vararg annotations: JavaAnnotationSpec): JavaWildcardTypeName {
-        if (annotations.isEmpty()) return this
-        return annotated(annotations.asList())
-    }
+    // override fun withoutAnnotations(): JavaWildcardTypeName
+    //
+    // override fun annotated(annotations: List<JavaAnnotationSpec>): JavaWildcardTypeName
+    //
+    // override fun annotated(vararg annotations: JavaAnnotationSpec): JavaWildcardTypeName {
+    //     if (annotations.isEmpty()) return this
+    //     return annotated(annotations.asList())
+    // }
 
     override val isPrimitive: Boolean
         get() = false
