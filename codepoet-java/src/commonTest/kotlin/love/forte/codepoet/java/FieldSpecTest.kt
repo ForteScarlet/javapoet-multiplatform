@@ -15,6 +15,8 @@
  */
 package love.forte.codepoet.java
 
+import love.forte.codepoet.java.naming.JavaTypeName
+import love.forte.codepoet.java.spec.FieldSpec
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -22,23 +24,23 @@ import kotlin.test.assertEquals
 class FieldSpecTest {
     @Test
     fun equalsAndHashCode() {
-        var a = FieldSpec(TypeName.Builtins.INT, "foo")
-        var b = FieldSpec(TypeName.Builtins.INT, "foo")
+        var a = FieldSpec(JavaTypeName.Builtins.INT, "foo")
+        var b = FieldSpec(JavaTypeName.Builtins.INT, "foo")
         assertEquals(a, b)
         assertEquals(a.hashCode(), b.hashCode())
         assertEquals(a.toString(), b.toString())
         a = FieldSpec(
-            TypeName.Builtins.INT,
+            JavaTypeName.Builtins.INT,
             "FOO",
         ) {
-            addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            addModifiers(JavaModifier.PUBLIC, JavaModifier.STATIC)
         }
 
         b = FieldSpec(
-            TypeName.Builtins.INT,
+            JavaTypeName.Builtins.INT,
             "FOO",
         ) {
-            addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            addModifiers(JavaModifier.PUBLIC, JavaModifier.STATIC)
         }
 
         assertEquals(a, b)

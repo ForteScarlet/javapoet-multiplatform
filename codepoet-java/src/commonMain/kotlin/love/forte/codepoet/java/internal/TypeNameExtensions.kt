@@ -1,9 +1,17 @@
 package love.forte.codepoet.java.internal
 
-import love.forte.codepoet.java.*
+import love.forte.codepoet.common.code.isEmpty
+import love.forte.codepoet.java.JavaCodeWriter
+import love.forte.codepoet.java.JavaModifier
+import love.forte.codepoet.java.emit
+import love.forte.codepoet.java.naming.JavaClassName
+import love.forte.codepoet.java.naming.JavaTypeName
+import love.forte.codepoet.java.spec.JavaTypeSpec
+import love.forte.codepoet.java.spec.internal.JavaSimpleTypeSpecImpl
+import love.forte.codepoet.java.type
 
-internal inline fun TypeSpec.doEmit(
-    codeWriter: CodeWriter,
+internal inline fun JavaTypeSpec.doEmit(
+    codeWriter: JavaCodeWriter,
     block: () -> Unit
 ) {
     // Nested classes interrupt wrapped line indentation. Stash the current wrapping state and put
@@ -18,22 +26,22 @@ internal inline fun TypeSpec.doEmit(
     }
 }
 
-private fun CodeWriter.newLineIfNot(condition: Boolean) {
+private fun JavaCodeWriter.newLineIfNot(condition: Boolean) {
     if (!condition) {
         emit("\n")
     }
 }
 
-internal fun TypeSpec.emitSupers(codeWriter: CodeWriter) {
-    val extendsTypes: List<TypeName>
-    val implementsTypes: List<TypeName>
+internal fun JavaTypeSpec.emitSupers(codeWriter: JavaCodeWriter) {
+    val extendsTypes: List<JavaTypeName>
+    val implementsTypes: List<JavaTypeName>
 
-    if (kind == TypeSpec.Kind.INTERFACE) {
+    if (kind == JavaTypeSpec.Kind.INTERFACE) {
         extendsTypes = superinterfaces
         implementsTypes = emptyList()
     } else {
         extendsTypes = superclass?.let {
-            if (it != ClassName.Builtins.OBJECT) {
+            if (it != JavaClassName.Builtins.OBJECT) {
                 listOf(it)
             } else null
         } ?: emptyList()
@@ -45,7 +53,7 @@ internal fun TypeSpec.emitSupers(codeWriter: CodeWriter) {
     codeWriter.emitImplements(implementsTypes)
 }
 
-internal fun CodeWriter.emitExtends(extendsTypes: List<TypeName>) {
+internal fun JavaCodeWriter.emitExtends(extendsTypes: List<JavaTypeName>) {
     if (extendsTypes.isNotEmpty()) {
         emit(" extends")
         var firstType = true
@@ -59,7 +67,7 @@ internal fun CodeWriter.emitExtends(extendsTypes: List<TypeName>) {
     }
 }
 
-internal fun CodeWriter.emitImplements(implementsTypes: List<TypeName>) {
+internal fun JavaCodeWriter.emitImplements(implementsTypes: List<JavaTypeName>) {
     if (implementsTypes.isNotEmpty()) {
         emit(" implements")
         var firstType = true
@@ -73,8 +81,8 @@ internal fun CodeWriter.emitImplements(implementsTypes: List<TypeName>) {
     }
 }
 
-internal inline fun TypeSpec.emitMembers(
-    codeWriter: CodeWriter,
+internal inline fun JavaTypeSpec.emitMembers(
+    codeWriter: JavaCodeWriter,
     isRecord: Boolean = false,
     block: (firstMember: Boolean, notFirst: () -> Unit) -> Unit = { _, _ -> }
 ) {
@@ -86,7 +94,7 @@ internal inline fun TypeSpec.emitMembers(
 
     // Static fields
     for (field in fields) {
-        if (!field.hasModifier(Modifier.STATIC)) continue
+        if (!field.hasModifier(JavaModifier.STATIC)) continue
         codeWriter.newLineIfNot(firstMember)
         field.emit(codeWriter, kind.implicitFieldModifiers)
         firstMember = false
@@ -101,7 +109,7 @@ internal inline fun TypeSpec.emitMembers(
 
     // Non-static fields
     for (field in fields) {
-        if (field.hasModifier(Modifier.STATIC)) continue
+        if (field.hasModifier(JavaModifier.STATIC)) continue
         codeWriter.newLineIfNot(firstMember)
         field.emit(codeWriter, kind.implicitFieldModifiers)
         firstMember = false
@@ -148,8 +156,8 @@ internal inline fun TypeSpec.emitMembers(
 }
 
 
-internal fun TypeSpec.toVirtualTypeSpec(name: String) =
-    SimpleTypeSpecImpl(
+internal fun JavaTypeSpec.toVirtualTypeSpec(name: String) =
+    JavaSimpleTypeSpecImpl(
         name = name,
         kind = kind,
         javadoc = javadoc,

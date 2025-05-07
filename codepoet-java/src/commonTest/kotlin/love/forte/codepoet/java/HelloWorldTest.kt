@@ -1,5 +1,9 @@
 package love.forte.codepoet.java
 
+import love.forte.codepoet.java.naming.JavaArrayTypeName
+import love.forte.codepoet.java.naming.JavaClassName
+import love.forte.codepoet.java.naming.JavaTypeName
+import love.forte.codepoet.java.spec.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -8,18 +12,18 @@ class HelloWorldTest {
 
     @Test
     fun simpleHelloWorldClass() {
-        val method = MethodSpec("main") {
-            addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-            returns(TypeName.Builtins.VOID)
-            addParameter(ParameterSpec(ArrayTypeName(ClassName.Builtins.STRING), "args"))
+        val method = JavaMethodSpec("main") {
+            addModifiers(JavaModifier.PUBLIC, JavaModifier.STATIC)
+            returns(JavaTypeName.Builtins.VOID)
+            addParameter(JavaParameterSpec(JavaArrayTypeName(JavaClassName.Builtins.STRING), "args"))
             addStatement("%V.out.println(%V)") {
-                type(ClassName("java.lang", "System"))
+                type(JavaClassName("java.lang", "System"))
                 string("Hello, World!")
             }
         }
 
-        val type = SimpleTypeSpec(TypeSpec.Kind.CLASS, "HelloWorld") {
-            addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+        val type = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "HelloWorld") {
+            addModifiers(JavaModifier.PUBLIC, JavaModifier.FINAL)
             addMethod(method)
         }
 

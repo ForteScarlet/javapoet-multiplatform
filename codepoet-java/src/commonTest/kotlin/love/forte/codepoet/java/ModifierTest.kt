@@ -17,20 +17,20 @@ class ModifierTest {
         ModifierSet().also { set ->
             assertEquals(0, set.size)
 
-            set.addAll(Modifier.PUBLIC, Modifier.ABSTRACT, Modifier.NATIVE)
+            set.addAll(JavaModifier.PUBLIC, JavaModifier.ABSTRACT, JavaModifier.NATIVE)
 
             assertEquals(3, set.size)
 
             val iterator = set.iterator()
 
             assertTrue(iterator.hasNext())
-            assertEquals(Modifier.PUBLIC, iterator.next())
+            assertEquals(JavaModifier.PUBLIC, iterator.next())
 
             assertTrue(iterator.hasNext())
-            assertEquals(Modifier.ABSTRACT, iterator.next())
+            assertEquals(JavaModifier.ABSTRACT, iterator.next())
 
             assertTrue(iterator.hasNext())
-            assertEquals(Modifier.NATIVE, iterator.next())
+            assertEquals(JavaModifier.NATIVE, iterator.next())
 
             assertFalse(iterator.hasNext())
         }
@@ -38,7 +38,7 @@ class ModifierTest {
         ModifierSet().also { set ->
             assertEquals(0, set.size)
 
-            set.addAll(Modifier.NATIVE, Modifier.ABSTRACT, Modifier.PUBLIC)
+            set.addAll(JavaModifier.NATIVE, JavaModifier.ABSTRACT, JavaModifier.PUBLIC)
 
             assertEquals(3, set.size)
 
@@ -47,13 +47,13 @@ class ModifierTest {
             // 顺序是enum的顺序而不是添加顺序
 
             assertTrue(iterator.hasNext())
-            assertEquals(Modifier.PUBLIC, iterator.next())
+            assertEquals(JavaModifier.PUBLIC, iterator.next())
 
             assertTrue(iterator.hasNext())
-            assertEquals(Modifier.ABSTRACT, iterator.next())
+            assertEquals(JavaModifier.ABSTRACT, iterator.next())
 
             assertTrue(iterator.hasNext())
-            assertEquals(Modifier.NATIVE, iterator.next())
+            assertEquals(JavaModifier.NATIVE, iterator.next())
 
             assertFalse(iterator.hasNext())
         }
@@ -75,14 +75,14 @@ class ModifierTest {
         assertEquals(
             "[PUBLIC, ABSTRACT, NATIVE]",
             ModifierSet().apply {
-                addAll(Modifier.NATIVE, Modifier.ABSTRACT, Modifier.PUBLIC)
+                addAll(JavaModifier.NATIVE, JavaModifier.ABSTRACT, JavaModifier.PUBLIC)
             }.toString()
         )
 
         assertEquals(
             "[PUBLIC, ABSTRACT, NATIVE]",
             ModifierSet().apply {
-                addAll(Modifier.PUBLIC, Modifier.ABSTRACT, Modifier.NATIVE)
+                addAll(JavaModifier.PUBLIC, JavaModifier.ABSTRACT, JavaModifier.NATIVE)
             }.toString()
         )
     }

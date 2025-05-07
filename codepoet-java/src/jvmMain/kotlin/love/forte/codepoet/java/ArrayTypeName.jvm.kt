@@ -19,32 +19,34 @@
 
 package love.forte.codepoet.java
 
+import love.forte.codepoet.java.naming.JavaArrayTypeName
+import love.forte.codepoet.java.naming.JavaTypeVariableName
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.Type
 import javax.lang.model.element.TypeParameterElement
 import javax.lang.model.type.ArrayType
 
-public fun ArrayTypeName(componentType: Type): ArrayTypeName {
-    return ArrayTypeName(componentType.toTypeName())
+public fun ArrayTypeName(componentType: Type): JavaArrayTypeName {
+    return JavaArrayTypeName(componentType.toTypeName())
 }
 
 /**
- * Create an [ArrayTypeName] from [GenericArrayType].
+ * Create an [JavaArrayTypeName] from [GenericArrayType].
  */
-public fun GenericArrayType.toArrayTypeName(): ArrayTypeName {
+public fun GenericArrayType.toArrayTypeName(): JavaArrayTypeName {
     return toArrayTypeName(linkedMapOf())
 }
 
-internal fun GenericArrayType.toArrayTypeName(map: MutableMap<Type, TypeVariableName>): ArrayTypeName {
-    return ArrayTypeName(genericComponentType.toTypeName(map))
+internal fun GenericArrayType.toArrayTypeName(map: MutableMap<Type, JavaTypeVariableName>): JavaArrayTypeName {
+    return JavaArrayTypeName(genericComponentType.toTypeName(map))
 }
 
 // javax.lang.model
 
-public fun ArrayType.toArrayTypeName(): ArrayTypeName {
+public fun ArrayType.toArrayTypeName(): JavaArrayTypeName {
     return toArrayTypeName(mutableMapOf())
 }
 
-internal fun ArrayType.toArrayTypeName(map: MutableMap<TypeParameterElement, TypeVariableName>): ArrayTypeName {
-    return ArrayTypeName(componentType.toTypeName(map))
+internal fun ArrayType.toArrayTypeName(map: MutableMap<TypeParameterElement, JavaTypeVariableName>): JavaArrayTypeName {
+    return JavaArrayTypeName(componentType.toTypeName(map))
 }

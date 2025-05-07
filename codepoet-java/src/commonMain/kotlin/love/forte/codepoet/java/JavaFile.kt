@@ -19,8 +19,13 @@
 
 package love.forte.codepoet.java
 
+import love.forte.codepoet.common.BuilderDsl
+import love.forte.codepoet.common.code.CodeArgumentPart
+import love.forte.codepoet.common.naming.canonicalName
 import love.forte.codepoet.java.JavaFile.Builder
 import love.forte.codepoet.java.internal.JavaFileImpl
+import love.forte.codepoet.java.naming.JavaClassName
+import love.forte.codepoet.java.spec.JavaTypeSpec
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
@@ -32,12 +37,12 @@ import kotlin.jvm.JvmStatic
  */
 public interface JavaFile : JavaCodeEmitter {
 
-    public val fileComment: CodeValue
+    public val fileComment: JavaCodeValue
     public val packageName: String
 
     // TODO types?
 
-    public val type: TypeSpec
+    public val type: JavaTypeSpec
 
     /**
      * Call this to omit imports for classes in `java.lang`, such as `java.lang.String`.
@@ -58,18 +63,18 @@ public interface JavaFile : JavaCodeEmitter {
 
     public class Builder internal constructor(
         public val packageName: String,
-        public val type: TypeSpec,
+        public val type: JavaTypeSpec,
     ) : BuilderDsl {
-        private val fileComment = CodeValue.builder()
+        private val fileComment = JavaCodeValue.builder()
         private var skipJavaLangImports: Boolean = true
         private var indent: String = "    "
         private val staticImports = linkedSetOf<String>()
 
         public fun addFileComment(format: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
-            addFileComment(CodeValue(format, *argumentParts))
+            addFileComment(JavaCodeValue(format, *argumentParts))
         }
 
-        public fun addFileComment(codeValue: CodeValue): Builder = apply {
+        public fun addFileComment(codeValue: JavaCodeValue): Builder = apply {
             fileComment.add(codeValue)
         }
 
@@ -77,14 +82,14 @@ public interface JavaFile : JavaCodeEmitter {
             staticImports.add(import)
         }
 
-        public fun addStaticImport(className: ClassName, vararg names: String): Builder = apply {
+        public fun addStaticImport(className: JavaClassName, vararg names: String): Builder = apply {
             require(names.isNotEmpty()) { "`names` is empty" }
             for (name in names) {
                 staticImports.add(className.canonicalName + "." + name)
             }
         }
 
-        public fun addStaticImport(className: ClassName, names: Iterable<String>): Builder = apply {
+        public fun addStaticImport(className: JavaClassName, names: Iterable<String>): Builder = apply {
             val iter = names.iterator()
             require(!iter.hasNext()) { "`names` is empty" }
 
@@ -125,15 +130,15 @@ public interface JavaFile : JavaCodeEmitter {
     public companion object {
 
         @JvmStatic
-        public fun builder(packageName: String, type: TypeSpec): Builder =
+        public fun builder(packageName: String, type: JavaTypeSpec): Builder =
             Builder(packageName, type)
 
     }
 }
 
 public inline fun Builder.addFileComment(format: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder = apply {
-    addFileComment(CodeValue(format, block))
+    addFileComment(JavaCodeValue(format, block))
 }
 
-public inline fun JavaFile(packageName: String, type: TypeSpec, block: Builder.() -> Unit = {}): JavaFile =
+public inline fun JavaFile(packageName: String, type: JavaTypeSpec, block: Builder.() -> Unit = {}): JavaFile =
     JavaFile.builder(packageName, type).also(block).build()

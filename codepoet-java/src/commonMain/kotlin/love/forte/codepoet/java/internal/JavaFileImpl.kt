@@ -1,6 +1,9 @@
 package love.forte.codepoet.java.internal
 
+import love.forte.codepoet.common.code.isEmpty
 import love.forte.codepoet.java.*
+import love.forte.codepoet.java.naming.JavaClassName
+import love.forte.codepoet.java.spec.JavaTypeSpec
 
 private object NullAppendable : Appendable {
     override fun append(value: Char): Appendable = this
@@ -9,9 +12,9 @@ private object NullAppendable : Appendable {
 }
 
 internal class JavaFileImpl(
-    override val fileComment: CodeValue,
+    override val fileComment: JavaCodeValue,
     override val packageName: String,
-    override val type: TypeSpec,
+    override val type: JavaTypeSpec,
     override val skipJavaLangImports: Boolean,
     override val staticImports: Set<String>,
     override val alwaysQualify: Set<String>,
@@ -19,16 +22,16 @@ internal class JavaFileImpl(
 ) : JavaFile {
     override fun writeTo(out: Appendable) {
         // First pass: emit the entire class, just to collect the types we'll need to import.
-        val importsCollector = CodeWriter.create(
+        val importsCollector = JavaCodeWriter.create(
             NullAppendable,
             indent,
             staticImports,
             alwaysQualify
         )
         emit(importsCollector)
-        val suggestedImports: Map<String, ClassName> = importsCollector.suggestedImports()
+        val suggestedImports: Map<String, JavaClassName> = importsCollector.suggestedImports()
 
-        val codeWriter = CodeWriter.create(
+        val codeWriter = JavaCodeWriter.create(
             out,
             indent,
             suggestedImports,
@@ -40,7 +43,7 @@ internal class JavaFileImpl(
     }
 
 
-    override fun emit(codeWriter: CodeWriter) {
+    override fun emit(codeWriter: JavaCodeWriter) {
         codeWriter.inPackage(packageName) {
             if (!fileComment.isEmpty) {
                 codeWriter.emitComment(fileComment)

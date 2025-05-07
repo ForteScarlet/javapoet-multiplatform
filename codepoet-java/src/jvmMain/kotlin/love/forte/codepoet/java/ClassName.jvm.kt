@@ -19,6 +19,7 @@
 
 package love.forte.codepoet.java
 
+import love.forte.codepoet.java.naming.JavaClassName
 import javax.lang.model.element.Element
 import javax.lang.model.element.PackageElement
 import javax.lang.model.element.TypeElement
@@ -26,18 +27,18 @@ import javax.lang.model.util.SimpleElementVisitor8
 import kotlin.reflect.KClass
 
 /**
- * Create a [ClassName] from [KClass].
+ * Create a [love.forte.codepoet.java.naming.JavaClassName] from [KClass].
  *
  * @see Class.toClassName
  */
-public fun KClass<*>.toClassName(): ClassName {
+public fun KClass<*>.toClassName(): JavaClassName {
     return java.toClassName()
 }
 
 /**
- * Create a [ClassName] from [Class].
+ * Create a [JavaClassName] from [Class].
  */
-public fun Class<*>.toClassName(): ClassName {
+public fun Class<*>.toClassName(): JavaClassName {
     var java = this
     require(!java.isPrimitive) { "Primitive types cannot be represented as a ClassName" }
     require(Void.TYPE != java) { "'void' type cannot be represented as a ClassName" }
@@ -56,7 +57,7 @@ public fun Class<*>.toClassName(): ClassName {
         val lastDot: Int = java.getName().lastIndexOf('.')
         val packageName: String? = if (lastDot != -1) java.getName().substring(0, lastDot) else null
 
-        return ClassName(packageName, name)
+        return JavaClassName(packageName, name)
     }
 
     return java.enclosingClass.toClassName().nestedClass(name)
@@ -64,22 +65,22 @@ public fun Class<*>.toClassName(): ClassName {
 
 // javax.lang.model
 
-public fun TypeElement.toClassName(): ClassName {
+public fun TypeElement.toClassName(): JavaClassName {
     val simpleName = simpleName.toString()
-    val visitor = object : SimpleElementVisitor8<ClassName, Void?>() {
-        override fun visitPackage(packageElement: PackageElement, p: Void?): ClassName {
-            return ClassName(packageElement.qualifiedName.toString(), simpleName)
+    val visitor = object : SimpleElementVisitor8<JavaClassName, Void?>() {
+        override fun visitPackage(packageElement: PackageElement, p: Void?): JavaClassName {
+            return JavaClassName(packageElement.qualifiedName.toString(), simpleName)
         }
 
-        override fun visitType(typeElement: TypeElement, p: Void?): ClassName {
+        override fun visitType(typeElement: TypeElement, p: Void?): JavaClassName {
             return typeElement.toClassName().nestedClass(simpleName)
         }
 
-        override fun visitUnknown(unknown: Element?, p: Void?): ClassName? {
-            return ClassName("", simpleName)
+        override fun visitUnknown(unknown: Element?, p: Void?): JavaClassName? {
+            return JavaClassName("", simpleName)
         }
 
-        override fun defaultAction(element: Element?, p: Void?): ClassName? {
+        override fun defaultAction(element: Element?, p: Void?): JavaClassName? {
             throw IllegalArgumentException("Unexpected type nesting: $element")
         }
     }

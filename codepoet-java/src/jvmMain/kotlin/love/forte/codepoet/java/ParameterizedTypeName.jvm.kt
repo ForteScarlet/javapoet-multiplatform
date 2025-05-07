@@ -19,19 +19,21 @@
 
 package love.forte.codepoet.java
 
-import love.forte.codepoet.java.internal.ParameterizedTypeNameImpl
+import love.forte.codepoet.java.naming.JavaParameterizedTypeName
+import love.forte.codepoet.java.naming.JavaTypeVariableName
+import love.forte.codepoet.java.naming.internal.JavaParameterizedTypeNameImpl
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-public fun Class<*>.toParameterizedTypeName(vararg typeArguments: Type): ParameterizedTypeName {
-    return ParameterizedTypeNameImpl(null, this.toClassName(), typeArguments.map { it.toTypeName() })
+public fun Class<*>.toParameterizedTypeName(vararg typeArguments: Type): JavaParameterizedTypeName {
+    return JavaParameterizedTypeNameImpl(null, this.toClassName(), typeArguments.map { it.toTypeName() })
 }
 
-public fun ParameterizedType.toParameterizedTypeName(): ParameterizedTypeName =
+public fun ParameterizedType.toParameterizedTypeName(): JavaParameterizedTypeName =
     toParameterizedTypeName(linkedMapOf())
 
-internal fun ParameterizedType.toParameterizedTypeName(map: MutableMap<Type, TypeVariableName>): ParameterizedTypeName {
+internal fun ParameterizedType.toParameterizedTypeName(map: MutableMap<Type, JavaTypeVariableName>): JavaParameterizedTypeName {
     val type = this
 
     val rawType = (type.rawType as Class<*>).toClassName()
@@ -47,5 +49,5 @@ internal fun ParameterizedType.toParameterizedTypeName(map: MutableMap<Type, Typ
     val typeArguments = type.actualTypeArguments.map { it.toTypeName(map) }
 
     return ownerType?.toParameterizedTypeName(map)?.nestedClass(rawType.simpleName, typeArguments)
-        ?: ParameterizedTypeNameImpl(null, rawType, typeArguments)
+        ?: JavaParameterizedTypeNameImpl(null, rawType, typeArguments)
 }

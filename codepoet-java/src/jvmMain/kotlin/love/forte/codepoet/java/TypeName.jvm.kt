@@ -19,6 +19,7 @@
 
 package love.forte.codepoet.java
 
+import love.forte.codepoet.java.naming.*
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -27,7 +28,7 @@ import javax.lang.model.element.TypeParameterElement
 import javax.lang.model.type.*
 import javax.lang.model.util.SimpleTypeVisitor8
 
-public fun Type.toTypeName(): TypeName = toTypeName(linkedMapOf())
+public fun Type.toTypeName(): JavaTypeName = toTypeName(linkedMapOf())
 
 
 private val VOID_CLASS = Void::class.javaPrimitiveType!!
@@ -39,22 +40,22 @@ private val LONG_CLASS = Long::class.javaPrimitiveType!!
 private val CHAR_CLASS = Char::class.javaPrimitiveType!!
 private val FLOAT_CLASS = Float::class.javaPrimitiveType!!
 
-internal fun Type.toTypeName(map: MutableMap<Type, TypeVariableName>): TypeName {
+internal fun Type.toTypeName(map: MutableMap<Type, JavaTypeVariableName>): JavaTypeName {
     return when (val type = this) {
         is Class<*> -> {
             when (type) {
-                VOID_CLASS -> return TypeName.Builtins.VOID
-                BOOLEAN_CLASS -> return TypeName.Builtins.BOOLEAN
-                BYTE_CLASS -> return TypeName.Builtins.BYTE
-                SHORT_CLASS -> return TypeName.Builtins.SHORT
-                INT_CLASS -> return TypeName.Builtins.INT
-                LONG_CLASS -> return TypeName.Builtins.LONG
-                CHAR_CLASS -> return TypeName.Builtins.CHAR
-                FLOAT_CLASS -> return TypeName.Builtins.FLOAT
+                VOID_CLASS -> return JavaTypeName.Builtins.VOID
+                BOOLEAN_CLASS -> return JavaTypeName.Builtins.BOOLEAN
+                BYTE_CLASS -> return JavaTypeName.Builtins.BYTE
+                SHORT_CLASS -> return JavaTypeName.Builtins.SHORT
+                INT_CLASS -> return JavaTypeName.Builtins.INT
+                LONG_CLASS -> return JavaTypeName.Builtins.LONG
+                CHAR_CLASS -> return JavaTypeName.Builtins.CHAR
+                FLOAT_CLASS -> return JavaTypeName.Builtins.FLOAT
             }
 
             if (type.isArray) {
-                ArrayTypeName(type.componentType.toTypeName(map))
+                JavaArrayTypeName(type.componentType.toTypeName(map))
             } else {
                 type.toClassName()
             }
@@ -66,10 +67,10 @@ internal fun Type.toTypeName(map: MutableMap<Type, TypeVariableName>): TypeName 
             val lowerBounds = type.lowerBounds
 
             if (lowerBounds.isNotEmpty()) {
-                SupertypeWildcardTypeName(lowerBounds.map { it.toTypeName() })
+                JavaSupertypeWildcardTypeName(lowerBounds.map { it.toTypeName() })
             } else {
-                SubtypeWildcardTypeName(
-                    type.upperBounds.map { it.toTypeName() }.ifEmpty { listOf(ClassName.Builtins.OBJECT) }
+                JavaSubtypeWildcardTypeName(
+                    type.upperBounds.map { it.toTypeName() }.ifEmpty { listOf(JavaClassName.Builtins.OBJECT) }
                 )
             }
         }
@@ -85,25 +86,25 @@ internal fun Type.toTypeName(map: MutableMap<Type, TypeVariableName>): TypeName 
 
 // javax.model.element
 
-public fun TypeMirror.toTypeName(): TypeName = toTypeName(linkedMapOf())
+public fun TypeMirror.toTypeName(): JavaTypeName = toTypeName(linkedMapOf())
 
-internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElement, TypeVariableName>): TypeName {
-    val visitor = object : SimpleTypeVisitor8<TypeName, Void?>() {
-        override fun visitPrimitive(t: PrimitiveType, p: Void?): TypeName {
+internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElement, JavaTypeVariableName>): JavaTypeName {
+    val visitor = object : SimpleTypeVisitor8<JavaTypeName, Void?>() {
+        override fun visitPrimitive(t: PrimitiveType, p: Void?): JavaTypeName {
             return when (t.kind) {
-                TypeKind.BOOLEAN -> TypeName.Builtins.BOOLEAN
-                TypeKind.BYTE -> TypeName.Builtins.BYTE
-                TypeKind.SHORT -> TypeName.Builtins.SHORT
-                TypeKind.INT -> TypeName.Builtins.INT
-                TypeKind.LONG -> TypeName.Builtins.LONG
-                TypeKind.CHAR -> TypeName.Builtins.CHAR
-                TypeKind.FLOAT -> TypeName.Builtins.FLOAT
-                TypeKind.DOUBLE -> TypeName.Builtins.DOUBLE
+                TypeKind.BOOLEAN -> JavaTypeName.Builtins.BOOLEAN
+                TypeKind.BYTE -> JavaTypeName.Builtins.BYTE
+                TypeKind.SHORT -> JavaTypeName.Builtins.SHORT
+                TypeKind.INT -> JavaTypeName.Builtins.INT
+                TypeKind.LONG -> JavaTypeName.Builtins.LONG
+                TypeKind.CHAR -> JavaTypeName.Builtins.CHAR
+                TypeKind.FLOAT -> JavaTypeName.Builtins.FLOAT
+                TypeKind.DOUBLE -> JavaTypeName.Builtins.DOUBLE
                 else -> throw AssertionError()
             }
         }
 
-        override fun visitDeclared(t: DeclaredType, p: Void?): TypeName {
+        override fun visitDeclared(t: DeclaredType, p: Void?): JavaTypeName {
             val asElement = t.asElement()
             val rawType = (asElement as TypeElement).toClassName()
             val enclosingType = t.enclosingType
@@ -114,47 +115,47 @@ internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElemen
             } else {
                 null
             }
-            if (t.typeArguments.isEmpty() && enclosing !is ParameterizedTypeName) {
+            if (t.typeArguments.isEmpty() && enclosing !is JavaParameterizedTypeName) {
                 return rawType
             }
 
-            val typeArgumentNames = mutableListOf<TypeName>()
+            val typeArgumentNames = mutableListOf<JavaTypeName>()
             for (mirror in t.typeArguments) {
                 mirror.toTypeName(typeVariables)
                 typeArgumentNames.add(mirror.toTypeName(typeVariables))
             }
 
-            return if (enclosing is ParameterizedTypeName) {
+            return if (enclosing is JavaParameterizedTypeName) {
                 enclosing.nestedClass(rawType.simpleName, typeArgumentNames)
             } else {
-                ParameterizedTypeName(rawType, typeArgumentNames)
+                JavaParameterizedTypeName(rawType, typeArgumentNames)
             }
         }
 
-        override fun visitError(t: ErrorType, p: Void?): TypeName {
+        override fun visitError(t: ErrorType, p: Void?): JavaTypeName {
             return visitDeclared(t, p)
         }
 
-        override fun visitArray(t: ArrayType, p: Void?): TypeName {
+        override fun visitArray(t: ArrayType, p: Void?): JavaTypeName {
             TODO("return t.toArrayTypeName(typeVariables)")
         }
 
-        override fun visitTypeVariable(t: TypeVariable, p: Void?): TypeName {
+        override fun visitTypeVariable(t: TypeVariable, p: Void?): JavaTypeName {
             TODO("return t.toTypeVariableName(typeVariables)")
         }
 
-        override fun visitWildcard(t: WildcardType, p: Void?): TypeName {
+        override fun visitWildcard(t: WildcardType, p: Void?): JavaTypeName {
             TODO("return t.toWildcardTypeName(typeVariables)")
         }
 
-        override fun visitNoType(t: javax.lang.model.type.NoType, p: Void?): TypeName {
+        override fun visitNoType(t: NoType, p: Void?): JavaTypeName {
             return when (t.kind) {
-                TypeKind.VOID -> TypeName.Builtins.VOID
+                TypeKind.VOID -> JavaTypeName.Builtins.VOID
                 else -> super.visitUnknown(t, p)
             }
         }
 
-        override fun defaultAction(e: TypeMirror?, p: Void?): TypeName {
+        override fun defaultAction(e: TypeMirror?, p: Void?): JavaTypeName {
             throw IllegalArgumentException("Unexpected type mirror: $e")
         }
     }

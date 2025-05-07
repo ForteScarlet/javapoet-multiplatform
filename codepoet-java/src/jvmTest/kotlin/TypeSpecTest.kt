@@ -1,4 +1,10 @@
-import love.forte.codepoet.java.*
+import love.forte.codepoet.java.JavaModifier
+import love.forte.codepoet.java.modifiers
+import love.forte.codepoet.java.naming.JavaTypeName
+import love.forte.codepoet.java.spec.JavaSimpleTypeSpec
+import love.forte.codepoet.java.spec.JavaTypeSpec
+import love.forte.codepoet.java.spec.addField
+import love.forte.codepoet.java.spec.addMethod
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -10,14 +16,14 @@ class TypeSpecTest {
 
     @Test
     fun testPrintTypeSpec() {
-        val simpleType = SimpleTypeSpec(TypeSpec.Kind.CLASS, "MyClass") {
-            modifiers += Modifier.PUBLIC
+        val simpleType = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "MyClass") {
+            modifiers += JavaModifier.PUBLIC
 
             addMethod("methodPub") {
                 modifiers { public() }
             }
 
-            addField(TypeName.Builtins.INT, "valuePub") {
+            addField(JavaTypeName.Builtins.INT, "valuePub") {
                 modifiers {
                     public()
                     static()
@@ -26,7 +32,7 @@ class TypeSpecTest {
                 initializer("1")
             }
 
-            addField(TypeName.Builtins.INT, "valuePri") {
+            addField(JavaTypeName.Builtins.INT, "valuePri") {
                 modifiers {
                     private()
                     static()

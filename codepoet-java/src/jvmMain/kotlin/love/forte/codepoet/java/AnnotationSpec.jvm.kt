@@ -1,15 +1,17 @@
 package love.forte.codepoet.java
 
-import love.forte.codepoet.java.CodePart.Companion.literal
+import love.forte.codepoet.common.code.CodePart.Companion.literal
+import love.forte.codepoet.java.spec.JavaAnnotationSpec
+import love.forte.codepoet.java.spec.addMember
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.util.SimpleAnnotationValueVisitor8
 
-public fun AnnotationMirror.toAnnotationSpec(): AnnotationSpec {
+public fun AnnotationMirror.toAnnotationSpec(): JavaAnnotationSpec {
     val element = annotationType.asElement() as TypeElement
-    return AnnotationSpec(element.toClassName()) {
+    return JavaAnnotationSpec(element.toClassName()) {
         val visitor = AnnotationMirrorVisitor(this)
         for (executableElement in this@toAnnotationSpec.elementValues.keys) {
             val name = executableElement.simpleName.toString()
@@ -19,19 +21,19 @@ public fun AnnotationMirror.toAnnotationSpec(): AnnotationSpec {
 }
 
 private class AnnotationMirrorVisitor(
-    val builder: AnnotationSpec.Builder,
-) : SimpleAnnotationValueVisitor8<AnnotationSpec.Builder, String>() {
-    override fun defaultAction(o: Any, name: String): AnnotationSpec.Builder {
+    val builder: JavaAnnotationSpec.Builder,
+) : SimpleAnnotationValueVisitor8<JavaAnnotationSpec.Builder, String>() {
+    override fun defaultAction(o: Any, name: String): JavaAnnotationSpec.Builder {
         return builder.addMemberForValue(name, o)
     }
 
-    override fun visitAnnotation(annotationMirror: AnnotationMirror, name: String): AnnotationSpec.Builder {
+    override fun visitAnnotation(annotationMirror: AnnotationMirror, name: String): JavaAnnotationSpec.Builder {
         return builder.addMember(name, "%V") {
             literal(annotationMirror.toAnnotationSpec())
         }
     }
 
-    override fun visitEnumConstant(c: VariableElement, name: String): AnnotationSpec.Builder {
+    override fun visitEnumConstant(c: VariableElement, name: String): JavaAnnotationSpec.Builder {
         return builder.addMember(name, "%V.%V") {
             type(c.asType().toTypeName())
             literal(c.simpleName)
@@ -39,7 +41,7 @@ private class AnnotationMirrorVisitor(
     }
 }
 
-internal fun AnnotationSpec.Builder.addMemberForValue(memberName: String, value: Any): AnnotationSpec.Builder {
+internal fun JavaAnnotationSpec.Builder.addMemberForValue(memberName: String, value: Any): JavaAnnotationSpec.Builder {
     check(SourceVersion.isName(memberName)) {
         "not a valid name: $memberName"
     }
@@ -85,7 +87,7 @@ internal fun AnnotationSpec.Builder.addMemberForValue(memberName: String, value:
         }
 
         else -> {
-            addMember(memberName, CodeValue(literal(value)))
+            addMember(memberName, JavaCodeValue(literal(value)))
         }
     }
 }

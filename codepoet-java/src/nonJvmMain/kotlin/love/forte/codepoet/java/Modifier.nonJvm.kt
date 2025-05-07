@@ -4,7 +4,7 @@ package love.forte.codepoet.java
  *
  * see `javax.lang.model.element.Modifier`
  */
-public actual enum class Modifier {
+public actual enum class JavaModifier {
 
     // See JLS sections 8.1.1, 8.3.1, 8.4.3, 8.8.3, and 9.1.1.
     // java.lang.reflect.Modifier includes INTERFACE, but that's a VMism.
