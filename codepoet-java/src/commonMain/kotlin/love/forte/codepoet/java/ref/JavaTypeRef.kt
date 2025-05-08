@@ -1,7 +1,6 @@
 package love.forte.codepoet.java.ref
 
 import love.forte.codepoet.common.BuilderDsl
-import love.forte.codepoet.common.ref.AnnotationRef
 import love.forte.codepoet.common.ref.TypeNameRefStatus
 import love.forte.codepoet.common.ref.TypeRef
 import love.forte.codepoet.java.JavaCodeEmitter
@@ -22,7 +21,7 @@ public interface JavaTypeRef : TypeRef, JavaCodeEmitter {
  * Java's [TypeNameRefStatus].
  */
 public interface JavaTypeNameRefStatus : TypeNameRefStatus {
-    public val annotations: List<AnnotationRef>
+    public val annotations: List<JavaAnnotationRef>
 }
 
 /**
@@ -81,19 +80,17 @@ public inline fun JavaTypeNameRefStatus(block: JavaTypeNameRefStatusBuilder.() -
 /**
  * Builder for [JavaTypeNameRefStatus].
  */
-public class JavaTypeNameRefStatusBuilder @PublishedApi internal constructor() : BuilderDsl {
+public class JavaTypeNameRefStatusBuilder @PublishedApi internal constructor() :
+    JavaAnnotationRefCollectable<JavaTypeNameRefStatusBuilder> {
     private val annotations: MutableList<JavaAnnotationRef> = mutableListOf()
 
-    public fun addAnnotationRef(ref: JavaAnnotationRef): JavaTypeNameRefStatusBuilder = apply {
+    override fun addAnnotationRef(ref: JavaAnnotationRef): JavaTypeNameRefStatusBuilder = apply {
         annotations.add(ref)
     }
 
-    public fun addAnnotationRefs(refs: Iterable<JavaAnnotationRef>): JavaTypeNameRefStatusBuilder = apply {
+    override fun addAnnotationRefs(refs: Iterable<JavaAnnotationRef>): JavaTypeNameRefStatusBuilder = apply {
         annotations.addAll(refs)
     }
-
-    public fun addAnnotationRefs(vararg refs: JavaAnnotationRef): JavaTypeNameRefStatusBuilder =
-        addAnnotationRefs(refs.asList())
 
     public fun build(): JavaTypeNameRefStatus {
         return JavaTypeNameRefStatusImpl(

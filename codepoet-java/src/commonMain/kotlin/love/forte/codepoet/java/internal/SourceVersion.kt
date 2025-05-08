@@ -27,6 +27,8 @@ package love.forte.codepoet.java.internal
 
 import love.forte.codepoet.common.codepoint.charCount
 import love.forte.codepoet.common.codepoint.codePointAt
+import love.forte.codepoet.java.codepoint.isJavaIdentifierPart
+import love.forte.codepoet.java.codepoint.isJavaIdentifierStart
 
 // See javax.lang.model.SourceVersion.java
 

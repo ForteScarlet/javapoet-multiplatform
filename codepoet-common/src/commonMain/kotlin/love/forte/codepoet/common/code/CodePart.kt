@@ -11,7 +11,7 @@ import kotlin.jvm.JvmStatic
  * or a top-level function with a companion receiver parameter.
  */
 @Retention(AnnotationRetention.SOURCE)
-internal annotation class CodePartFactory
+public annotation class CodePartFactory
 
 /**
  * A part of [CodeValue].

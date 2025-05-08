@@ -1,4 +1,4 @@
-package love.forte.codepoet.java.internal
+package love.forte.codepoet.java.codepoint
 
 import love.forte.codepoet.common.codepoint.CodePoint
 import love.forte.codepoet.common.codepoint.charCount

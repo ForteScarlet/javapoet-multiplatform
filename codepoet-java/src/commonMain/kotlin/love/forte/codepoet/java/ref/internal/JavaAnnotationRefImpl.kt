@@ -6,7 +6,7 @@ import love.forte.codepoet.java.JavaCodeValue
 import love.forte.codepoet.java.JavaCodeWriter
 import love.forte.codepoet.java.naming.JavaClassName
 import love.forte.codepoet.java.ref.JavaAnnotationRef
-import love.forte.codepoet.java.spec.internal.emitAnnotation
+import love.forte.codepoet.java.spec.internal.emitJavaAnnotation
 
 /**
  *
@@ -24,5 +24,5 @@ internal data class JavaAnnotationRefImpl(
 }
 
 internal fun AnnotationRef.emitTo(codeWriter: JavaCodeWriter, inline: Boolean = true) {
-    codeWriter.emitAnnotation(inline, className, members)
+    codeWriter.emitJavaAnnotation(inline, className, members)
 }

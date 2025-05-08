@@ -25,6 +25,7 @@ import love.forte.codepoet.java.internal.isSourceName
 import love.forte.codepoet.java.naming.JavaClassName
 import love.forte.codepoet.java.naming.JavaTypeName
 import love.forte.codepoet.java.naming.JavaTypeVariableName
+import love.forte.codepoet.java.naming.isPrimitive
 import love.forte.codepoet.java.spec.internal.*
 import kotlin.jvm.JvmInline
 import kotlin.jvm.JvmMultifileClass
@@ -805,7 +806,7 @@ public inline fun JavaTypeSpec.Builder<*, *>.addInitializerBlock(
 
 public inline fun JavaTypeSpec.Builder<*, *>.addAnnotation(
     annotation: JavaClassName,
-    block: JavaAnnotationSpec.Builder.() -> Unit = {}
+    block: JavaAnnotationSpecBuilder.() -> Unit = {}
 ) {
     addAnnotation(JavaAnnotationSpec(annotation, block))
 }

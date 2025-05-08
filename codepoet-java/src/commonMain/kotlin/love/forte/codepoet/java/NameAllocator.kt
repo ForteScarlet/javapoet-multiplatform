@@ -18,8 +18,8 @@ package love.forte.codepoet.java
 
 import love.forte.codepoet.common.codepoint.charCount
 import love.forte.codepoet.common.codepoint.codePointAt
-import love.forte.codepoet.java.internal.isJavaIdentifierPart
-import love.forte.codepoet.java.internal.isJavaIdentifierStart
+import love.forte.codepoet.java.codepoint.isJavaIdentifierPart
+import love.forte.codepoet.java.codepoint.isJavaIdentifierStart
 import love.forte.codepoet.java.internal.isSourceKeyword
 import kotlin.random.Random
 import kotlin.random.nextULong

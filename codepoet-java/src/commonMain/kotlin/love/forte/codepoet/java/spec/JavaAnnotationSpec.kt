@@ -28,6 +28,8 @@ import love.forte.codepoet.java.JavaCodeWriter
 import love.forte.codepoet.java.internal.isSourceName
 import love.forte.codepoet.java.naming.JavaClassName
 import love.forte.codepoet.java.naming.JavaTypeName
+import love.forte.codepoet.java.ref.JavaAnnotationRef
+import love.forte.codepoet.java.ref.JavaAnnotationRefCollectable
 import love.forte.codepoet.java.spec.internal.JavaAnnotationSpecImpl
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -42,7 +44,7 @@ public interface JavaAnnotationSpec : JavaSpec {
 
     public val members: Map<String, List<JavaCodeValue>>
 
-    public fun toBuilder(): Builder
+    public val annotations: List<JavaAnnotationRef>
 
     @InternalJavaCodePoetApi
     override fun emit(codeWriter: JavaCodeWriter) {
@@ -52,44 +54,65 @@ public interface JavaAnnotationSpec : JavaSpec {
     @InternalJavaCodePoetApi
     public fun emit(codeWriter: JavaCodeWriter, inline: Boolean = true)
 
-    public class Builder internal constructor(private val type: JavaTypeName) : BuilderDsl {
-        public val members: MutableMap<String, MutableList<JavaCodeValue>> = linkedMapOf()
-
-        public fun addMember(name: String, codeValue: JavaCodeValue): Builder = apply {
-            val values = members.computeValueIfAbsent(name) { mutableListOf() }
-            values.add(codeValue)
-        }
-
-        public fun addMember(name: String, format: String, vararg argumentParts: CodeArgumentPart): Builder =
-            addMember(name, JavaCodeValue(format, *argumentParts))
-
-
-        // TODO addMemberForValue(memberName: String, value: Any)
-
-        public fun build(): JavaAnnotationSpec {
-            for (name in members.keys) {
-                check(name.isSourceName()) { "not a valid name: $name" }
-            }
-
-            return JavaAnnotationSpecImpl(type, members.mapValues { it.value.toList() })
-        }
-    }
-
     public companion object {
         public const val VALUE: String = "value"
 
         @JvmStatic
-        public fun builder(type: JavaClassName): Builder = Builder(type)
+        public fun builder(type: JavaClassName): JavaAnnotationSpecBuilder = JavaAnnotationSpecBuilder(type)
     }
 }
 
-public inline fun JavaAnnotationSpec(annotation: JavaClassName, block: JavaAnnotationSpec.Builder.() -> Unit = {}): JavaAnnotationSpec =
+public inline fun JavaAnnotationSpec(
+    annotation: JavaClassName,
+    block: JavaAnnotationSpecBuilder.() -> Unit = {}
+): JavaAnnotationSpec =
     JavaAnnotationSpec.builder(annotation).also(block).build()
 
 
-public inline fun JavaAnnotationSpec.Builder.addMember(
+public inline fun JavaAnnotationSpecBuilder.addMember(
     name: String,
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
-): JavaAnnotationSpec.Builder =
+): JavaAnnotationSpecBuilder =
     addMember(name, JavaCodeValue(format, block))
+
+public class JavaAnnotationSpecBuilder internal constructor(private val type: JavaTypeName) :
+    JavaAnnotationRefCollectable<JavaAnnotationSpecBuilder>,
+    BuilderDsl {
+    private val members: MutableMap<String, MutableList<JavaCodeValue>> = linkedMapOf()
+    private val annotations: MutableList<JavaAnnotationRef> = mutableListOf()
+
+    public fun addMember(name: String, codeValue: JavaCodeValue): JavaAnnotationSpecBuilder = apply {
+        val values = members.computeValueIfAbsent(name) { mutableListOf() }
+        values.add(codeValue)
+    }
+
+    public fun addMember(
+        name: String,
+        format: String,
+        vararg argumentParts: CodeArgumentPart
+    ): JavaAnnotationSpecBuilder =
+        addMember(name, JavaCodeValue(format, *argumentParts))
+
+    override fun addAnnotationRef(ref: JavaAnnotationRef): JavaAnnotationSpecBuilder = apply {
+        annotations.add(ref)
+    }
+
+    override fun addAnnotationRefs(refs: Iterable<JavaAnnotationRef>): JavaAnnotationSpecBuilder = apply {
+        annotations.addAll(refs)
+    }
+
+    // TODO addMemberForValue(memberName: String, value: Any)
+
+    public fun build(): JavaAnnotationSpec {
+        for (name in members.keys) {
+            check(name.isSourceName()) { "not a valid name: $name" }
+        }
+
+        return JavaAnnotationSpecImpl(
+            type,
+            members.mapValues { it.value.toList() },
+            annotations.toList()
+        )
+    }
+}

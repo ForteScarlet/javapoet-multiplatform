@@ -1,9 +1,9 @@
 package love.forte.codepoet.java.ref.internal
 
-import love.forte.codepoet.common.ref.AnnotationRef
 import love.forte.codepoet.java.InternalJavaCodePoetApi
 import love.forte.codepoet.java.JavaCodeWriter
 import love.forte.codepoet.java.naming.JavaTypeName
+import love.forte.codepoet.java.ref.JavaAnnotationRef
 import love.forte.codepoet.java.ref.JavaTypeNameRefStatus
 import love.forte.codepoet.java.ref.JavaTypeRef
 
@@ -22,7 +22,7 @@ internal data class JavaTypeRefImpl(
 }
 
 internal data class JavaTypeNameRefStatusImpl(
-    override val annotations: List<AnnotationRef>
+    override val annotations: List<JavaAnnotationRef>
 ) : JavaTypeNameRefStatus
 
 internal fun JavaTypeRef.emitTo(codeWriter: JavaCodeWriter) {

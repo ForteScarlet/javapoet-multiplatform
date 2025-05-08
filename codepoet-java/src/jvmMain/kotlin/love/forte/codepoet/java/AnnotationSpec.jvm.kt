@@ -2,6 +2,7 @@ package love.forte.codepoet.java
 
 import love.forte.codepoet.common.code.CodePart.Companion.literal
 import love.forte.codepoet.java.spec.JavaAnnotationSpec
+import love.forte.codepoet.java.spec.JavaAnnotationSpecBuilder
 import love.forte.codepoet.java.spec.addMember
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.AnnotationMirror
@@ -21,19 +22,19 @@ public fun AnnotationMirror.toAnnotationSpec(): JavaAnnotationSpec {
 }
 
 private class AnnotationMirrorVisitor(
-    val builder: JavaAnnotationSpec.Builder,
-) : SimpleAnnotationValueVisitor8<JavaAnnotationSpec.Builder, String>() {
-    override fun defaultAction(o: Any, name: String): JavaAnnotationSpec.Builder {
+    val builder: JavaAnnotationSpecBuilder,
+) : SimpleAnnotationValueVisitor8<JavaAnnotationSpecBuilder, String>() {
+    override fun defaultAction(o: Any, name: String): JavaAnnotationSpecBuilder {
         return builder.addMemberForValue(name, o)
     }
 
-    override fun visitAnnotation(annotationMirror: AnnotationMirror, name: String): JavaAnnotationSpec.Builder {
+    override fun visitAnnotation(annotationMirror: AnnotationMirror, name: String): JavaAnnotationSpecBuilder {
         return builder.addMember(name, "%V") {
             literal(annotationMirror.toAnnotationSpec())
         }
     }
 
-    override fun visitEnumConstant(c: VariableElement, name: String): JavaAnnotationSpec.Builder {
+    override fun visitEnumConstant(c: VariableElement, name: String): JavaAnnotationSpecBuilder {
         return builder.addMember(name, "%V.%V") {
             type(c.asType().toTypeName())
             literal(c.simpleName)
@@ -41,7 +42,7 @@ private class AnnotationMirrorVisitor(
     }
 }
 
-internal fun JavaAnnotationSpec.Builder.addMemberForValue(memberName: String, value: Any): JavaAnnotationSpec.Builder {
+internal fun JavaAnnotationSpecBuilder.addMemberForValue(memberName: String, value: Any): JavaAnnotationSpecBuilder {
     check(SourceVersion.isName(memberName)) {
         "not a valid name: $memberName"
     }

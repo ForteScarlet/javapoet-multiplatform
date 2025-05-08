@@ -1,10 +1,7 @@
 package love.forte.codepoet.java.ref
 
-import love.forte.codepoet.common.BuilderDsl
-import love.forte.codepoet.common.code.CodeArgumentPart
 import love.forte.codepoet.common.computeValueIfAbsent
 import love.forte.codepoet.common.ref.AnnotationRef
-import love.forte.codepoet.java.CodeValueSingleFormatBuilderDsl
 import love.forte.codepoet.java.JavaCodeEmitter
 import love.forte.codepoet.java.JavaCodeValue
 import love.forte.codepoet.java.naming.JavaClassName
@@ -29,21 +26,14 @@ public inline fun JavaClassName.javaAnnotationRef(block: JavaAnnotationRefBuilde
 /**
  * Builder for [JavaAnnotationRef].
  */
-public class JavaAnnotationRefBuilder(public val className: JavaClassName) : BuilderDsl {
+public class JavaAnnotationRefBuilder(public val className: JavaClassName) :
+    JavaAnnotationRefBuildable<JavaAnnotationRefBuilder> {
     private val members: MutableMap<String, MutableList<JavaCodeValue>> = linkedMapOf()
 
-    public fun addMember(name: String, codeValue: JavaCodeValue): JavaAnnotationRefBuilder = apply {
+    override fun addMember(name: String, codeValue: JavaCodeValue): JavaAnnotationRefBuilder = apply {
         val values = members.computeValueIfAbsent(name) { mutableListOf() }
         values.add(codeValue)
     }
-
-    public fun addMember(
-        name: String,
-        format: String,
-        vararg argumentParts: CodeArgumentPart
-    ): JavaAnnotationRefBuilder =
-        addMember(name, JavaCodeValue(format, *argumentParts))
-
 
     public fun build(): JavaAnnotationRef {
         return JavaAnnotationRefImpl(
@@ -52,10 +42,3 @@ public class JavaAnnotationRefBuilder(public val className: JavaClassName) : Bui
         )
     }
 }
-
-public inline fun JavaAnnotationRefBuilder.addMember(
-    name: String,
-    format: String,
-    block: CodeValueSingleFormatBuilderDsl = {}
-): JavaAnnotationRefBuilder =
-    addMember(name, JavaCodeValue(format, block))
