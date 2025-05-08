@@ -3,7 +3,7 @@ package love.forte.codepoet.java.naming.internal
 import love.forte.codepoet.java.JavaCodeWriter
 import love.forte.codepoet.java.emitToString
 import love.forte.codepoet.java.naming.JavaArrayTypeName
-import love.forte.codepoet.java.naming.JavaTypeName
+import love.forte.codepoet.java.ref.JavaTypeRef
 
 
 /**
@@ -11,19 +11,8 @@ import love.forte.codepoet.java.naming.JavaTypeName
  * @author ForteScarlet
  */
 internal class JavaArrayTypeNameImpl(
-    override val componentType: JavaTypeName,
-    // override val annotations: List<JavaAnnotationSpec> = emptyList(),
+    override val componentType: JavaTypeRef,
 ) : JavaArrayTypeName {
-    // override fun annotated(annotations: List<JavaAnnotationSpec>): JavaArrayTypeName {
-    //     if (annotations.isEmpty()) return this
-    //
-    //     return JavaArrayTypeNameImpl(componentType, this.annotations + annotations)
-    // }
-    //
-    // override fun withoutAnnotations(): JavaArrayTypeName {
-    //     return if (annotations.isEmpty()) this else JavaArrayTypeNameImpl(componentType)
-    // }
-
     override fun emit(codeWriter: JavaCodeWriter, varargs: Boolean) {
         emitLeafType(codeWriter)
         emitBrackets(codeWriter, varargs)

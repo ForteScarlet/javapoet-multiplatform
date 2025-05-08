@@ -3,11 +3,11 @@ package love.forte.codepoet.java.ref
 import love.forte.codepoet.common.BuilderDsl
 import love.forte.codepoet.common.code.CodeArgumentPart
 import love.forte.codepoet.common.computeValueIfAbsent
-import love.forte.codepoet.common.naming.ClassName
 import love.forte.codepoet.common.ref.AnnotationRef
 import love.forte.codepoet.java.CodeValueSingleFormatBuilderDsl
 import love.forte.codepoet.java.JavaCodeEmitter
 import love.forte.codepoet.java.JavaCodeValue
+import love.forte.codepoet.java.naming.JavaClassName
 import love.forte.codepoet.java.ref.internal.JavaAnnotationRefImpl
 
 /**
@@ -16,11 +16,11 @@ import love.forte.codepoet.java.ref.internal.JavaAnnotationRefImpl
  * @author ForteScarlet
  */
 public interface JavaAnnotationRef : AnnotationRef, JavaCodeEmitter {
-    override val className: ClassName
+    override val className: JavaClassName
     override val members: Map<String, List<JavaCodeValue>>
 }
 
-public inline fun ClassName.javaAnnotationRef(block: JavaAnnotationRefBuilder.() -> Unit = {}): JavaAnnotationRef {
+public inline fun JavaClassName.javaAnnotationRef(block: JavaAnnotationRefBuilder.() -> Unit = {}): JavaAnnotationRef {
     return JavaAnnotationRefBuilder(this@javaAnnotationRef).apply {
         block()
     }.build()
@@ -29,7 +29,7 @@ public inline fun ClassName.javaAnnotationRef(block: JavaAnnotationRefBuilder.()
 /**
  * Builder for [JavaAnnotationRef].
  */
-public class JavaAnnotationRefBuilder(public val className: ClassName) : BuilderDsl {
+public class JavaAnnotationRefBuilder(public val className: JavaClassName) : BuilderDsl {
     private val members: MutableMap<String, MutableList<JavaCodeValue>> = linkedMapOf()
 
     public fun addMember(name: String, codeValue: JavaCodeValue): JavaAnnotationRefBuilder = apply {

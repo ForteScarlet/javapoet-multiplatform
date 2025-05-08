@@ -4,7 +4,7 @@ import love.forte.codepoet.java.JavaCodeWriter
 import love.forte.codepoet.java.emitToString
 import love.forte.codepoet.java.naming.JavaClassName
 import love.forte.codepoet.java.naming.JavaParameterizedTypeName
-import love.forte.codepoet.java.naming.JavaTypeName
+import love.forte.codepoet.java.ref.JavaTypeRef
 
 
 /**
@@ -14,7 +14,7 @@ import love.forte.codepoet.java.naming.JavaTypeName
 internal class JavaParameterizedTypeNameImpl(
     private val enclosingType: JavaParameterizedTypeName?,
     override val rawType: JavaClassName,
-    override val typeArguments: List<JavaTypeName> = emptyList(),
+    override val typeArguments: List<JavaTypeRef> = emptyList(),
     // override val annotations: List<JavaAnnotationSpec> = emptyList(),
 ) : JavaParameterizedTypeName {
     override fun nestedClass(name: String): JavaParameterizedTypeName {
@@ -24,26 +24,13 @@ internal class JavaParameterizedTypeNameImpl(
         )
     }
 
-    override fun nestedClass(name: String, typeArguments: List<JavaTypeName>): JavaParameterizedTypeName {
+    override fun nestedClass(name: String, typeArguments: List<JavaTypeRef>): JavaParameterizedTypeName {
         return JavaParameterizedTypeNameImpl(
             this,
             rawType.nestedClass(name),
             typeArguments.toList(),
         )
     }
-
-    // override fun annotated(annotations: List<JavaAnnotationSpec>): JavaParameterizedTypeName {
-    //     if (annotations.isEmpty()) return this
-    //
-    //     return JavaParameterizedTypeNameImpl(
-    //         enclosingType, rawType, typeArguments, this.annotations + annotations
-    //     )
-    // }
-    //
-    // override fun withoutAnnotations(): JavaParameterizedTypeName {
-    //     return if (annotations.isEmpty()) this
-    //     else JavaParameterizedTypeNameImpl(enclosingType, rawType, typeArguments)
-    // }
 
     override fun emit(codeWriter: JavaCodeWriter) {
         if (enclosingType != null) {

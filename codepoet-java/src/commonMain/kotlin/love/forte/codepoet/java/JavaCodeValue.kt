@@ -7,6 +7,7 @@ import love.forte.codepoet.common.code.CodeArgumentPart
 import love.forte.codepoet.common.code.CodePart
 import love.forte.codepoet.common.code.CodeValue
 import love.forte.codepoet.common.naming.TypeName
+import love.forte.codepoet.common.ref.TypeRef
 import love.forte.codepoet.java.internal.JavaJavaCodeValueImpl
 import love.forte.codepoet.java.internal.emit0
 import kotlin.jvm.JvmName
@@ -73,6 +74,10 @@ public fun JavaCodeValueSingleFormatBuilder.string(value: String?): JavaCodeValu
     value(CodePart.string(value))
 
 public fun JavaCodeValueSingleFormatBuilder.type(type: TypeName): JavaCodeValueSingleFormatBuilder =
+    // TODO Type -> Ref?
+    value(CodePart.type(type))
+
+public fun JavaCodeValueSingleFormatBuilder.type(type: TypeRef): JavaCodeValueSingleFormatBuilder =
     // TODO Type -> Ref?
     value(CodePart.type(type))
 

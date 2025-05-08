@@ -18,54 +18,45 @@
 
 package love.forte.codepoet.java.naming
 
+import love.forte.codepoet.common.naming.WildcardTypeName
 import love.forte.codepoet.java.naming.internal.JavaSubtypeWildcardTypeNameImpl
 import love.forte.codepoet.java.naming.internal.JavaSupertypeWildcardTypeNameImpl
+import love.forte.codepoet.java.ref.JavaTypeRef
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
 
-public sealed interface JavaWildcardTypeName : JavaTypeName {
-    public val upperBounds: List<JavaTypeName> // ? extends T1 & T2
-    public val lowerBounds: List<JavaTypeName> // ? super T1 & T2
-
-    // override fun withoutAnnotations(): JavaWildcardTypeName
-    //
-    // override fun annotated(annotations: List<JavaAnnotationSpec>): JavaWildcardTypeName
-    //
-    // override fun annotated(vararg annotations: JavaAnnotationSpec): JavaWildcardTypeName {
-    //     if (annotations.isEmpty()) return this
-    //     return annotated(annotations.asList())
-    // }
-
-    override val isPrimitive: Boolean
-        get() = false
+public sealed interface JavaWildcardTypeName : JavaTypeName, WildcardTypeName {
+    override val bounds: List<JavaTypeRef>
+    // public val upperBounds: List<JavaTypeName> // ? extends T1 & T2
+    // public val lowerBounds: List<JavaTypeName> // ? super T1 & T2
 }
 
 public interface JavaSubtypeWildcardTypeName : JavaWildcardTypeName {
     // lowerBounds, ? super A
-    override val upperBounds: List<JavaTypeName>
-        get() = emptyList()
+    public val lowerBounds: List<JavaTypeRef>
+        get() = bounds
 }
 
 public interface JavaSupertypeWildcardTypeName : JavaWildcardTypeName {
     // upperBounds, ? extends A & B,
     // 接口在后，类在前
-    override val lowerBounds: List<JavaTypeName>
-        get() = emptyList()
+    public val upperBounds: List<JavaTypeRef>
+        get() = bounds
 }
 
 @JvmName("of")
-public fun JavaSubtypeWildcardTypeName(upperBound: JavaTypeName): JavaSubtypeWildcardTypeName =
+public fun JavaSubtypeWildcardTypeName(upperBound: JavaTypeRef): JavaSubtypeWildcardTypeName =
     JavaSubtypeWildcardTypeName(listOf(upperBound))
 
 @JvmName("of")
-public fun JavaSupertypeWildcardTypeName(lowerBound: JavaTypeName): JavaSupertypeWildcardTypeName =
+public fun JavaSupertypeWildcardTypeName(lowerBound: JavaTypeRef): JavaSupertypeWildcardTypeName =
     JavaSupertypeWildcardTypeName(listOf(lowerBound))
 
 @JvmName("of")
-public fun JavaSubtypeWildcardTypeName(upperBounds: List<JavaTypeName>): JavaSubtypeWildcardTypeName =
+public fun JavaSubtypeWildcardTypeName(upperBounds: List<JavaTypeRef>): JavaSubtypeWildcardTypeName =
     JavaSubtypeWildcardTypeNameImpl(upperBounds)
 
 @JvmName("of")
-public fun JavaSupertypeWildcardTypeName(lowerBounds: List<JavaTypeName>): JavaSupertypeWildcardTypeName =
+public fun JavaSupertypeWildcardTypeName(lowerBounds: List<JavaTypeRef>): JavaSupertypeWildcardTypeName =
     JavaSupertypeWildcardTypeNameImpl(lowerBounds)

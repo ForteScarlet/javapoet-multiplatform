@@ -21,7 +21,8 @@ package love.forte.codepoet.java.naming
 
 import love.forte.codepoet.common.naming.TypeName
 import love.forte.codepoet.java.JavaCodeEmitter
-import love.forte.codepoet.java.naming.internal.PrimitiveTypeNameImpl
+import love.forte.codepoet.java.naming.JavaTypeName.Builtins
+import love.forte.codepoet.java.naming.internal.JavaPrimitiveTypeNameImpl
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -30,28 +31,6 @@ import kotlin.jvm.JvmName
  * A type name represented in Java。
  */
 public sealed interface JavaTypeName : TypeName, JavaCodeEmitter {
-    // public val annotations: List<JavaAnnotationSpec>
-    //
-    // public fun annotated(annotations: List<JavaAnnotationSpec>): JavaTypeName
-    //
-    // public fun annotated(vararg annotations: JavaAnnotationSpec): JavaTypeName {
-    //     if (annotations.isEmpty()) return this
-    //     return annotated(annotations.asList())
-    // }
-    //
-    // public fun withoutAnnotations(): JavaTypeName
-    //
-    // public val isAnnotated: Boolean
-    //     get() = annotations.isNotEmpty()
-
-    /**
-     * Returns true if this is a primitive type like `int`.
-     * Returns false for all other types
-     *
-     * types including boxed primitives and `void`.
-     */
-    public val isPrimitive: Boolean
-
     /**
      * If this type is one of the primitive types ([Builtins.VOID], [Builtins.INT], etc.),
      * return the boxed type ([JavaClassName.Builtins.BOXED_VOID], [JavaClassName.Builtins.BOXED_INT], etc.).
@@ -69,35 +48,35 @@ public sealed interface JavaTypeName : TypeName, JavaCodeEmitter {
 
     public object Builtins {
         @JvmField
-        public val VOID: JavaTypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.VOID)
+        public val VOID: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.VOID)
 
         @JvmField
-        public val BOOLEAN: JavaTypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.BOOLEAN)
+        public val BOOLEAN: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.BOOLEAN)
 
         @JvmField
-        public val BYTE: JavaTypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.BYTE)
+        public val BYTE: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.BYTE)
 
         @JvmField
-        public val SHORT: JavaTypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.SHORT)
+        public val SHORT: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.SHORT)
 
         @JvmField
-        public val INT: JavaTypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.INT)
+        public val INT: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.INT)
 
         @JvmField
-        public val LONG: JavaTypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.LONG)
+        public val LONG: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.LONG)
 
         @JvmField
-        public val CHAR: JavaTypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.CHAR)
+        public val CHAR: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.CHAR)
 
         @JvmField
-        public val FLOAT: JavaTypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.FLOAT)
+        public val FLOAT: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.FLOAT)
 
         @JvmField
-        public val DOUBLE: JavaTypeName = PrimitiveTypeNameImpl(PrimitiveTypeName.DOUBLE)
+        public val DOUBLE: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.DOUBLE)
     }
 }
 
-internal interface PrimitiveTypeName : JavaTypeName {
+internal interface JavaPrimitiveTypeName : JavaTypeName {
     val keyword: String
 
     companion object {
@@ -112,3 +91,12 @@ internal interface PrimitiveTypeName : JavaTypeName {
         const val DOUBLE = "double"
     }
 }
+
+/**
+ * Returns true if this is a primitive type like `int`.
+ * Returns false for all other types
+ *
+ * Types including boxed primitives and `void`.
+ */
+public val JavaTypeName.isPrimitive: Boolean
+    get() = this is JavaPrimitiveTypeName && this != Builtins.VOID

@@ -79,7 +79,7 @@ internal class JavaClassNameImpl(
                 // We've already emitted an enclosing class. Emit as we go.
                 codeWriter.emit(".")
                 simpleName = className.simpleName
-            } else if (/*className.isAnnotated || */className === this) {
+            } else if (className === this) {
                 // We encountered the first enclosing class that must be emitted.
                 val qualifiedName: String = codeWriter.lookupName(className)
                 val dot = qualifiedName.lastIndexOf('.')
@@ -94,11 +94,6 @@ internal class JavaClassNameImpl(
                 // Don't emit this enclosing type. Keep going so we can be more precise.
                 continue
             }
-
-            // if (className.isAnnotated) {
-            //     if (charsEmitted) codeWriter.emit(" ")
-            //     className.emitAnnotations(codeWriter)
-            // }
 
             codeWriter.emit(simpleName)
             charsEmitted = true
@@ -156,7 +151,6 @@ private fun JavaCodeWriter.lookupName(className: JavaClassName): String {
     if (currentTypeVariables.contains(topLevelSimpleName)) {
         return className.canonicalName
     }
-
 
     // Find the shortest suffix of className that resolves to className. This uses both local type
     // names (so `Entry` in `Map` refers to `Map.Entry`). Also uses imports.

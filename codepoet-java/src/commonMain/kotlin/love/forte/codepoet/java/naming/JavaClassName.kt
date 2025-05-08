@@ -28,7 +28,6 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
-
 /**
  * A fully-qualified class name for top-level and member classes.
  */
@@ -50,9 +49,6 @@ public interface JavaClassName : ClassName, JavaTypeName {
      */
     override val enclosingClassName: JavaClassName?
 
-
-    override val isPrimitive: Boolean
-        get() = false
 
     override val topLevelClassName: JavaClassName
 
@@ -134,7 +130,6 @@ public interface JavaClassName : ClassName, JavaTypeName {
         public val SUPPRESS_WARNINGS: JavaClassName = JavaClassNameImpl(JAVA_LANG_PACKAGE, null, "SuppressWarnings")
     }
 }
-
 
 /**
  * Returns a class name created from the given parts. For example, calling this with package name `"java.util"`

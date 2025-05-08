@@ -2,6 +2,7 @@ package love.forte.codepoet.common.code
 
 import love.forte.codepoet.common.naming.Named
 import love.forte.codepoet.common.naming.TypeName
+import love.forte.codepoet.common.ref.TypeRef
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
@@ -80,10 +81,21 @@ public sealed class CodePart {
         @JvmStatic
         @CodePartFactory
         public fun type(type: TypeName): CodeArgumentPart = CodeArgumentPart.Type(type)
+
         // TODO type(Class)
         //  type(TypeMirror)
         //  type(Element)
         //  type(Any)
+
+        /**
+         * Emits a `type` reference. Types will be imported if possible. Arguments
+         * for types may be `Class` classes, `TypeMirror` type mirrors,
+         * and `Element` elements.
+         */
+        @JvmStatic
+        @CodePartFactory
+        public fun type(type: TypeRef): CodeArgumentPart = CodeArgumentPart.TypeRef(type)
+
 
         /**
          * Increases the indentation level.
@@ -254,6 +266,25 @@ public sealed class CodeArgumentPart : CodePart() {
             // }
         }
 
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is Type) return false
+
+            if (type != other.type) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return type.hashCode()
+        }
+
+        override fun toString(): String {
+            return "Type(type=$type)"
+        }
+    }
+
+    public class TypeRef internal constructor(public val type: love.forte.codepoet.common.ref.TypeRef) : CodeArgumentPart() {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other !is Type) return false

@@ -1,19 +1,20 @@
 package love.forte.codepoet.java.ref
 
 import love.forte.codepoet.common.BuilderDsl
-import love.forte.codepoet.common.naming.ClassName
-import love.forte.codepoet.common.naming.TypeName
 import love.forte.codepoet.common.ref.AnnotationRef
 import love.forte.codepoet.common.ref.TypeNameRefStatus
 import love.forte.codepoet.common.ref.TypeRef
+import love.forte.codepoet.java.JavaCodeEmitter
+import love.forte.codepoet.java.naming.JavaClassName
+import love.forte.codepoet.java.naming.JavaTypeName
 import love.forte.codepoet.java.ref.internal.JavaTypeNameRefStatusImpl
 import love.forte.codepoet.java.ref.internal.JavaTypeRefImpl
 
 /**
  * Java's [TypeRef].
  */
-public interface JavaTypeRef : TypeRef {
-    override val typeName: TypeName
+public interface JavaTypeRef : TypeRef, JavaCodeEmitter {
+    override val typeName: JavaTypeName
     override val status: JavaTypeNameRefStatus
 }
 
@@ -27,13 +28,13 @@ public interface JavaTypeNameRefStatus : TypeNameRefStatus {
 /**
  * @see TypeRef
  */
-public inline fun TypeName.javaRef(block: JavaTypeNameRefBuilder.() -> Unit): JavaTypeRef =
+public inline fun JavaTypeName.javaRef(block: JavaTypeNameRefBuilder.() -> Unit): JavaTypeRef =
     JavaTypeNameRefBuilder(this).also(block).build()
 
 /**
  * Builder for [JavaTypeRef].
  */
-public class JavaTypeNameRefBuilder @PublishedApi internal constructor(public val typeName: TypeName) : BuilderDsl {
+public class JavaTypeNameRefBuilder @PublishedApi internal constructor(public val typeName: JavaTypeName) : BuilderDsl {
     public val status: JavaTypeNameRefStatusBuilder = JavaTypeNameRefStatusBuilder()
 
     public fun addAnnotationRef(ref: JavaAnnotationRef): JavaTypeNameRefBuilder = apply {
@@ -102,7 +103,7 @@ public class JavaTypeNameRefStatusBuilder @PublishedApi internal constructor() :
 }
 
 public inline fun JavaTypeNameRefStatusBuilder.addAnnotationRef(
-    className: ClassName,
+    className: JavaClassName,
     block: JavaAnnotationRefBuilder.() -> Unit = {}
 ): JavaTypeNameRefStatusBuilder =
     addAnnotationRef(JavaAnnotationRefBuilder(className).apply(block).build())

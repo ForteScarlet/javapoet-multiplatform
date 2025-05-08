@@ -19,33 +19,20 @@
 package love.forte.codepoet.java.naming
 
 import love.forte.codepoet.java.naming.internal.JavaTypeVariableNameImpl
+import love.forte.codepoet.java.ref.JavaTypeRef
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
 
 public interface JavaTypeVariableName : JavaTypeName {
-    // TODO : TypeVariableName
     public val name: String
-    public val bounds: List<JavaTypeName>
+    public val bounds: List<JavaTypeRef>
 
-    // override fun annotated(annotations: List<JavaAnnotationSpec>): JavaTypeVariableName
-    //
-    // override fun annotated(vararg annotations: JavaAnnotationSpec): JavaTypeVariableName {
-    //     if (annotations.isEmpty()) return this
-    //
-    //     return annotated(annotations.asList())
-    // }
-    //
-    // override fun withoutAnnotations(): JavaTypeVariableName
+    public fun withBounds(bounds: List<JavaTypeRef>): JavaTypeVariableName
 
-    public fun withBounds(bounds: List<JavaTypeName>): JavaTypeVariableName
-
-    public fun withBounds(vararg bounds: JavaTypeName): JavaTypeVariableName {
+    public fun withBounds(vararg bounds: JavaTypeRef): JavaTypeVariableName {
         return withBounds(bounds.asList())
     }
-
-    override val isPrimitive: Boolean
-        get() = false
 }
 
 /**
@@ -59,12 +46,12 @@ public fun JavaTypeVariableName(name: String): JavaTypeVariableName =
  * Returns type variable named `name` with `bounds`.
  */
 @JvmName("of")
-public fun JavaTypeVariableName(name: String, vararg bounds: JavaTypeName): JavaTypeVariableName =
+public fun JavaTypeVariableName(name: String, vararg bounds: JavaTypeRef): JavaTypeVariableName =
     JavaTypeVariableNameImpl(name, bounds.asList())
 
 /**
  * Returns type variable named `name` with `bounds`.
  */
 @JvmName("of")
-public fun JavaTypeVariableName(name: String, bounds: Iterable<JavaTypeName>): JavaTypeVariableName =
+public fun JavaTypeVariableName(name: String, bounds: Iterable<JavaTypeRef>): JavaTypeVariableName =
     JavaTypeVariableNameImpl(name, bounds.toList())
