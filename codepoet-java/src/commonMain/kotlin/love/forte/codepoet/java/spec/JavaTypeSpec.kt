@@ -821,13 +821,13 @@ public inline fun JavaTypeSpec.Builder<*, *>.addField(
 
 public inline fun JavaTypeSpec.Builder<*, *>.addMethod(
     name: String,
-    block: JavaMethodSpec.Builder.() -> Unit = {}
+    block: JavaMethodSpecBuilder.() -> Unit = {}
 ) {
     addMethod(JavaMethodSpec(name, block))
 }
 
 public inline fun JavaTypeSpec.Builder<*, *>.addMethod(
-    block: JavaMethodSpec.Builder.() -> Unit = {}
+    block: JavaMethodSpecBuilder.() -> Unit = {}
 ) {
     addMethod(JavaMethodSpec(block))
 }

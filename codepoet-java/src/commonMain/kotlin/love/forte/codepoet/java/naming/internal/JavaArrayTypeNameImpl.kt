@@ -11,7 +11,7 @@ import love.forte.codepoet.java.ref.JavaTypeRef
  * @author ForteScarlet
  */
 internal class JavaArrayTypeNameImpl(
-    override val componentType: JavaTypeRef,
+    override val componentType: JavaTypeRef<*>,
 ) : JavaArrayTypeName {
     override fun emit(codeWriter: JavaCodeWriter, varargs: Boolean) {
         emitLeafType(codeWriter)

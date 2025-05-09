@@ -14,7 +14,7 @@ import love.forte.codepoet.java.ref.JavaTypeRef
 internal class JavaParameterizedTypeNameImpl(
     private val enclosingType: JavaParameterizedTypeName?,
     override val rawType: JavaClassName,
-    override val typeArguments: List<JavaTypeRef> = emptyList(),
+    override val typeArguments: List<JavaTypeRef<*>> = emptyList(),
     // override val annotations: List<JavaAnnotationSpec> = emptyList(),
 ) : JavaParameterizedTypeName {
     override fun nestedClass(name: String): JavaParameterizedTypeName {
@@ -24,7 +24,7 @@ internal class JavaParameterizedTypeNameImpl(
         )
     }
 
-    override fun nestedClass(name: String, typeArguments: List<JavaTypeRef>): JavaParameterizedTypeName {
+    override fun nestedClass(name: String, typeArguments: List<JavaTypeRef<*>>): JavaParameterizedTypeName {
         return JavaParameterizedTypeNameImpl(
             this,
             rawType.nestedClass(name),

@@ -4,7 +4,9 @@ import love.forte.codepoet.common.code.isEmpty
 import love.forte.codepoet.java.*
 import love.forte.codepoet.java.naming.JavaTypeName
 import love.forte.codepoet.java.naming.JavaTypeVariableName
-import love.forte.codepoet.java.spec.JavaAnnotationSpec
+import love.forte.codepoet.java.ref.JavaAnnotationRef
+import love.forte.codepoet.java.ref.JavaTypeRef
+import love.forte.codepoet.java.ref.javaRef
 import love.forte.codepoet.java.spec.JavaMethodSpec
 import love.forte.codepoet.java.spec.JavaParameterSpec
 
@@ -12,38 +14,23 @@ import love.forte.codepoet.java.spec.JavaParameterSpec
 internal class JavaMethodSpecImpl(
     override val name: String,
     override val javadoc: JavaCodeValue,
-    override val annotations: List<JavaAnnotationSpec>,
+    override val annotations: List<JavaAnnotationRef>,
     override val modifiers: Set<JavaModifier>,
-    override val typeVariables: List<JavaTypeVariableName>,
-    override val returnType: JavaTypeName?,
+    override val typeVariables: List<JavaTypeRef<JavaTypeVariableName>>,
+    override val returnType: JavaTypeRef<*>?,
     override val parameters: List<JavaParameterSpec>,
     override val isVarargs: Boolean,
-    override val exceptions: List<JavaTypeName>,
+    override val exceptions: List<JavaTypeRef<*>>,
     override val code: JavaCodeValue,
     override val defaultValue: JavaCodeValue,
 ) : JavaMethodSpec {
-    override fun toBuilder(): JavaMethodSpec.Builder {
-        return JavaMethodSpec.Builder(name).also { builder ->
-            builder.javadoc.add(javadoc)
-            builder.annotations.addAll(annotations)
-            builder.modifiers.addAll(modifiers)
-            builder.typeVariables.addAll(typeVariables)
-            builder.returnType = returnType
-            builder.parameters.addAll(parameters)
-            builder.isVarargs = isVarargs
-            builder.exceptions.addAll(exceptions)
-            builder.code.add(code)
-            builder.defaultValue = defaultValue.takeUnless { it.isEmpty }
-        }
-    }
-
     override fun emit(codeWriter: JavaCodeWriter, name: String?, implicitModifiers: Set<JavaModifier>) {
         javadocWithParameters().emit(codeWriter)
-        codeWriter.emitAnnotations(annotations, false)
+        codeWriter.emitAnnotationRefs(annotations, false)
         codeWriter.emitModifiers(modifiers, implicitModifiers)
 
         if (typeVariables.isNotEmpty()) {
-            codeWriter.emitTypeVariables(typeVariables)
+            codeWriter.emitTypeVariablesRef(typeVariables)
             codeWriter.emit(" ")
         }
 
@@ -53,7 +40,7 @@ internal class JavaMethodSpecImpl(
             }
         } else {
             codeWriter.emit("%V ${this.name}(%V") {
-                type(returnType ?: JavaTypeName.Builtins.VOID)
+                type(returnType ?: JavaTypeName.Builtins.VOID.javaRef())
                 zeroWidthSpace()
             }
         }
@@ -78,7 +65,7 @@ internal class JavaMethodSpecImpl(
             defaultValue.emit(codeWriter)
         }
 
-        if (!exceptions.isEmpty()) {
+        if (exceptions.isNotEmpty()) {
             codeWriter.emitWrappingSpace()
             codeWriter.emit("throws")
             var firstException = true

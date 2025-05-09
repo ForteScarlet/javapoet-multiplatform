@@ -11,10 +11,10 @@ import love.forte.codepoet.java.ref.JavaTypeRef
  *
  * @author ForteScarlet
  */
-internal data class JavaTypeRefImpl(
-    override val typeName: JavaTypeName,
+internal data class JavaTypeRefImpl<T : JavaTypeName>(
+    override val typeName: T,
     override val status: JavaTypeNameRefStatus
-) : JavaTypeRef {
+) : JavaTypeRef<T> {
     @InternalJavaCodePoetApi
     override fun emit(codeWriter: JavaCodeWriter) {
         emitTo(codeWriter)
@@ -25,12 +25,12 @@ internal data class JavaTypeNameRefStatusImpl(
     override val annotations: List<JavaAnnotationRef>
 ) : JavaTypeNameRefStatus
 
-internal fun JavaTypeRef.emitTo(codeWriter: JavaCodeWriter) {
+internal fun JavaTypeRef<*>.emitTo(codeWriter: JavaCodeWriter) {
     emitAnnotations(codeWriter)
     typeName.emit(codeWriter)
 }
 
-private fun JavaTypeRef.emitAnnotations(codeWriter: JavaCodeWriter) {
+private fun JavaTypeRef<*>.emitAnnotations(codeWriter: JavaCodeWriter) {
     for (annotation in status.annotations) {
         annotation.emitTo(codeWriter)
         codeWriter.emit(" ")

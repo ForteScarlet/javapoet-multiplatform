@@ -28,7 +28,7 @@ import kotlin.jvm.JvmName
 public interface JavaParameterizedTypeName : JavaTypeName {
     public val rawType: JavaClassName
 
-    public val typeArguments: List<JavaTypeRef>
+    public val typeArguments: List<JavaTypeRef<*>>
 
     /**
      * Returns a new [JavaParameterizedTypeName] instance for the specified [name] as nested inside this class.
@@ -39,13 +39,13 @@ public interface JavaParameterizedTypeName : JavaTypeName {
      * Returns a new [JavaParameterizedTypeName] instance for the specified [name] as nested
      * inside this class, with the specified [typeArguments].
      */
-    public fun nestedClass(name: String, typeArguments: List<JavaTypeRef>): JavaParameterizedTypeName
+    public fun nestedClass(name: String, typeArguments: List<JavaTypeRef<*>>): JavaParameterizedTypeName
 
     /**
      * Returns a new [JavaParameterizedTypeName] instance for the specified [name] as nested
      * inside this class, with the specified [typeArguments].
      */
-    public fun nestedClass(name: String, vararg typeArguments: JavaTypeRef): JavaParameterizedTypeName =
+    public fun nestedClass(name: String, vararg typeArguments: JavaTypeRef<*>): JavaParameterizedTypeName =
         nestedClass(name, typeArguments.asList())
 
     public companion object
@@ -67,11 +67,11 @@ public interface JavaParameterizedTypeName : JavaTypeName {
 
 /** Returns a parameterized type, applying [typeArguments] to [rawType]. */
 @JvmName("of")
-public fun JavaParameterizedTypeName(rawType: JavaClassName, vararg typeArguments: JavaTypeRef): JavaParameterizedTypeName {
+public fun JavaParameterizedTypeName(rawType: JavaClassName, vararg typeArguments: JavaTypeRef<*>): JavaParameterizedTypeName {
     return JavaParameterizedTypeNameImpl(null, rawType, typeArguments.asList())
 }
 /** Returns a parameterized type, applying [typeArguments] to [rawType]. */
 @JvmName("of")
-public fun JavaParameterizedTypeName(rawType: JavaClassName, typeArguments: Iterable<JavaTypeRef>): JavaParameterizedTypeName {
+public fun JavaParameterizedTypeName(rawType: JavaClassName, typeArguments: Iterable<JavaTypeRef<*>>): JavaParameterizedTypeName {
     return JavaParameterizedTypeNameImpl(null, rawType, typeArguments.toList())
 }

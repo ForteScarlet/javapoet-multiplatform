@@ -32,7 +32,7 @@ import kotlin.jvm.JvmName
  *
  */
 public interface JavaArrayTypeName : JavaTypeName {
-    public val componentType: JavaTypeRef
+    public val componentType: JavaTypeRef<*>
 
     override fun emit(codeWriter: JavaCodeWriter) {
         emit(codeWriter, false)
@@ -43,5 +43,5 @@ public interface JavaArrayTypeName : JavaTypeName {
 }
 
 @JvmName("of")
-public fun JavaArrayTypeName(componentType: JavaTypeRef): JavaArrayTypeName =
+public fun JavaArrayTypeName(componentType: JavaTypeRef<*>): JavaArrayTypeName =
     JavaArrayTypeNameImpl(componentType)

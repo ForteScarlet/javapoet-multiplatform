@@ -12,9 +12,9 @@ import love.forte.codepoet.java.ref.JavaTypeRef
  */
 internal class JavaTypeVariableNameImpl(
     override val name: String,
-    override val bounds: List<JavaTypeRef> = emptyList(),
+    override val bounds: List<JavaTypeRef<*>> = emptyList(),
 ) : JavaTypeVariableName {
-    override fun withBounds(bounds: List<JavaTypeRef>): JavaTypeVariableName {
+    override fun withBounds(bounds: List<JavaTypeRef<*>>): JavaTypeVariableName {
         return JavaTypeVariableNameImpl(name, this.bounds + bounds)
     }
 

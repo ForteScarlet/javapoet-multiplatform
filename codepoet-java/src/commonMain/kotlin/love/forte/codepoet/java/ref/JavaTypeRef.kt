@@ -12,8 +12,8 @@ import love.forte.codepoet.java.ref.internal.JavaTypeRefImpl
 /**
  * Java's [TypeRef].
  */
-public interface JavaTypeRef : TypeRef, JavaCodeEmitter {
-    override val typeName: JavaTypeName
+public interface JavaTypeRef<out T : JavaTypeName> : TypeRef, JavaCodeEmitter {
+    override val typeName: T
     override val status: JavaTypeNameRefStatus
 }
 
@@ -27,28 +27,26 @@ public interface JavaTypeNameRefStatus : TypeNameRefStatus {
 /**
  * @see TypeRef
  */
-public inline fun JavaTypeName.javaRef(block: JavaTypeNameRefBuilder.() -> Unit): JavaTypeRef =
-    JavaTypeNameRefBuilder(this).also(block).build()
+public inline fun <T : JavaTypeName> T.javaRef(block: JavaTypeRefBuilder<T>.() -> Unit = {}): JavaTypeRef<T> =
+    JavaTypeRefBuilder(this).also(block).build()
 
 /**
  * Builder for [JavaTypeRef].
  */
-public class JavaTypeNameRefBuilder @PublishedApi internal constructor(public val typeName: JavaTypeName) : BuilderDsl {
+public class JavaTypeRefBuilder<T : JavaTypeName> @PublishedApi internal constructor(public val typeName: T) :
+    JavaAnnotationRefCollectable<JavaTypeRefBuilder<T>>,
+    BuilderDsl {
     public val status: JavaTypeNameRefStatusBuilder = JavaTypeNameRefStatusBuilder()
 
-    public fun addAnnotationRef(ref: JavaAnnotationRef): JavaTypeNameRefBuilder = apply {
+    override fun addAnnotationRef(ref: JavaAnnotationRef): JavaTypeRefBuilder<T> = apply {
         status.addAnnotationRef(ref)
     }
 
-    public fun addAnnotationRefs(refs: Iterable<JavaAnnotationRef>): JavaTypeNameRefBuilder = apply {
+    override fun addAnnotationRefs(refs: Iterable<JavaAnnotationRef>): JavaTypeRefBuilder<T> = apply {
         status.addAnnotationRefs(refs)
     }
 
-    public fun addAnnotationRefs(vararg refs: JavaAnnotationRef): JavaTypeNameRefBuilder = apply {
-        status.addAnnotationRefs(*refs)
-    }
-
-    public fun build(): JavaTypeRef {
+    public fun build(): JavaTypeRef<T> {
         return JavaTypeRefImpl(
             typeName = typeName,
             status = status.build()
@@ -64,8 +62,9 @@ public class JavaTypeNameRefBuilder @PublishedApi internal constructor(public va
  *     }
  * }
  */
-public inline fun JavaTypeNameRefBuilder.status(block: JavaTypeNameRefStatusBuilder.() -> Unit = {}): JavaTypeNameRefBuilder =
-    apply { status.block() }
+public inline fun <T : JavaTypeName> JavaTypeRefBuilder<T>.status(
+    block: JavaTypeNameRefStatusBuilder.() -> Unit = {}
+): JavaTypeRefBuilder<T> = apply { status.block() }
 
 /**
  * ```Kotlin

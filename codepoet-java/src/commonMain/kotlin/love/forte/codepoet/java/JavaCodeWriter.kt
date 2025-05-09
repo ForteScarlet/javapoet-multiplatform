@@ -23,6 +23,9 @@ import love.forte.codepoet.java.internal.emit0
 import love.forte.codepoet.java.internal.isSourceIdentifier
 import love.forte.codepoet.java.naming.JavaClassName
 import love.forte.codepoet.java.naming.JavaTypeVariableName
+import love.forte.codepoet.java.ref.JavaAnnotationRef
+import love.forte.codepoet.java.ref.JavaTypeRef
+import love.forte.codepoet.java.ref.internal.emitTo
 import love.forte.codepoet.java.spec.JavaAnnotationSpec
 import love.forte.codepoet.java.spec.JavaTypeSpec
 
@@ -127,6 +130,13 @@ public class JavaCodeWriter private constructor(
         }
     }
 
+    internal fun emitAnnotationRefs(annotations: Iterable<JavaAnnotationRef>, inline: Boolean) {
+        for (annotation in annotations) {
+            annotation.emitTo(this, inline)
+            emit(if (inline) " " else "\n")
+        }
+    }
+
     internal fun emitModifiers(modifiers: Set<JavaModifier>, implicitModifiers: Set<JavaModifier> = emptySet()) {
         if (modifiers.isEmpty()) return
 
@@ -161,8 +171,36 @@ public class JavaCodeWriter private constructor(
         emit(">")
     }
 
+    internal fun emitTypeVariablesRef(typeVariables: List<JavaTypeRef<JavaTypeVariableName>>) {
+        if (typeVariables.isEmpty()) return
+
+        typeVariables.forEach { typeVariable -> currentTypeVariables.add(typeVariable.typeName.name) }
+
+        emit("<")
+        var firstTypeVariable = true
+        for (typeVariable in typeVariables) {
+            if (!firstTypeVariable) emit(", ")
+            // TODO typeVariableRef
+            emitAnnotationRefs(typeVariable.status.annotations, true)
+            emit("%V") { literal(typeVariable.typeName.name) }
+            var firstBound = true
+            for (bound in typeVariable.typeName.bounds) {
+                emit(if (firstBound) " extends %V" else " & %V") {
+                    type(bound)
+                }
+                firstBound = false
+            }
+            firstTypeVariable = false
+        }
+        emit(">")
+    }
+
     internal fun popTypeVariables(typeVariables: List<JavaTypeVariableName>) {
         typeVariables.forEach { typeVariable -> currentTypeVariables.remove(typeVariable.name) }
+    }
+
+    internal fun popTypeVariables(typeVariableRefs: List<JavaTypeRef<JavaTypeVariableName>>) {
+        typeVariableRefs.forEach { typeVariableRef -> currentTypeVariables.remove(typeVariableRef.typeName.name) }
     }
 
     internal fun emitWrappingSpace() {

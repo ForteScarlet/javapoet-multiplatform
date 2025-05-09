@@ -26,11 +26,11 @@ import kotlin.jvm.JvmName
 
 public interface JavaTypeVariableName : JavaTypeName {
     public val name: String
-    public val bounds: List<JavaTypeRef>
+    public val bounds: List<JavaTypeRef<*>>
 
-    public fun withBounds(bounds: List<JavaTypeRef>): JavaTypeVariableName
+    public fun withBounds(bounds: List<JavaTypeRef<*>>): JavaTypeVariableName
 
-    public fun withBounds(vararg bounds: JavaTypeRef): JavaTypeVariableName {
+    public fun withBounds(vararg bounds: JavaTypeRef<*>): JavaTypeVariableName {
         return withBounds(bounds.asList())
     }
 }
@@ -46,12 +46,12 @@ public fun JavaTypeVariableName(name: String): JavaTypeVariableName =
  * Returns type variable named `name` with `bounds`.
  */
 @JvmName("of")
-public fun JavaTypeVariableName(name: String, vararg bounds: JavaTypeRef): JavaTypeVariableName =
+public fun JavaTypeVariableName(name: String, vararg bounds: JavaTypeRef<*>): JavaTypeVariableName =
     JavaTypeVariableNameImpl(name, bounds.asList())
 
 /**
  * Returns type variable named `name` with `bounds`.
  */
 @JvmName("of")
-public fun JavaTypeVariableName(name: String, bounds: Iterable<JavaTypeRef>): JavaTypeVariableName =
+public fun JavaTypeVariableName(name: String, bounds: Iterable<JavaTypeRef<*>>): JavaTypeVariableName =
     JavaTypeVariableNameImpl(name, bounds.toList())
