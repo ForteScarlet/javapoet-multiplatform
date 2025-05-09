@@ -92,7 +92,7 @@ public class JavaMethodSpecBuilder internal constructor(
     internal var returnType: JavaTypeRef<*>? = null
 
     @PublishedApi
-    internal val code: JavaCodeValueBuilder = JavaCodeValue.Companion.builder()
+    internal val code: JavaCodeValueBuilder = JavaCodeValue.builder()
     internal var defaultValue: JavaCodeValue? = null
     internal val exceptions = linkedSetOf<JavaTypeRef<*>>()
 
@@ -262,7 +262,7 @@ public class JavaMethodSpecBuilder internal constructor(
             isVarargs = isVarargs,
             exceptions = exceptions.toList(),
             code = code.build(),
-            defaultValue = defaultValue ?: JavaCodeValue.Companion.EMPTY
+            defaultValue = defaultValue ?: JavaCodeValue.EMPTY
         )
     }
 }

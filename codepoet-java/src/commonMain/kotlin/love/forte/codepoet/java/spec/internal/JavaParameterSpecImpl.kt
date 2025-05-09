@@ -5,28 +5,20 @@ import love.forte.codepoet.java.JavaCodeWriter
 import love.forte.codepoet.java.JavaModifier
 import love.forte.codepoet.java.emitToString
 import love.forte.codepoet.java.naming.JavaArrayTypeName
-import love.forte.codepoet.java.naming.JavaTypeName
-import love.forte.codepoet.java.spec.JavaAnnotationSpec
+import love.forte.codepoet.java.ref.JavaAnnotationRef
+import love.forte.codepoet.java.ref.JavaTypeRef
 import love.forte.codepoet.java.spec.JavaParameterSpec
 
 
 internal class JavaParameterSpecImpl internal constructor(
-    override val type: JavaTypeName,
+    override val type: JavaTypeRef<*>,
     override val name: String,
-    override val annotations: List<JavaAnnotationSpec>,
+    override val annotations: List<JavaAnnotationRef>,
     override val modifiers: Set<JavaModifier>,
     override val javadoc: JavaCodeValue,
 ) : JavaParameterSpec {
-    override fun toBuilder(): JavaParameterSpec.Builder {
-        return JavaParameterSpec.builder(type, name).also { builder ->
-            builder.annotations.addAll(annotations)
-            builder.modifiers.addAll(modifiers)
-            builder.javadoc.add(javadoc)
-        }
-    }
-
     override fun emit(codeWriter: JavaCodeWriter, vararg: Boolean) {
-        codeWriter.emitAnnotations(annotations, true)
+        codeWriter.emitAnnotationRefs(annotations, true)
         codeWriter.emitModifiers(modifiers)
 
         if (vararg) {

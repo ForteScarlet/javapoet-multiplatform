@@ -211,10 +211,10 @@ public sealed interface JavaTypeSpec : JavaSpec {
             check(name == null || name.isSourceName()) { "Invalid `name`: $name" }
         }
 
-        internal val javadoc = JavaCodeValue.Companion.builder()
+        internal val javadoc = JavaCodeValue.builder()
         internal var superclass: JavaTypeName? = null
-        internal val staticBlock = JavaCodeValue.Companion.builder()
-        internal val initializerBlock = JavaCodeValue.Companion.builder()
+        internal val staticBlock = JavaCodeValue.builder()
+        internal val initializerBlock = JavaCodeValue.builder()
 
         public val annotations: MutableList<JavaAnnotationSpec> = mutableListOf()
         public val modifiers: MutableSet<JavaModifier> = linkedSetOf()
@@ -846,7 +846,7 @@ public inline fun JavaEnumTypeSpec.Builder.addEnumConstant(
 public inline fun JavaRecordTypeSpec.Builder.addMainConstructorParameter(
     type: JavaTypeName,
     name: String,
-    block: JavaParameterSpec.Builder.() -> Unit = {}
+    block: JavaParameterSpecBuilder.() -> Unit = {}
 ) {
     addMainConstructorParameter(
         JavaParameterSpec(type, name, block)
