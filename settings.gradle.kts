@@ -1,5 +1,5 @@
 /*
- *     Copyright (c) 2021-2024. ForteScarlet.
+ *     Copyright (c) 2021-2025. ForteScarlet.
  *
  *     Project    https://github.com/simple-robot/simpler-robot
  *     Email      ForteScarlet@163.com
@@ -33,11 +33,11 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
 }
 
-rootProject.name = "javapoet-multiplatform"
+rootProject.name = "codegentle"
 
-include(":codepoet-common")
-include(":codepoet-java")
-include(":codepoet-kotlin")
-// include(":codepoet-java-apt")
+include(":codegentle-common")
+include(":codegentle-java")
+include(":codegentle-kotlin")
+// include(":codegentle-java-apt")
 
-// include(":codepoet-tests:codepoet-java-apt-test")
+// include(":codegentle-tests:codegentle-java-apt-test")
