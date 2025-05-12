@@ -19,6 +19,7 @@
 
 package love.forte.codegentle.java
 
+import love.forte.codegentle.java.strategy.JavaWriteStrategy
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.IOException
@@ -38,7 +39,11 @@ import kotlin.io.path.notExists
 
 @JvmOverloads
 @Throws(IOException::class)
-public fun JavaFile.writeTo(directory: Path, charset: Charset = Charsets.UTF_8) {
+public fun JavaFile.writeTo(
+    directory: Path,
+    charset: Charset = Charsets.UTF_8,
+    strategy: JavaWriteStrategy = JavaWriteStrategy
+) {
     require(directory.notExists() || directory.isDirectory()) {
         "Path $directory does not exist or is not a directory."
     }
@@ -55,14 +60,17 @@ public fun JavaFile.writeTo(directory: Path, charset: Charset = Charsets.UTF_8) 
     val outputPath = outputDir.resolve(type.name + ".java")
 
     outputPath.bufferedWriter(charset = charset).use { writer ->
-        writeTo(writer)
+        writeTo(out = writer, strategy = strategy)
     }
 }
 
-@JvmOverloads
 @Throws(IOException::class)
-public fun JavaFile.writeTo(directory: File, charset: Charset = Charsets.UTF_8) {
-    writeTo(directory.toPath(), charset)
+public fun JavaFile.writeTo(
+    directory: File,
+    charset: Charset = Charsets.UTF_8,
+    strategy: JavaWriteStrategy = JavaWriteStrategy
+) {
+    writeTo(directory.toPath(), charset, strategy)
 }
 
 // APT
@@ -100,7 +108,11 @@ public fun JavaFile.toJavaFileObject(): JavaFileObject {
  * @param originatingElements see `originatingElements` in [Filer.createSourceFile]
  */
 @Throws(IOException::class)
-public fun JavaFile.writeTo(filer: Filer, vararg originatingElements: Element) {
+public fun JavaFile.writeTo(
+    filer: Filer,
+    strategy: JavaWriteStrategy = JavaWriteStrategy,
+    vararg originatingElements: Element
+) {
     val fileName = if (packageName.isEmpty()) {
         type.name
     } else {
@@ -111,7 +123,7 @@ public fun JavaFile.writeTo(filer: Filer, vararg originatingElements: Element) {
 
     try {
         filerSourceFile.openWriter().use { writer ->
-            writeTo(writer)
+            writeTo(out = writer, strategy = strategy)
         }
     } catch (e: Exception) {
         runCatching {

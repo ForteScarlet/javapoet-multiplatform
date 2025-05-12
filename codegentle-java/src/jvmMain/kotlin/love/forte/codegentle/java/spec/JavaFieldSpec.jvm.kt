@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-@file:JvmName("FieldSpecs")
+@file:JvmName("JavaFieldSpecs")
 @file:JvmMultifileClass
 
-package love.forte.codegentle.java
+package love.forte.codegentle.java.spec
 
+import love.forte.codegentle.java.naming.toClassName
+import love.forte.codegentle.java.naming.toTypeName
 import love.forte.codegentle.java.ref.JavaAnnotationRefBuilder
 import love.forte.codegentle.java.ref.javaAnnotationRef
-import love.forte.codegentle.java.spec.FieldSpec
-import love.forte.codegentle.java.spec.FieldSpecBuilder
 import java.lang.reflect.Type
 import kotlin.reflect.KClass
 

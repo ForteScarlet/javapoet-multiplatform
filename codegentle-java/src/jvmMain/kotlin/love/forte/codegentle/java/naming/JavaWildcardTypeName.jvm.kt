@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:JvmName("WildcardTypeNames")
+@file:JvmName("JavaWildcardTypeNames")
 @file:JvmMultifileClass
 
-package love.forte.codegentle.java
+package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.java.naming.JavaSubtypeWildcardTypeName
-import love.forte.codegentle.java.naming.JavaSupertypeWildcardTypeName
 import love.forte.codegentle.java.naming.internal.JavaSubtypeWildcardTypeNameImpl
 import love.forte.codegentle.java.naming.internal.JavaSupertypeWildcardTypeNameImpl
 import love.forte.codegentle.java.ref.javaRef

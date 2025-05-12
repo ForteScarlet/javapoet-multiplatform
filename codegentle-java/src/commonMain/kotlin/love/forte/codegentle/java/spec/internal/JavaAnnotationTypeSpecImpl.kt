@@ -1,11 +1,21 @@
 package love.forte.codegentle.java.spec.internal
 
-import love.forte.codegentle.java.*
+import love.forte.codegentle.java.JavaCodeValue
+import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.internal.doEmit
 import love.forte.codegentle.java.internal.emitMembers
 import love.forte.codegentle.java.internal.toVirtualTypeSpec
+import love.forte.codegentle.java.literal
 import love.forte.codegentle.java.naming.JavaTypeVariableName
-import love.forte.codegentle.java.spec.*
+import love.forte.codegentle.java.ref.JavaAnnotationRef
+import love.forte.codegentle.java.ref.JavaTypeRef
+import love.forte.codegentle.java.spec.FieldSpec
+import love.forte.codegentle.java.spec.JavaAnnotationTypeSpec
+import love.forte.codegentle.java.spec.JavaMethodSpec
+import love.forte.codegentle.java.spec.JavaTypeSpec
+import love.forte.codegentle.java.writer.JavaCodeWriter
+import love.forte.codegentle.java.writer.emit
+import love.forte.codegentle.java.writer.emitToString
 
 
 /**
@@ -16,14 +26,14 @@ internal class JavaAnnotationTypeSpecImpl(
     override val name: String,
     override val kind: JavaTypeSpec.Kind,
     override val javadoc: JavaCodeValue,
-    override val annotations: List<JavaAnnotationSpec>,
+    override val annotations: List<JavaAnnotationRef>,
     override val modifiers: Set<JavaModifier>,
-    override val typeVariables: List<JavaTypeVariableName>,
+    override val typeVariables: List<JavaTypeRef<JavaTypeVariableName>>,
     override val fields: List<FieldSpec>,
     override val staticBlock: JavaCodeValue,
     override val initializerBlock: JavaCodeValue,
     override val methods: List<JavaMethodSpec>,
-    override val types: List<JavaTypeSpec>
+    override val subtypes: List<JavaTypeSpec>
 ) : JavaAnnotationTypeSpec {
 
     override fun emit(codeWriter: JavaCodeWriter, implicitModifiers: Set<JavaModifier>) {
@@ -32,20 +42,20 @@ internal class JavaAnnotationTypeSpecImpl(
             codeWriter.pushType(this.toVirtualTypeSpec(name))
 
             codeWriter.emitJavadoc(javadoc)
-            codeWriter.emitAnnotations(annotations, false)
+            codeWriter.emitAnnotationRefs(annotations, false)
             codeWriter.emitModifiers(modifiers, implicitModifiers + kind.asMemberModifiers)
             codeWriter.emit("@interface %V") {
                 literal(name)
             }
 
-            codeWriter.emitTypeVariables(typeVariables)
+            codeWriter.emitTypeVariableRefs(typeVariables)
 
             codeWriter.popType()
             codeWriter.emit(" {\n")
 
             emitMembers(codeWriter)
 
-            codeWriter.popTypeVariables(typeVariables)
+            codeWriter.popTypeVariableRefs(typeVariables)
 
             codeWriter.emit("}\n")
         }
@@ -67,7 +77,7 @@ internal class JavaAnnotationTypeSpecImpl(
         if (staticBlock != other.staticBlock) return false
         if (initializerBlock != other.initializerBlock) return false
         if (methods != other.methods) return false
-        if (types != other.types) return false
+        if (subtypes != other.subtypes) return false
 
         return true
     }
@@ -85,7 +95,7 @@ internal class JavaAnnotationTypeSpecImpl(
         result = 31 * result + staticBlock.hashCode()
         result = 31 * result + initializerBlock.hashCode()
         result = 31 * result + methods.hashCode()
-        result = 31 * result + types.hashCode()
+        result = 31 * result + subtypes.hashCode()
         return result
     }
 

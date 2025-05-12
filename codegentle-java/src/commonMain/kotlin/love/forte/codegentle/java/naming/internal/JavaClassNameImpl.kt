@@ -2,12 +2,12 @@ package love.forte.codegentle.java.naming.internal
 
 import love.forte.codegentle.common.naming.canonicalName
 import love.forte.codegentle.common.naming.simpleNames
-import love.forte.codegentle.java.JavaCodeWriter
-import love.forte.codegentle.java.emitToString
 import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.spec.nestedTypesSimpleNames
+import love.forte.codegentle.java.writer.JavaCodeWriter
+import love.forte.codegentle.java.writer.emitToString
 
 
 /**
@@ -166,7 +166,8 @@ private fun JavaCodeWriter.lookupName(className: JavaClassName): String {
 
 
     // We'll have to use the fully-qualified name. Mark the type as importable for a future pass.
-    if (!javadoc) {
+    // if (!javadoc) {
+    if (commentType?.isJavadoc != true) {
         importableType(className)
     }
 

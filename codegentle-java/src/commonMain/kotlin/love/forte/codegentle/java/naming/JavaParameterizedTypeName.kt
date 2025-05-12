@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@file:JvmName("ParameterizedTypeNames")
+@file:JvmName("JavaParameterizedTypeNames")
 @file:JvmMultifileClass
 
 package love.forte.codegentle.java.naming

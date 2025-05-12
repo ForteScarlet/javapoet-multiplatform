@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-@file:JvmName("ParameterizedTypeNames")
+@file:JvmName("JavaParameterizedTypeNames")
 @file:JvmMultifileClass
 
-package love.forte.codegentle.java
+package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.java.naming.JavaParameterizedTypeName
-import love.forte.codegentle.java.naming.JavaTypeVariableName
 import love.forte.codegentle.java.naming.internal.JavaParameterizedTypeNameImpl
 import love.forte.codegentle.java.ref.javaRef
 import java.lang.reflect.Modifier

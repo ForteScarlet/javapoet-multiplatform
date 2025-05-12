@@ -1,4 +1,4 @@
-package love.forte.codegentle.java.writer
+package love.forte.codegentle.java.strategy
 
 import love.forte.codegentle.common.writer.Strategy
 
@@ -8,4 +8,7 @@ import love.forte.codegentle.common.writer.Strategy
  * @author ForteScarlet
  */
 public interface JavaWriteStrategy : Strategy {
+
+
+    public companion object Default : JavaWriteStrategy by DefaultJavaWriteStrategy()
 }

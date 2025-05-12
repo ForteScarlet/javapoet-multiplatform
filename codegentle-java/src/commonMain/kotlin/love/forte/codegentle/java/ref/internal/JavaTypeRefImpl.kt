@@ -1,12 +1,12 @@
 package love.forte.codegentle.java.ref.internal
 
 import love.forte.codegentle.java.InternalJavaCodeGentleApi
-import love.forte.codegentle.java.JavaCodeWriter
-import love.forte.codegentle.java.emitToString
 import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaTypeNameRefStatus
 import love.forte.codegentle.java.ref.JavaTypeRef
+import love.forte.codegentle.java.writer.JavaCodeWriter
+import love.forte.codegentle.java.writer.emitToString
 
 /**
  *

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-@file:JvmName("TypeNames")
+@file:JvmName("JavaTypeNames")
 @file:JvmMultifileClass
 
-package love.forte.codegentle.java
+package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.java.naming.*
 import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.ref.javaRef
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.TypeParameterElement
 import javax.lang.model.type.*
@@ -114,7 +114,7 @@ internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElemen
             val rawType = (asElement as TypeElement).toClassName()
             val enclosingType = t.enclosingType
             val enclosing = if (enclosingType.kind != TypeKind.NONE
-                && !asElement.modifiers.contains(javax.lang.model.element.Modifier.STATIC)
+                && !asElement.modifiers.contains(Modifier.STATIC)
             ) {
                 enclosingType.accept(this, null)
             } else {

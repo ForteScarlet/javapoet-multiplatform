@@ -10,7 +10,7 @@ class CodeValueTests {
     @Test
     fun testEmit() {
         val code = JavaCodeValue {
-            addStatement("String value = %V;", string("Hello, World"))
+            addStatement("String value = %V", string("Hello, World"))
         }
 
         assertEquals("String value = \"Hello, World\";\n", code.toString())

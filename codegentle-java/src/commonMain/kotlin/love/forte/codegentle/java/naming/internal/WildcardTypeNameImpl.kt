@@ -1,13 +1,13 @@
 package love.forte.codegentle.java.naming.internal
 
-import love.forte.codegentle.java.JavaCodeWriter
-import love.forte.codegentle.java.emit
-import love.forte.codegentle.java.emitToString
 import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.naming.JavaSubtypeWildcardTypeName
 import love.forte.codegentle.java.naming.JavaSupertypeWildcardTypeName
 import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.type
+import love.forte.codegentle.java.writer.JavaCodeWriter
+import love.forte.codegentle.java.writer.emit
+import love.forte.codegentle.java.writer.emitToString
 
 internal class JavaSubtypeWildcardTypeNameImpl(
     override val bounds: List<JavaTypeRef<*>>,

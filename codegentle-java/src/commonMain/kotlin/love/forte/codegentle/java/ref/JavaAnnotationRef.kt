@@ -2,10 +2,10 @@ package love.forte.codegentle.java.ref
 
 import love.forte.codegentle.common.computeValueIfAbsent
 import love.forte.codegentle.common.ref.AnnotationRef
-import love.forte.codegentle.java.JavaCodeEmitter
 import love.forte.codegentle.java.JavaCodeValue
 import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.ref.internal.JavaAnnotationRefImpl
+import love.forte.codegentle.java.writer.JavaCodeEmitter
 
 /**
  * A Java annotation ref.

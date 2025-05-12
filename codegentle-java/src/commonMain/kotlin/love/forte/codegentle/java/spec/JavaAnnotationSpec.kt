@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:JvmName("AnnotationSpecs")
+
+@file:JvmName("JavaAnnotationSpecs")
 @file:JvmMultifileClass
 
 package love.forte.codegentle.java.spec
@@ -24,13 +25,13 @@ import love.forte.codegentle.common.computeValueIfAbsent
 import love.forte.codegentle.java.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.java.InternalJavaCodeGentleApi
 import love.forte.codegentle.java.JavaCodeValue
-import love.forte.codegentle.java.JavaCodeWriter
 import love.forte.codegentle.java.internal.isSourceName
 import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaAnnotationRefCollectable
 import love.forte.codegentle.java.spec.internal.JavaAnnotationSpecImpl
+import love.forte.codegentle.java.writer.JavaCodeWriter
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic

@@ -2,11 +2,16 @@ package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.naming.TypeName
-import love.forte.codegentle.java.*
+import love.forte.codegentle.java.JavaCodeValue
 import love.forte.codegentle.java.internal.emit0
+import love.forte.codegentle.java.literal
 import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.spec.JavaAnnotationSpec
+import love.forte.codegentle.java.type
+import love.forte.codegentle.java.writer.JavaCodeWriter
+import love.forte.codegentle.java.writer.emit
+import love.forte.codegentle.java.writer.emitToString
 
 
 internal fun JavaCodeWriter.emitJavaAnnotation(
@@ -15,7 +20,7 @@ internal fun JavaCodeWriter.emitJavaAnnotation(
     members: Map<String, List<CodeValue>>
 ) {
     val whitespace = if (inline) "" else "\n"
-    val memberSeparator = if (inline) ", " else ",\n"
+    val memberSeparator = ", " // member: inline only //if (inline) ", " else ",\n"
 
     if (members.isEmpty()) {
         // @Singleton

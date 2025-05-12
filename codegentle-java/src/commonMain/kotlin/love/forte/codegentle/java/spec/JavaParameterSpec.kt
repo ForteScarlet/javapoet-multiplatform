@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-@file:JvmName("ParameterSpecs")
+@file:JvmName("JavaParameterSpecs")
 @file:JvmMultifileClass
 
 package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.spec.NamedSpec
-import love.forte.codegentle.java.*
+import love.forte.codegentle.java.CodeValueSingleFormatBuilderDsl
+import love.forte.codegentle.java.JavaCodeValue
+import love.forte.codegentle.java.JavaModifier
+import love.forte.codegentle.java.ModifierBuilderContainer
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaAnnotationRefCollectable
 import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.spec.internal.JavaParameterSpecImpl
+import love.forte.codegentle.java.writer.JavaCodeWriter
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
-
 
 /**
  * A generated parameter declaration.

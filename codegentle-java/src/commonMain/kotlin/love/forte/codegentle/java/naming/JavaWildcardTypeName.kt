@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:JvmName("WildcardTypeNames")
+@file:JvmName("JavaWildcardTypeNames")
 @file:JvmMultifileClass
 
 package love.forte.codegentle.java.naming

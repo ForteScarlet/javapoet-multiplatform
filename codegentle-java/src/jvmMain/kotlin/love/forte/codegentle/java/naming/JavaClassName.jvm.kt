@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-@file:JvmName("ClassNames")
+@file:JvmName("JavaClassNames")
 @file:JvmMultifileClass
 
-package love.forte.codegentle.java
+package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.java.naming.JavaClassName
 import javax.lang.model.element.Element
 import javax.lang.model.element.PackageElement
 import javax.lang.model.element.TypeElement

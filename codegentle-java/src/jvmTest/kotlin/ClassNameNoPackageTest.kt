@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import love.forte.codegentle.java.toClassName
+import love.forte.codegentle.java.naming.toClassName
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

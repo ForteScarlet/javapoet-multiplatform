@@ -1,9 +1,13 @@
-package love.forte.codegentle.java
+
+@file:JvmName("JavaAnnotationSpecs")
+@file:JvmMultifileClass
+
+package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.code.CodePart.Companion.literal
-import love.forte.codegentle.java.spec.JavaAnnotationSpec
-import love.forte.codegentle.java.spec.JavaAnnotationSpecBuilder
-import love.forte.codegentle.java.spec.addMember
+import love.forte.codegentle.java.*
+import love.forte.codegentle.java.naming.toClassName
+import love.forte.codegentle.java.naming.toTypeName
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.TypeElement

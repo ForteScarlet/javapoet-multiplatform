@@ -1,11 +1,16 @@
 package love.forte.codegentle.java.internal
 
 import love.forte.codegentle.common.code.isEmpty
-import love.forte.codegentle.java.*
+import love.forte.codegentle.java.JavaCodeValue
+import love.forte.codegentle.java.JavaFile
+import love.forte.codegentle.java.literal
 import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.spec.JavaTypeSpec
-import love.forte.codegentle.java.writer.JavaWriteStrategy
-import love.forte.codegentle.java.writer.ToStringJavaWriteStrategy
+import love.forte.codegentle.java.strategy.JavaWriteStrategy
+import love.forte.codegentle.java.strategy.ToStringJavaWriteStrategy
+import love.forte.codegentle.java.writer.JavaCodeWriter
+import love.forte.codegentle.java.writer.emit
+import love.forte.codegentle.java.writer.inPackage
 
 private object NullAppendable : Appendable {
     override fun append(value: Char): Appendable = this

@@ -17,4 +17,9 @@ public interface Strategy {
      */
     public fun isValidName(name: TypeName): Boolean
 
+    /**
+     * The new line string.
+     */
+    public fun newline(): String = "\n"
+
 }

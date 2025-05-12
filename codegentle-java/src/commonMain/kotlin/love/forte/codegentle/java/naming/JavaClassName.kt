@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@file:JvmName("ClassNames")
+@file:JvmName("JavaClassNames")
 @file:JvmMultifileClass
 
 package love.forte.codegentle.java.naming

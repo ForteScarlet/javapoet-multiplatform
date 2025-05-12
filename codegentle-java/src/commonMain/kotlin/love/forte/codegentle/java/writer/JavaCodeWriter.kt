@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package love.forte.codegentle.java
+package love.forte.codegentle.java.writer
 
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.common.computeValue
 import love.forte.codegentle.common.writer.CodeWriter
+import love.forte.codegentle.java.*
 import love.forte.codegentle.java.internal.LineWrapper
 import love.forte.codegentle.java.internal.emit0
 import love.forte.codegentle.java.internal.isSourceIdentifier
@@ -29,9 +30,9 @@ import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.ref.internal.emitTo
 import love.forte.codegentle.java.spec.JavaAnnotationSpec
 import love.forte.codegentle.java.spec.JavaTypeSpec
-import love.forte.codegentle.java.writer.DefaultJavaWriteStrategy
-import love.forte.codegentle.java.writer.JavaWriteStrategy
-import love.forte.codegentle.java.writer.ToStringJavaWriteStrategy
+import love.forte.codegentle.java.strategy.DefaultJavaWriteStrategy
+import love.forte.codegentle.java.strategy.JavaWriteStrategy
+import love.forte.codegentle.java.strategy.ToStringJavaWriteStrategy
 
 
 @InternalJavaCodeGentleApi
@@ -43,12 +44,22 @@ public class JavaCodeWriter private constructor(
     override val staticImportClassNames: Set<JavaClassName> = emptySet(),
     override val staticImports: Set<String> = emptySet(),
     override val alwaysQualify: Set<String> = emptySet(),
-    internal val importedTypes: Map<String, JavaClassName> = emptyMap(),
+    internal val importedTypes: Map<String, JavaClassName> = emptyMap()
+) : CodeWriter {
 
-    ) : CodeWriter {
+    internal enum class CommentType(
+        val isJavadoc: Boolean = false,
+    ) {
+        JAVADOC(isJavadoc = true),
+        COMMENT,
+    }
+
+
     internal var indentLevel = 0
-    internal var javadoc = false
-    private var comment = false
+    internal var commentType: CommentType? = null
+
+    // internal var javadoc = false
+    // private var comment = false
     internal var packageName: String? = null // com.squareup.javapoet.CodeWriter.NO_PACKAGE
 
     internal val importableTypes: MutableMap<String, JavaClassName> = linkedMapOf()
@@ -67,23 +78,14 @@ public class JavaCodeWriter private constructor(
      */
     internal var statementLine: Int = -1
 
-    internal fun indent() {
-        indent(1)
-    }
-
-    internal fun indent(levels: Int) {
+    internal fun indent(levels: Int = 1) {
         indentLevel += levels
     }
 
-    internal fun unindent() {
-        unindent(1)
-    }
-
-    internal fun unindent(levels: Int) {
+    internal fun unindent(levels: Int = 1) {
         check(indentLevel - levels >= 0) { "cannot unindent $levels from $indentLevel" }
         indentLevel -= levels
     }
-
 
     internal fun pushPackage(packageName: String) {
         check(this.packageName == null) { "package already set: ${this.packageName}" }
@@ -105,12 +107,14 @@ public class JavaCodeWriter private constructor(
 
     internal fun emitComment(codeBlock: JavaCodeValue) {
         trailingNewline = true
-        comment = true
+        commentType = CommentType.COMMENT
+        // comment = true
         try {
             codeBlock.emit(this)
             emit("\n")
         } finally {
-            comment = false
+            commentType = null
+            // comment = false
         }
     }
 
@@ -118,11 +122,13 @@ public class JavaCodeWriter private constructor(
         if (javadoc.isEmpty) return
 
         emit("/**\n")
-        this.javadoc = true
+        this.commentType = CommentType.JAVADOC
+        // this.javadoc = true
         try {
             javadoc.emit0(this, true)
         } finally {
-            this.javadoc = false
+            this.commentType = null
+            // this.javadoc = false
         }
 
         emit(" */\n")
@@ -176,7 +182,7 @@ public class JavaCodeWriter private constructor(
         emit(">")
     }
 
-    internal fun emitTypeVariablesRef(typeVariables: List<JavaTypeRef<JavaTypeVariableName>>) {
+    internal fun emitTypeVariableRefs(typeVariables: List<JavaTypeRef<JavaTypeVariableName>>) {
         if (typeVariables.isEmpty()) return
 
         typeVariables.forEach { typeVariable -> currentTypeVariables.add(typeVariable.typeName.name) }
@@ -258,15 +264,27 @@ public class JavaCodeWriter private constructor(
         codeValue.emit0(this)
     }
 
+    internal fun emitNewline() {
+        out.append(strategy.newline())
+        trailingNewline = true
+    }
+
+    internal fun emitNewlineAndIndent() {
+        emitNewline()
+        emitIndentation()
+    }
+
     internal fun emitAndIndent(s: String) {
         var first = true
         val lines = s.lines()
         for (line in lines) {
             // Emit a newline character. Make sure blank lines in Javadoc & comments look good.
             if (!first) {
-                if ((javadoc || comment) && trailingNewline) {
+                // if ((javadoc || comment) && trailingNewline) {
+                if (commentType != null && trailingNewline) {
                     emitIndentation()
-                    out.append(if (javadoc) " *" else "//")
+                    out.append(if (commentType?.isJavadoc == true) " *" else "//")
+                    // out.append(if (javadoc) " *" else "//")
                 }
                 out.append("\n")
                 trailingNewline = true
@@ -284,10 +302,14 @@ public class JavaCodeWriter private constructor(
             // Emit indentation and comment prefix if necessary.
             if (trailingNewline) {
                 emitIndentation()
-                if (javadoc) {
-                    out.append(" * ")
-                } else if (comment) {
-                    out.append("// ")
+                when (commentType) {
+                    CommentType.JAVADOC -> {
+                        out.append(" * ")
+                    }
+                    CommentType.COMMENT -> {
+                        out.append("// ")
+                    }
+                    null -> {}
                 }
             }
 

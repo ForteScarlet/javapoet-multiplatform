@@ -9,6 +9,9 @@ import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.JavaMethodSpec
 import love.forte.codegentle.java.spec.JavaParameterSpec
+import love.forte.codegentle.java.writer.JavaCodeWriter
+import love.forte.codegentle.java.writer.emit
+import love.forte.codegentle.java.writer.emitToString
 
 
 internal class JavaMethodSpecImpl(
@@ -30,7 +33,7 @@ internal class JavaMethodSpecImpl(
         codeWriter.emitModifiers(modifiers, implicitModifiers)
 
         if (typeVariables.isNotEmpty()) {
-            codeWriter.emitTypeVariablesRef(typeVariables)
+            codeWriter.emitTypeVariableRefs(typeVariables)
             codeWriter.emit(" ")
         }
 

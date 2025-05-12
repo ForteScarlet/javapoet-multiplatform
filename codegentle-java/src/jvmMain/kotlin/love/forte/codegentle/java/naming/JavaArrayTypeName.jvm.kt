@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-@file:JvmName("ArrayTypeNames")
+@file:JvmName("JavaArrayTypeNames")
 @file:JvmMultifileClass
 
-package love.forte.codegentle.java
+package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.java.naming.JavaArrayTypeName
-import love.forte.codegentle.java.naming.JavaTypeVariableName
 import love.forte.codegentle.java.ref.JavaTypeRefBuilder
 import love.forte.codegentle.java.ref.javaRef
 import java.lang.reflect.GenericArrayType

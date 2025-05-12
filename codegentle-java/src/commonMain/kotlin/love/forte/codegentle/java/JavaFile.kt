@@ -26,7 +26,8 @@ import love.forte.codegentle.java.JavaFile.Builder
 import love.forte.codegentle.java.internal.JavaFileImpl
 import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.spec.JavaTypeSpec
-import love.forte.codegentle.java.writer.JavaWriteStrategy
+import love.forte.codegentle.java.strategy.JavaWriteStrategy
+import love.forte.codegentle.java.writer.JavaCodeEmitter
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic

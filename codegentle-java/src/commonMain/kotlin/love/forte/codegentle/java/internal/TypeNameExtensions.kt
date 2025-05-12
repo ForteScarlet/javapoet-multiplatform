@@ -1,14 +1,14 @@
 package love.forte.codegentle.java.internal
 
 import love.forte.codegentle.common.code.isEmpty
-import love.forte.codegentle.java.JavaCodeWriter
 import love.forte.codegentle.java.JavaModifier
-import love.forte.codegentle.java.emit
 import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.spec.internal.JavaSimpleTypeSpecImpl
 import love.forte.codegentle.java.type
+import love.forte.codegentle.java.writer.JavaCodeWriter
+import love.forte.codegentle.java.writer.emit
 
 internal inline fun JavaTypeSpec.doEmit(
     codeWriter: JavaCodeWriter,
@@ -145,7 +145,7 @@ internal inline fun JavaTypeSpec.emitMembers(
     }
 
     // Types
-    for (type in types) {
+    for (type in subtypes) {
         codeWriter.newLineIfNot(firstMember)
         type.emit(codeWriter, kind.implicitFieldModifiers)
         firstMember = false
@@ -170,5 +170,5 @@ internal fun JavaTypeSpec.toVirtualTypeSpec(name: String) =
         staticBlock = staticBlock,
         initializerBlock = initializerBlock,
         methods = emptyList(),
-        types = emptyList(),
+        subtypes = emptyList(),
     )

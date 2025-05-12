@@ -10,6 +10,8 @@ import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.java.internal.JavaJavaCodeValueImpl
 import love.forte.codegentle.java.internal.emit0
+import love.forte.codegentle.java.writer.JavaCodeEmitter
+import love.forte.codegentle.java.writer.JavaCodeWriter
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 

@@ -6,12 +6,12 @@ import love.forte.codegentle.common.code.CodeSimplePart
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.naming.canonicalName
 import love.forte.codegentle.java.JavaCodeValue
-import love.forte.codegentle.java.JavaCodeWriter
-import love.forte.codegentle.java.emitToString
 import love.forte.codegentle.java.literalWithDoubleQuotes
 import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.ref.JavaTypeRef
+import love.forte.codegentle.java.writer.JavaCodeWriter
+import love.forte.codegentle.java.writer.emitToString
 
 
 internal fun CodeValue.emit0(codeWriter: JavaCodeWriter, ensureTrailingNewline: Boolean = false) {

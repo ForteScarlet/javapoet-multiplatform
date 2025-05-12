@@ -1,10 +1,10 @@
 package love.forte.codegentle.java.naming.internal
 
-import love.forte.codegentle.java.JavaCodeWriter
-import love.forte.codegentle.java.emitToString
 import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.naming.JavaPrimitiveTypeName
 import love.forte.codegentle.java.naming.JavaTypeName
+import love.forte.codegentle.java.writer.JavaCodeWriter
+import love.forte.codegentle.java.writer.emitToString
 
 
 internal class JavaPrimitiveTypeNameImpl(

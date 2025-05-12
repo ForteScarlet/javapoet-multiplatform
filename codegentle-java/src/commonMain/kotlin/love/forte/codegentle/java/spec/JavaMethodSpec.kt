@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@file:JvmName("MethodSpecs")
+@file:JvmName("JavaMethodSpecs")
 @file:JvmMultifileClass
 
 package love.forte.codegentle.java.spec
@@ -27,6 +27,7 @@ import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.naming.JavaTypeVariableName
 import love.forte.codegentle.java.ref.*
 import love.forte.codegentle.java.spec.internal.JavaMethodSpecImpl
+import love.forte.codegentle.java.writer.JavaCodeWriter
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
@@ -267,7 +268,7 @@ public class JavaMethodSpecBuilder internal constructor(
     }
 }
 
-public inline fun <T : JavaTypeVariableName> JavaMethodSpecBuilder.addTypeVariable(
+public inline fun <T : JavaTypeVariableName> JavaMethodSpecBuilder.addTypeVariableRef(
     variableName: T,
     block: JavaTypeRefBuilder<T>.() -> Unit = {}
 ): JavaMethodSpecBuilder =

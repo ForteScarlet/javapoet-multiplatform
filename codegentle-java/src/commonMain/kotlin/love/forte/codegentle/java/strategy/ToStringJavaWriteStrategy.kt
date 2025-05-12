@@ -1,4 +1,4 @@
-package love.forte.codegentle.java.writer
+package love.forte.codegentle.java.strategy
 
 import love.forte.codegentle.common.naming.TypeName
 

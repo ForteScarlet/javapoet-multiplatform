@@ -1,10 +1,15 @@
 package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.common.code.isEmpty
-import love.forte.codegentle.java.*
+import love.forte.codegentle.java.JavaCodeValue
+import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.spec.FieldSpec
+import love.forte.codegentle.java.type
+import love.forte.codegentle.java.writer.JavaCodeWriter
+import love.forte.codegentle.java.writer.emit
+import love.forte.codegentle.java.writer.emitToString
 
 
 /**

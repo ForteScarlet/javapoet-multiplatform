@@ -5,7 +5,7 @@ import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.*
-import love.forte.codegentle.java.writer.ToStringJavaWriteStrategy
+import love.forte.codegentle.java.strategy.ToStringJavaWriteStrategy
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -1,13 +1,13 @@
 package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.java.JavaCodeValue
-import love.forte.codegentle.java.JavaCodeWriter
 import love.forte.codegentle.java.JavaModifier
-import love.forte.codegentle.java.emitToString
 import love.forte.codegentle.java.naming.JavaArrayTypeName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.spec.JavaParameterSpec
+import love.forte.codegentle.java.writer.JavaCodeWriter
+import love.forte.codegentle.java.writer.emitToString
 
 
 internal class JavaParameterSpecImpl internal constructor(

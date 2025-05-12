@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-@file:JvmName("TypeNames")
+@file:JvmName("JavaTypeNames")
 @file:JvmMultifileClass
 
 package love.forte.codegentle.java.naming
 
 import love.forte.codegentle.common.naming.TypeName
-import love.forte.codegentle.java.JavaCodeEmitter
 import love.forte.codegentle.java.naming.JavaTypeName.Builtins
 import love.forte.codegentle.java.naming.internal.JavaPrimitiveTypeNameImpl
+import love.forte.codegentle.java.writer.JavaCodeEmitter
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
