@@ -18,6 +18,7 @@ package love.forte.codegentle.java
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.common.computeValue
+import love.forte.codegentle.common.writer.CodeWriter
 import love.forte.codegentle.java.internal.LineWrapper
 import love.forte.codegentle.java.internal.emit0
 import love.forte.codegentle.java.internal.isSourceIdentifier
@@ -28,19 +29,23 @@ import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.ref.internal.emitTo
 import love.forte.codegentle.java.spec.JavaAnnotationSpec
 import love.forte.codegentle.java.spec.JavaTypeSpec
+import love.forte.codegentle.java.writer.DefaultJavaWriteStrategy
+import love.forte.codegentle.java.writer.JavaWriteStrategy
+import love.forte.codegentle.java.writer.ToStringJavaWriteStrategy
 
 
-@InternalJavaCodePoetApi
+@InternalJavaCodeGentleApi
 public class JavaCodeWriter private constructor(
-    internal val indentValue: String,
+    override val strategy: JavaWriteStrategy,
+    override val indentValue: String,
     internal val out: LineWrapper,
 
-    internal val staticImportClassNames: Set<String> = emptySet(),
-    internal val staticImports: Set<String> = emptySet(),
-    internal val alwaysQualify: Set<String> = emptySet(),
+    override val staticImportClassNames: Set<JavaClassName> = emptySet(),
+    override val staticImports: Set<String> = emptySet(),
+    override val alwaysQualify: Set<String> = emptySet(),
     internal val importedTypes: Map<String, JavaClassName> = emptyMap(),
 
-    ) {
+    ) : CodeWriter {
     internal var indentLevel = 0
     internal var javadoc = false
     private var comment = false
@@ -307,40 +312,57 @@ public class JavaCodeWriter private constructor(
         private const val DEFAULT_COLUMN_LIMIT = 100
         private const val DEFAULT_INDENT = "    "
 
-        internal fun create(out: Appendable): JavaCodeWriter {
-            return create(out, DEFAULT_INDENT, emptySet(), emptySet())
+        internal fun create(
+            out: Appendable,
+            dialect: JavaWriteStrategy = DefaultJavaWriteStrategy()
+        ): JavaCodeWriter {
+            return create(
+                dialect = dialect,
+                out = out,
+                indent = DEFAULT_INDENT,
+                staticImports = emptySet(),
+                alwaysQualify = emptySet()
+            )
         }
 
         internal fun create(
+            dialect: JavaWriteStrategy,
             out: Appendable,
             indent: String,
             staticImports: Set<String>,
             alwaysQualify: Set<String>,
         ): JavaCodeWriter {
             return create(
-                out,
-                indent,
-                emptyMap(),
-                staticImports,
-                alwaysQualify
+                dialect = dialect,
+                out = out,
+                indent = indent,
+                importedTypes = emptyMap(),
+                staticImports = staticImports,
+                alwaysQualify = alwaysQualify
             )
         }
 
         internal fun create(
+            dialect: JavaWriteStrategy,
             out: Appendable,
             indent: String,
             importedTypes: Map<String, JavaClassName>,
+            // TODO sealed class StaticImports { className, propertyName, functionName }
             staticImports: Set<String>,
             alwaysQualify: Set<String>
         ): JavaCodeWriter {
             return JavaCodeWriter(
+                strategy = dialect,
                 indentValue = indent,
                 out = LineWrapper.create(out, indent, DEFAULT_COLUMN_LIMIT),
                 importedTypes = importedTypes,
                 staticImports = staticImports,
                 alwaysQualify = alwaysQualify,
                 staticImportClassNames = staticImports.mapTo(linkedSetOf()) {
-                    it.substringBeforeLast('.')
+                    // static import 不止可以import class，还有字段、方法啥的
+                    JavaClassName(it)
+                    // TODO("")
+                    // it.substringBeforeLast('.')
                 },
             )
         }
@@ -387,7 +409,11 @@ internal inline fun JavaCodeWriter.inPackage(packageName: String, block: () -> U
     popPackage()
 }
 
-internal inline fun JavaCodeWriter.emit(ensureTrailingNewline: Boolean, format: String, block: CodeValueSingleFormatBuilderDsl = {}) {
+internal inline fun JavaCodeWriter.emit(
+    ensureTrailingNewline: Boolean,
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+) {
     JavaCodeValue(format, block).emit(this, ensureTrailingNewline)
 }
 
@@ -396,4 +422,11 @@ internal inline fun JavaCodeWriter.emit(format: String, block: CodeValueSingleFo
 }
 
 internal fun JavaCodeEmitter.emitToString(): String =
-    buildString { emit(JavaCodeWriter.create(this)) }
+    buildString {
+        emit(
+            JavaCodeWriter.create(
+                out = this,
+                dialect = ToStringJavaWriteStrategy
+            )
+        )
+    }

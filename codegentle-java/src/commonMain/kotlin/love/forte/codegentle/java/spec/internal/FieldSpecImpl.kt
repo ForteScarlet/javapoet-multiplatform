@@ -2,9 +2,9 @@ package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.java.*
-import love.forte.codegentle.java.naming.JavaTypeName
+import love.forte.codegentle.java.ref.JavaAnnotationRef
+import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.spec.FieldSpec
-import love.forte.codegentle.java.spec.JavaAnnotationSpec
 
 
 /**
@@ -12,25 +12,17 @@ import love.forte.codegentle.java.spec.JavaAnnotationSpec
  * @author ForteScarlet
  */
 internal class FieldSpecImpl internal constructor(
-    override val type: JavaTypeName,
+    override val type: JavaTypeRef<*>,
     override val name: String,
     override val javadoc: JavaCodeValue,
-    override val annotations: List<JavaAnnotationSpec>,
+    override val annotations: List<JavaAnnotationRef>,
     override val modifiers: Set<JavaModifier>,
     override val initializer: JavaCodeValue
 ) : FieldSpec {
-    override fun toBuilder(): FieldSpec.Builder {
-        return FieldSpec.Builder(type, name).also { builder ->
-            builder.javadoc.add(javadoc)
-            builder.annotations.addAll(annotations)
-            builder.modifiers.addAll(modifiers)
-            builder.initializer = initializer.takeUnless { it.isEmpty }
-        }
-    }
 
     override fun emit(codeWriter: JavaCodeWriter, implicitModifiers: Set<JavaModifier>) {
         codeWriter.emitJavadoc(javadoc)
-        codeWriter.emitAnnotations(annotations, false)
+        codeWriter.emitAnnotationRefs(annotations, false)
         codeWriter.emitModifiers(modifiers, implicitModifiers)
         codeWriter.emit("%V $name") {
             type(type)

@@ -1,7 +1,7 @@
-package love.forte.codegentle.common.emitter
+package love.forte.codegentle.common.writer
 
 /**
- * A code emitter.
+ * A code writer.
  *
  * @author ForteScarlet
  */

@@ -14,7 +14,7 @@ import love.forte.codegentle.java.spec.nestedTypesSimpleNames
  *
  * @author ForteScarlet
  */
-internal class JavaClassNameImpl(
+internal data class JavaClassNameImpl(
     override val packageName: String?,
     override val enclosingClassName: JavaClassName?,
     override val simpleName: String,
@@ -98,24 +98,6 @@ internal class JavaClassNameImpl(
             codeWriter.emit(simpleName)
             charsEmitted = true
         }
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is JavaClassNameImpl) return false
-
-        if (packageName != other.packageName) return false
-        if (enclosingClassName != other.enclosingClassName) return false
-        if (simpleName != other.simpleName) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = packageName?.hashCode() ?: 0
-        result = 31 * result + (enclosingClassName?.hashCode() ?: 0)
-        result = 31 * result + simpleName.hashCode()
-        return result
     }
 
     override fun toString(): String {

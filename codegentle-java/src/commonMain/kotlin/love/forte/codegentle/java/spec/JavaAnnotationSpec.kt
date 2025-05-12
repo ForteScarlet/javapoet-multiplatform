@@ -22,7 +22,7 @@ import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.computeValueIfAbsent
 import love.forte.codegentle.java.CodeValueSingleFormatBuilderDsl
-import love.forte.codegentle.java.InternalJavaCodePoetApi
+import love.forte.codegentle.java.InternalJavaCodeGentleApi
 import love.forte.codegentle.java.JavaCodeValue
 import love.forte.codegentle.java.JavaCodeWriter
 import love.forte.codegentle.java.internal.isSourceName
@@ -46,12 +46,12 @@ public interface JavaAnnotationSpec : JavaSpec {
 
     public val annotations: List<JavaAnnotationRef>
 
-    @InternalJavaCodePoetApi
+    @InternalJavaCodeGentleApi
     override fun emit(codeWriter: JavaCodeWriter) {
         emit(codeWriter, true)
     }
 
-    @InternalJavaCodePoetApi
+    @InternalJavaCodeGentleApi
     public fun emit(codeWriter: JavaCodeWriter, inline: Boolean = true)
 
     public companion object {

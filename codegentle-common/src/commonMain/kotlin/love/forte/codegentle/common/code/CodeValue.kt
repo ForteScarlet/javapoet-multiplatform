@@ -1,6 +1,6 @@
 package love.forte.codegentle.common.code
 
-import love.forte.codegentle.common.emitter.CodeEmitter
+import love.forte.codegentle.common.writer.CodeEmitter
 
 /**
  *

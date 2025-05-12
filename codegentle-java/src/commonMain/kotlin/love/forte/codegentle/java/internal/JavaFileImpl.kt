@@ -4,6 +4,8 @@ import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.java.*
 import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.spec.JavaTypeSpec
+import love.forte.codegentle.java.writer.JavaWriteStrategy
+import love.forte.codegentle.java.writer.ToStringJavaWriteStrategy
 
 private object NullAppendable : Appendable {
     override fun append(value: Char): Appendable = this
@@ -20,23 +22,26 @@ internal class JavaFileImpl(
     override val alwaysQualify: Set<String>,
     override val indent: String
 ) : JavaFile {
-    override fun writeTo(out: Appendable) {
+    override fun writeTo(out: Appendable, strategy: JavaWriteStrategy) {
         // First pass: emit the entire class, just to collect the types we'll need to import.
+        // TODO support dynamics imports?
         val importsCollector = JavaCodeWriter.create(
-            NullAppendable,
-            indent,
-            staticImports,
-            alwaysQualify
+            dialect = strategy,
+            out = NullAppendable,
+            indent = indent,
+            staticImports = staticImports,
+            alwaysQualify = alwaysQualify
         )
         emit(importsCollector)
         val suggestedImports: Map<String, JavaClassName> = importsCollector.suggestedImports()
 
         val codeWriter = JavaCodeWriter.create(
-            out,
-            indent,
-            suggestedImports,
-            staticImports,
-            alwaysQualify
+            dialect = strategy,
+            out = out,
+            indent = indent,
+            importedTypes = suggestedImports,
+            staticImports = staticImports,
+            alwaysQualify = alwaysQualify
         )
 
         emit(codeWriter)
@@ -116,7 +121,7 @@ internal class JavaFileImpl(
 
     override fun toString(): String {
         return buildString {
-            writeTo(this)
+            writeTo(this, ToStringJavaWriteStrategy)
         }
     }
 }

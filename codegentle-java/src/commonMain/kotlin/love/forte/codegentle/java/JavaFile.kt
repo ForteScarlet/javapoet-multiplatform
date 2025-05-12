@@ -26,6 +26,7 @@ import love.forte.codegentle.java.JavaFile.Builder
 import love.forte.codegentle.java.internal.JavaFileImpl
 import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.spec.JavaTypeSpec
+import love.forte.codegentle.java.writer.JavaWriteStrategy
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
@@ -59,7 +60,7 @@ public interface JavaFile : JavaCodeEmitter {
 
     public val indent: String
 
-    public fun writeTo(out: Appendable)
+    public fun writeTo(out: Appendable, strategy: JavaWriteStrategy)
 
     public class Builder internal constructor(
         public val packageName: String,

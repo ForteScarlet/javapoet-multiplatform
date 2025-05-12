@@ -37,7 +37,7 @@ class ClassNameTest {
         assertEquals(
             "import java.lang.String;",
             JavaCodeValue("import %V;") {
-                literal(JavaClassName("java.lang", "String").withoutAnnotations())
+                literal(JavaClassName("java.lang", "String"))
             }.toString()
         )
     }

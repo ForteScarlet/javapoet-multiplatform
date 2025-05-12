@@ -1,7 +1,7 @@
 package love.forte.codegentle.java.ref.internal
 
 import love.forte.codegentle.common.ref.AnnotationRef
-import love.forte.codegentle.java.InternalJavaCodePoetApi
+import love.forte.codegentle.java.InternalJavaCodeGentleApi
 import love.forte.codegentle.java.JavaCodeValue
 import love.forte.codegentle.java.JavaCodeWriter
 import love.forte.codegentle.java.naming.JavaClassName
@@ -17,7 +17,7 @@ internal data class JavaAnnotationRefImpl(
     override val members: Map<String, List<JavaCodeValue>>
 ) : JavaAnnotationRef {
 
-    @InternalJavaCodePoetApi
+    @InternalJavaCodeGentleApi
     override fun emit(codeWriter: JavaCodeWriter) {
         emitTo(codeWriter)
     }

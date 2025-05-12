@@ -1,10 +1,10 @@
 package love.forte.codegentle.java
 
-import love.forte.codegentle.common.emitter.CodeEmitter
+import love.forte.codegentle.common.writer.CodeEmitter
 
-@InternalJavaCodePoetApi
+@InternalJavaCodeGentleApi
 public interface JavaCodeEmitter : CodeEmitter {
-    @InternalJavaCodePoetApi
+    @InternalJavaCodeGentleApi
     public fun emit(codeWriter: JavaCodeWriter)
 }
 

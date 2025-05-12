@@ -815,7 +815,7 @@ public inline fun JavaTypeSpec.Builder<*, *>.addAnnotation(
 public inline fun JavaTypeSpec.Builder<*, *>.addField(
     type: JavaTypeName,
     name: String,
-    block: FieldSpec.Builder.() -> Unit = {}
+    block: FieldSpecBuilder.() -> Unit = {}
 ) {
     addField(FieldSpec(type, name, block))
 }

@@ -19,10 +19,12 @@
 
 package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.java.InternalJavaCodePoetApi
+import love.forte.codegentle.java.InternalJavaCodeGentleApi
 import love.forte.codegentle.java.JavaCodeWriter
 import love.forte.codegentle.java.naming.internal.JavaArrayTypeNameImpl
 import love.forte.codegentle.java.ref.JavaTypeRef
+import love.forte.codegentle.java.ref.JavaTypeRefBuilder
+import love.forte.codegentle.java.ref.javaRef
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
@@ -38,10 +40,17 @@ public interface JavaArrayTypeName : JavaTypeName {
         emit(codeWriter, false)
     }
 
-    @InternalJavaCodePoetApi
+    @InternalJavaCodeGentleApi
     public fun emit(codeWriter: JavaCodeWriter, varargs: Boolean)
 }
 
 @JvmName("of")
 public fun JavaArrayTypeName(componentType: JavaTypeRef<*>): JavaArrayTypeName =
     JavaArrayTypeNameImpl(componentType)
+
+
+public inline fun <T : JavaTypeName> JavaArrayTypeName(
+    componentType: T,
+    block: JavaTypeRefBuilder<T>.() -> Unit = {}
+): JavaArrayTypeName =
+    JavaArrayTypeName(componentType.javaRef(block))

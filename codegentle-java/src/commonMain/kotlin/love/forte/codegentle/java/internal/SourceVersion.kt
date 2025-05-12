@@ -52,7 +52,7 @@ internal fun CharSequence.isSourceKeyword() = toString() in keywords
 internal fun CharSequence.isSourceName(): Boolean {
     val id = toString()
 
-    for (s in id.split("\\.".toRegex()).toTypedArray()) {
+    for (s in id.split("\\.".toRegex())) {
         if (!s.isSourceIdentifier() || s.isSourceKeyword()) return false
     }
     return true
