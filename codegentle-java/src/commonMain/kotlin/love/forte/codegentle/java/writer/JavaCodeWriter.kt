@@ -51,7 +51,7 @@ public class JavaCodeWriter private constructor(
         val isJavadoc: Boolean = false,
     ) {
         JAVADOC(isJavadoc = true),
-        COMMENT,
+        COMMENT;
     }
 
 
@@ -62,6 +62,7 @@ public class JavaCodeWriter private constructor(
     // private var comment = false
     internal var packageName: String? = null // com.squareup.javapoet.CodeWriter.NO_PACKAGE
 
+    // simple name -> class name
     internal val importableTypes: MutableMap<String, JavaClassName> = linkedMapOf()
     internal val referencedNames: MutableSet<String> = linkedSetOf()
 
@@ -306,9 +307,11 @@ public class JavaCodeWriter private constructor(
                     CommentType.JAVADOC -> {
                         out.append(" * ")
                     }
+
                     CommentType.COMMENT -> {
                         out.append("// ")
                     }
+
                     null -> {}
                 }
             }
