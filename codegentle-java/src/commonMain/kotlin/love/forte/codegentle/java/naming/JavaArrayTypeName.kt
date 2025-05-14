@@ -23,7 +23,7 @@ import love.forte.codegentle.java.InternalJavaCodeGentleApi
 import love.forte.codegentle.java.naming.internal.JavaArrayTypeNameImpl
 import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.ref.JavaTypeRefBuilder
-import love.forte.codegentle.java.ref.javaRef
+import love.forte.codegentle.java.ref.ref
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -53,4 +53,4 @@ public inline fun <T : JavaTypeName> JavaArrayTypeName(
     componentType: T,
     block: JavaTypeRefBuilder<T>.() -> Unit = {}
 ): JavaArrayTypeName =
-    JavaArrayTypeName(componentType.javaRef(block))
+    JavaArrayTypeName(componentType.ref(block))

@@ -28,35 +28,28 @@ internal fun JavaCodeWriter.emitJavaAnnotation(
     } else if (members.size == 1 && members.containsKey("value")) {
         // @Named("foo")
         emit("@%V(") { type(type) }
-        emitAnnotationValues(whitespace, memberSeparator, members["value"]!!)
+        // Always inline between values.
+        emitAnnotationValues(memberSeparator, members["value"]!!)
         emit(")")
     } else {
-        // Inline:
-        //   @Column(name = "updated_at", nullable = false)
-        //
-        // Not inline:
-        //   @Column(
-        //       name = "updated_at",
-        //       nullable = false
-        //   )
-        emit("@%V($whitespace") { type(type) }
-        indent(2)
-        val i = members.entries.iterator()
-        while (i.hasNext()) {
-            val entry = i.next()
-            emit("%V = ") { literal(entry.key) }
-            emitAnnotationValues(whitespace, memberSeparator, entry.value)
-            if (i.hasNext()) {
-                emit(memberSeparator)
+        // @Column(name = "updated_at", nullable = false)
+        emit("@%V(") { type(type) }
+        withIndent(2) {
+            val i = members.entries.iterator()
+            while (i.hasNext()) {
+                val entry = i.next()
+                emit("%V = ") { literal(entry.key) }
+                emitAnnotationValues(memberSeparator, entry.value)
+                if (i.hasNext()) {
+                    emit(memberSeparator)
+                }
             }
         }
-        unindent(2)
-        emit("$whitespace)")
+        emit(")")
     }
 }
 
 private fun JavaCodeWriter.emitAnnotationValues(
-    whitespace: String,
     memberSeparator: String,
     values: List<CodeValue>
 ) {
@@ -67,16 +60,14 @@ private fun JavaCodeWriter.emitAnnotationValues(
         return
     }
 
-    emit("{$whitespace")
-    indent(2)
+    emit("{")
     var first = true
     for (codeBlock in values) {
         if (!first) emit(memberSeparator)
         codeBlock.emit0(this)
         first = false
     }
-    unindent(2)
-    emit("$whitespace}")
+    emit("}")
 }
 
 internal class JavaAnnotationSpecImpl(

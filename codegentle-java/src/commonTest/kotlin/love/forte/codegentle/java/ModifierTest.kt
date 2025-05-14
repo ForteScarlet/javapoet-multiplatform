@@ -14,7 +14,7 @@ class ModifierTest {
 
     @Test
     fun testModifierSet() {
-        ModifierSet().also { set ->
+        JavaModifierSet().also { set ->
             assertEquals(0, set.size)
 
             set.addAll(JavaModifier.PUBLIC, JavaModifier.ABSTRACT, JavaModifier.NATIVE)
@@ -35,7 +35,7 @@ class ModifierTest {
             assertFalse(iterator.hasNext())
         }
 
-        ModifierSet().also { set ->
+        JavaModifierSet().also { set ->
             assertEquals(0, set.size)
 
             set.addAll(JavaModifier.NATIVE, JavaModifier.ABSTRACT, JavaModifier.PUBLIC)
@@ -58,7 +58,7 @@ class ModifierTest {
             assertFalse(iterator.hasNext())
         }
 
-        ModifierSet().also { set ->
+        JavaModifierSet().also { set ->
             assertEquals(0, set.size)
             val iterator = set.iterator()
             assertFalse(iterator.hasNext())
@@ -69,19 +69,19 @@ class ModifierTest {
     fun testToString() {
         assertEquals(
             "[]",
-            ModifierSet().toString()
+            JavaModifierSet().toString()
         )
 
         assertEquals(
             "[PUBLIC, ABSTRACT, NATIVE]",
-            ModifierSet().apply {
+            JavaModifierSet().apply {
                 addAll(JavaModifier.NATIVE, JavaModifier.ABSTRACT, JavaModifier.PUBLIC)
             }.toString()
         )
 
         assertEquals(
             "[PUBLIC, ABSTRACT, NATIVE]",
-            ModifierSet().apply {
+            JavaModifierSet().apply {
                 addAll(JavaModifier.PUBLIC, JavaModifier.ABSTRACT, JavaModifier.NATIVE)
             }.toString()
         )

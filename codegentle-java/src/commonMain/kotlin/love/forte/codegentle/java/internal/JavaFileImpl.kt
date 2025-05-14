@@ -83,7 +83,7 @@ internal class JavaFileImpl(
                     continue
                 }
                 codeWriter.emit("import %V;\n") {
-                    literal(className)
+                    literal(className.toString())
                 }
                 importedTypesCount++
             }

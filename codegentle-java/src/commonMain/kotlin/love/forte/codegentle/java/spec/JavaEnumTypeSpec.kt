@@ -48,7 +48,7 @@ public class JavaEnumTypeSpecBuilder @PublishedApi internal constructor(
             enumConstants = enumConstants.toMap(linkedMapOf()),
             javadoc = javadoc.build(),
             annotations = annotationRefs.toList(),
-            modifiers = LinkedHashSet(modifiers),
+            modifiers = modifiers.copy(),
             typeVariables = typeVariableRefs.toList(),
             superinterfaces = superinterfaces.toList(),
             fields = fields.toList(),

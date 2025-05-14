@@ -27,7 +27,7 @@ public interface JavaTypeNameRefStatus : TypeNameRefStatus {
 /**
  * @see TypeRef
  */
-public inline fun <T : JavaTypeName> T.javaRef(block: JavaTypeRefBuilder<T>.() -> Unit = {}): JavaTypeRef<T> =
+public inline fun <T : JavaTypeName> T.ref(block: JavaTypeRefBuilder<T>.() -> Unit = {}): JavaTypeRef<T> =
     JavaTypeRefBuilder(this).also(block).build()
 
 /**

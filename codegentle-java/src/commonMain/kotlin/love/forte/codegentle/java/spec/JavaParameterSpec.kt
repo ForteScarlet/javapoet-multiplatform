@@ -21,10 +21,7 @@ package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.spec.NamedSpec
-import love.forte.codegentle.java.CodeValueSingleFormatBuilderDsl
-import love.forte.codegentle.java.JavaCodeValue
-import love.forte.codegentle.java.JavaModifier
-import love.forte.codegentle.java.ModifierBuilderContainer
+import love.forte.codegentle.java.*
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaAnnotationRefCollectable
 import love.forte.codegentle.java.ref.JavaTypeRef
@@ -67,10 +64,10 @@ public interface JavaParameterSpec : JavaSpec, NamedSpec {
 public class JavaParameterSpecBuilder internal constructor(
     public val type: JavaTypeRef<*>,
     public val name: String
-) : ModifierBuilderContainer, JavaAnnotationRefCollectable<JavaParameterSpecBuilder> {
+) : JavaModifierBuilderContainer, JavaAnnotationRefCollectable<JavaParameterSpecBuilder> {
     internal val javadoc = JavaCodeValue.Companion.builder()
     internal val annotations = mutableListOf<JavaAnnotationRef>()
-    internal val modifiers = mutableSetOf<JavaModifier>()
+    internal val modifiers = JavaModifierSet()
 
     public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): JavaParameterSpecBuilder = apply {
         addJavadoc(JavaCodeValue(format, *argumentParts))
@@ -90,7 +87,7 @@ public class JavaParameterSpecBuilder internal constructor(
 
     override fun addModifiers(vararg modifiers: JavaModifier): JavaParameterSpecBuilder = apply {
         modifiers.forEach { checkModifier(it) }
-        this.modifiers.addAll(modifiers)
+        this.modifiers.addAll(*modifiers)
     }
 
     override fun addModifiers(modifiers: Iterable<JavaModifier>): JavaParameterSpecBuilder = apply {

@@ -79,7 +79,7 @@ public expect enum class JavaModifier {
  * 始终按照 [JavaModifier] 的 [JavaModifier.ordinal] 进行排序的 [Set] 实现。
  * 类似 TreeSet 或 SortedSet。
  */
-internal class ModifierSet(private var value: Int = 0) : Set<JavaModifier> {
+internal class JavaModifierSet(private var value: Int = 0) : Set<JavaModifier> {
     override val size: Int
         get() = value.countOneBits()
 
@@ -100,7 +100,7 @@ internal class ModifierSet(private var value: Int = 0) : Set<JavaModifier> {
     }
 
     fun addAll(elements: Iterable<JavaModifier>) {
-        if (elements is ModifierSet) {
+        if (elements is JavaModifierSet) {
             value = value or elements.value
         } else {
             elements.forEach { add(it) }
@@ -135,13 +135,13 @@ internal class ModifierSet(private var value: Int = 0) : Set<JavaModifier> {
         }
     }
 
-    fun copy(): ModifierSet = ModifierSet(value)
+    fun copy(): JavaModifierSet = JavaModifierSet(value)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Set<*>) return false
 
-        if (other is ModifierSet) return value == other.value
+        if (other is JavaModifierSet) return value == other.value
 
         // Other sets
 
@@ -165,15 +165,15 @@ internal class ModifierSet(private var value: Int = 0) : Set<JavaModifier> {
     }
 }
 
-public interface ModifierBuilderContainer : BuilderDsl {
-    public fun addModifier(modifier: JavaModifier): ModifierBuilderContainer
-    public fun addModifiers(vararg modifiers: JavaModifier): ModifierBuilderContainer
-    public fun addModifiers(modifiers: Iterable<JavaModifier>): ModifierBuilderContainer
+public interface JavaModifierBuilderContainer : BuilderDsl {
+    public fun addModifier(modifier: JavaModifier): JavaModifierBuilderContainer
+    public fun addModifiers(vararg modifiers: JavaModifier): JavaModifierBuilderContainer
+    public fun addModifiers(modifiers: Iterable<JavaModifier>): JavaModifierBuilderContainer
 }
 
 @JvmInline
-public value class ModifierOp
-@PublishedApi internal constructor(private val container: ModifierBuilderContainer) {
+public value class JavaModifierOp
+@PublishedApi internal constructor(private val container: JavaModifierBuilderContainer) {
     public fun public() {
         container.addModifier(JavaModifier.PUBLIC)
     }
@@ -234,6 +234,6 @@ public value class ModifierOp
  * }
  * ```
  */
-public inline fun ModifierBuilderContainer.modifiers(block: ModifierOp.() -> Unit) {
-    ModifierOp(this).block()
+public inline fun JavaModifierBuilderContainer.modifiers(block: JavaModifierOp.() -> Unit) {
+    JavaModifierOp(this).block()
 }

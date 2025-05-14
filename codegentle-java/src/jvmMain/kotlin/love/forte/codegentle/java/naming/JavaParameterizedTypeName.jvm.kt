@@ -20,22 +20,22 @@
 package love.forte.codegentle.java.naming
 
 import love.forte.codegentle.java.naming.internal.JavaParameterizedTypeNameImpl
-import love.forte.codegentle.java.ref.javaRef
+import love.forte.codegentle.java.ref.ref
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-public fun Class<*>.toParameterizedTypeName(vararg typeArguments: Type): JavaParameterizedTypeName {
-    return JavaParameterizedTypeNameImpl(null, this.toClassName(), typeArguments.map { it.toTypeName().javaRef() })
+public fun Class<*>.toJavaParameterizedTypeName(vararg typeArguments: Type): JavaParameterizedTypeName {
+    return JavaParameterizedTypeNameImpl(null, this.toJavaClassName(), typeArguments.map { it.toJavaTypeName().ref() })
 }
 
-public fun ParameterizedType.toParameterizedTypeName(): JavaParameterizedTypeName =
-    toParameterizedTypeName(linkedMapOf())
+public fun ParameterizedType.toJavaParameterizedTypeName(): JavaParameterizedTypeName =
+    toJavaParameterizedTypeName(linkedMapOf())
 
-internal fun ParameterizedType.toParameterizedTypeName(map: MutableMap<Type, JavaTypeVariableName>): JavaParameterizedTypeName {
+internal fun ParameterizedType.toJavaParameterizedTypeName(map: MutableMap<Type, JavaTypeVariableName>): JavaParameterizedTypeName {
     val type = this
 
-    val rawType = (type.rawType as Class<*>).toClassName()
+    val rawType = (type.rawType as Class<*>).toJavaClassName()
     val ownerType = if (
         type.ownerType is ParameterizedType
         && !Modifier.isStatic((type.rawType as Class<*>).modifiers)
@@ -45,8 +45,8 @@ internal fun ParameterizedType.toParameterizedTypeName(map: MutableMap<Type, Jav
         null
     }
 
-    val typeArguments = type.actualTypeArguments.map { it.toTypeName(map).javaRef() }
+    val typeArguments = type.actualTypeArguments.map { it.toJavaTypeName(map).ref() }
 
-    return ownerType?.toParameterizedTypeName(map)?.nestedClass(rawType.simpleName, typeArguments)
+    return ownerType?.toJavaParameterizedTypeName(map)?.nestedClass(rawType.simpleName, typeArguments)
         ?: JavaParameterizedTypeNameImpl(null, rawType, typeArguments)
 }

@@ -102,6 +102,16 @@ public fun JavaFile.toJavaFileObject(): JavaFileObject {
     }
 }
 
+@Throws(IOException::class)
+public fun JavaFile.writeTo(
+    filer: Filer,
+    strategy: JavaWriteStrategy = JavaWriteStrategy,
+    originatingElements: Iterable<Element>
+) {
+    writeTo(filer, strategy, *originatingElements.toList().toTypedArray())
+}
+
+
 /**
  * Write [JavaFile] to [Filer].
  *

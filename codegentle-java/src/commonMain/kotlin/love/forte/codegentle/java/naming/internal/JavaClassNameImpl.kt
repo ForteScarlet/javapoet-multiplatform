@@ -191,7 +191,8 @@ private fun JavaCodeWriter.importableType(className: JavaClassName) {
      * limitations under the License.
      */
 
-    if (className.packageName?.isEmpty() != false) {
+    val packageName = className.packageName
+    if (packageName == null || packageName.isEmpty()) {
         // null, or is empty.
         return
     } else if (alwaysQualify.contains(className.simpleName)) {

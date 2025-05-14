@@ -20,10 +20,7 @@
 package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.BuilderDsl
-import love.forte.codegentle.java.CodeValueSingleFormatBuilderDsl
-import love.forte.codegentle.java.JavaCodeValue
-import love.forte.codegentle.java.JavaModifier
-import love.forte.codegentle.java.ModifierBuilderContainer
+import love.forte.codegentle.java.*
 import love.forte.codegentle.java.internal.isSourceName
 import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.naming.JavaTypeVariableName
@@ -73,7 +70,7 @@ public sealed interface JavaTypeSpec : JavaSpec {
 
     public val superinterfaces: List<JavaTypeName>
 
-    public val fields: List<FieldSpec>
+    public val fields: List<JavaFieldSpec>
 
     public val staticBlock: JavaCodeValue
 
@@ -214,7 +211,7 @@ public val JavaTypeSpec.nestedTypesSimpleNames: Set<String>
 public sealed class JavaTypeSpecBuilder<B : JavaTypeSpecBuilder<B, T>, T : JavaTypeSpec>(
     public val kind: JavaTypeSpec.Kind,
     public val name: String?,
-) : ModifierBuilderContainer,
+) : JavaModifierBuilderContainer,
     JavaAnnotationRefCollectable<B>,
     BuilderDsl {
     init {
@@ -227,10 +224,10 @@ public sealed class JavaTypeSpecBuilder<B : JavaTypeSpecBuilder<B, T>, T : JavaT
     internal val initializerBlock = JavaCodeValue.builder()
 
     internal val annotationRefs: MutableList<JavaAnnotationRef> = mutableListOf()
-    internal val modifiers: MutableSet<JavaModifier> = linkedSetOf()
+    internal val modifiers = JavaModifierSet()
     internal val typeVariableRefs: MutableList<JavaTypeRef<JavaTypeVariableName>> = mutableListOf()
     internal val superinterfaces: MutableList<JavaTypeName> = mutableListOf()
-    internal val fields: MutableList<FieldSpec> = mutableListOf()
+    internal val fields: MutableList<JavaFieldSpec> = mutableListOf()
     internal val methods: MutableList<JavaMethodSpec> = mutableListOf()
     internal val subtypes: MutableList<JavaTypeSpec> = mutableListOf()
 
@@ -263,7 +260,7 @@ public sealed class JavaTypeSpecBuilder<B : JavaTypeSpecBuilder<B, T>, T : JavaT
     }
 
     override fun addModifiers(vararg modifiers: JavaModifier): B = self.apply {
-        this.modifiers.addAll(modifiers)
+        this.modifiers.addAll(*modifiers)
     }
 
     override fun addModifiers(modifiers: Iterable<JavaModifier>): B = self.apply {
@@ -305,15 +302,15 @@ public sealed class JavaTypeSpecBuilder<B : JavaTypeSpecBuilder<B, T>, T : JavaT
         check(kind.states.superinterfacesSupport) { "`superinterface` is not supported for kind $kind" }
     }
 
-    public fun addFields(vararg fields: FieldSpec): B = self.apply {
+    public fun addFields(vararg fields: JavaFieldSpec): B = self.apply {
         this.fields.addAll(fields)
     }
 
-    public fun addFields(fields: Iterable<FieldSpec>): B = self.apply {
+    public fun addFields(fields: Iterable<JavaFieldSpec>): B = self.apply {
         this.fields.addAll(fields)
     }
 
-    public fun addField(field: FieldSpec): B = self.apply {
+    public fun addField(field: JavaFieldSpec): B = self.apply {
         this.fields.add(field)
     }
 
@@ -375,17 +372,17 @@ public inline fun JavaTypeSpecBuilder<*, *>.addInitializerBlock(
 public inline fun JavaTypeSpecBuilder<*, *>.addField(
     type: JavaTypeName,
     name: String,
-    block: FieldSpecBuilder.() -> Unit = {}
+    block: JavaFieldSpecBuilder.() -> Unit = {}
 ) {
-    addField(FieldSpec(type, name, block))
+    addField(JavaFieldSpec(type, name, block))
 }
 
 public inline fun JavaTypeSpecBuilder<*, *>.addField(
     type: JavaTypeRef<*>,
     name: String,
-    block: FieldSpecBuilder.() -> Unit = {}
+    block: JavaFieldSpecBuilder.() -> Unit = {}
 ) {
-    addField(FieldSpec(type, name, block))
+    addField(JavaFieldSpec(type, name, block))
 }
 
 /**
@@ -401,7 +398,7 @@ public inline fun JavaTypeSpecBuilder<*, *>.addMethod(
 /**
  * Add a constructor
  */
-public inline fun JavaTypeSpecBuilder<*, *>.addMethod(
+public inline fun JavaTypeSpecBuilder<*, *>.addConstructor(
     block: JavaMethodSpecBuilder.() -> Unit = {}
 ) {
     addMethod(JavaMethodSpec(block))

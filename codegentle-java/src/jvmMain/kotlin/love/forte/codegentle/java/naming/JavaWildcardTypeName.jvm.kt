@@ -20,17 +20,17 @@ package love.forte.codegentle.java.naming
 
 import love.forte.codegentle.java.naming.internal.JavaSubtypeWildcardTypeNameImpl
 import love.forte.codegentle.java.naming.internal.JavaSupertypeWildcardTypeNameImpl
-import love.forte.codegentle.java.ref.javaRef
+import love.forte.codegentle.java.ref.ref
 import java.lang.reflect.Type
 
-public fun Type.toSubtypeWildcardTypeName(): JavaSubtypeWildcardTypeName =
-    listOf(this).toSubtypeWildcardTypeName()
+public fun Type.toJavaSubtypeWildcardTypeName(): JavaSubtypeWildcardTypeName =
+    listOf(this).toJavaSubtypeWildcardTypeName()
 
-public fun Type.toSupertypeWildcardTypeName(): JavaSupertypeWildcardTypeName =
-    listOf(this).toSupertypeWildcardTypeName()
+public fun Type.toJavaSupertypeWildcardTypeName(): JavaSupertypeWildcardTypeName =
+    listOf(this).toJavaSupertypeWildcardTypeName()
 
-public fun Iterable<Type>.toSubtypeWildcardTypeName(): JavaSubtypeWildcardTypeName =
-    JavaSubtypeWildcardTypeNameImpl(this.map { it.toTypeName().javaRef() })
+public fun Iterable<Type>.toJavaSubtypeWildcardTypeName(): JavaSubtypeWildcardTypeName =
+    JavaSubtypeWildcardTypeNameImpl(this.map { it.toJavaTypeName().ref() })
 
-public fun Iterable<Type>.toSupertypeWildcardTypeName(): JavaSupertypeWildcardTypeName =
-    JavaSupertypeWildcardTypeNameImpl(this.map { it.toTypeName().javaRef() })
+public fun Iterable<Type>.toJavaSupertypeWildcardTypeName(): JavaSupertypeWildcardTypeName =
+    JavaSupertypeWildcardTypeNameImpl(this.map { it.toJavaTypeName().ref() })

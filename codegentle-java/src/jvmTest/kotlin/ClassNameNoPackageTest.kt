@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import love.forte.codegentle.java.naming.toClassName
+import love.forte.codegentle.java.naming.toJavaClassName
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -24,7 +24,7 @@ class ClassNameNoPackageTest {
 
     @Test
     fun shouldSupportClassInDefaultPackage() {
-        val className = ClassNameNoPackageTest::class.toClassName()
+        val className = ClassNameNoPackageTest::class.toJavaClassName()
         assertNull(className.packageName)
         assertEquals("ClassNameNoPackageTest", className.simpleName)
         assertEquals("ClassNameNoPackageTest", className.toString())

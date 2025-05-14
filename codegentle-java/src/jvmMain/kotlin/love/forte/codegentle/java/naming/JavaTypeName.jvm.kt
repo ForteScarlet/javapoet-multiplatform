@@ -20,7 +20,7 @@
 package love.forte.codegentle.java.naming
 
 import love.forte.codegentle.java.ref.JavaTypeRef
-import love.forte.codegentle.java.ref.javaRef
+import love.forte.codegentle.java.ref.ref
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -30,7 +30,7 @@ import javax.lang.model.element.TypeParameterElement
 import javax.lang.model.type.*
 import javax.lang.model.util.SimpleTypeVisitor8
 
-public fun Type.toTypeName(): JavaTypeName = toTypeName(linkedMapOf())
+public fun Type.toJavaTypeName(): JavaTypeName = toJavaTypeName(linkedMapOf())
 
 
 private val VOID_CLASS = Void::class.javaPrimitiveType!!
@@ -42,8 +42,20 @@ private val LONG_CLASS = Long::class.javaPrimitiveType!!
 private val CHAR_CLASS = Char::class.javaPrimitiveType!!
 private val FLOAT_CLASS = Float::class.javaPrimitiveType!!
 
+internal val VOID_BOXED_CLASS = Void::class.javaObjectType
+internal val BOOLEAN_BOXED_CLASS = Boolean::class.javaObjectType
+internal val BYTE_BOXED_CLASS = Byte::class.javaObjectType
+internal val SHORT_BOXED_CLASS = Short::class.javaObjectType
+internal val INT_BOXED_CLASS = Int::class.javaObjectType
+internal val LONG_BOXED_CLASS = Long::class.javaObjectType
+internal val CHAR_BOXED_CLASS = Char::class.javaObjectType
+internal val FLOAT_BOXED_CLASS = Float::class.javaObjectType
+
+internal val OBJECT_CLASS = Object::class.java
+internal val STRING_CLASS = String::class.java
+
 @PublishedApi
-internal fun Type.toTypeName(map: MutableMap<Type, JavaTypeVariableName>): JavaTypeName {
+internal fun Type.toJavaTypeName(map: MutableMap<Type, JavaTypeVariableName>): JavaTypeName {
     return when (val type = this) {
         is Class<*> -> {
             when (type) {
@@ -55,32 +67,42 @@ internal fun Type.toTypeName(map: MutableMap<Type, JavaTypeVariableName>): JavaT
                 LONG_CLASS -> return JavaTypeName.Builtins.LONG
                 CHAR_CLASS -> return JavaTypeName.Builtins.CHAR
                 FLOAT_CLASS -> return JavaTypeName.Builtins.FLOAT
+                VOID_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_VOID
+                BOOLEAN_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_BOOLEAN
+                BYTE_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_BYTE
+                SHORT_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_SHORT
+                INT_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_INT
+                LONG_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_LONG
+                CHAR_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_CHAR
+                FLOAT_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_FLOAT
+                OBJECT_CLASS -> return JavaClassName.Builtins.OBJECT
+                STRING_CLASS -> return JavaClassName.Builtins.STRING
             }
 
             if (type.isArray) {
-                JavaArrayTypeName(type.componentType.toTypeName(map).javaRef())
+                JavaArrayTypeName(type.componentType.toJavaTypeName(map).ref())
             } else {
-                type.toClassName()
+                type.toJavaClassName()
             }
         }
 
-        is ParameterizedType -> type.toParameterizedTypeName(map)
+        is ParameterizedType -> type.toJavaParameterizedTypeName(map)
 
         is java.lang.reflect.WildcardType -> {
             val lowerBounds = type.lowerBounds
 
             if (lowerBounds.isNotEmpty()) {
-                JavaSupertypeWildcardTypeName(lowerBounds.map { it.toTypeName().javaRef() })
+                JavaSupertypeWildcardTypeName(lowerBounds.map { it.toJavaTypeName().ref() })
             } else {
                 JavaSubtypeWildcardTypeName(
                     type.upperBounds
-                        .map { it.toTypeName().javaRef() }
-                        .ifEmpty { listOf(JavaClassName.Builtins.OBJECT.javaRef()) }
+                        .map { it.toJavaTypeName().ref() }
+                        .ifEmpty { listOf(JavaClassName.Builtins.OBJECT.ref()) }
                 )
             }
         }
 
-        is java.lang.reflect.TypeVariable<*> -> type.toTypeVariableName(map)
+        is java.lang.reflect.TypeVariable<*> -> type.toJavaTypeVariableName(map)
 
         is GenericArrayType -> type.toJavaArrayTypeName(map) {}
 
@@ -91,9 +113,9 @@ internal fun Type.toTypeName(map: MutableMap<Type, JavaTypeVariableName>): JavaT
 
 // javax.model.element
 
-public fun TypeMirror.toTypeName(): JavaTypeName = toTypeName(linkedMapOf())
+public fun TypeMirror.toJavaTypeName(): JavaTypeName = toJavaTypeName(linkedMapOf())
 
-internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElement, JavaTypeVariableName>): JavaTypeName {
+internal fun TypeMirror.toJavaTypeName(typeVariables: MutableMap<TypeParameterElement, JavaTypeVariableName>): JavaTypeName {
     val visitor = object : SimpleTypeVisitor8<JavaTypeName, Void?>() {
         override fun visitPrimitive(t: PrimitiveType, p: Void?): JavaTypeName {
             return when (t.kind) {
@@ -111,7 +133,7 @@ internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElemen
 
         override fun visitDeclared(t: DeclaredType, p: Void?): JavaTypeName {
             val asElement = t.asElement()
-            val rawType = (asElement as TypeElement).toClassName()
+            val rawType = (asElement as TypeElement).toJavaClassName()
             val enclosingType = t.enclosingType
             val enclosing = if (enclosingType.kind != TypeKind.NONE
                 && !asElement.modifiers.contains(Modifier.STATIC)
@@ -126,8 +148,8 @@ internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElemen
 
             val typeArgumentNameRefs = mutableListOf<JavaTypeRef<*>>()
             for (mirror in t.typeArguments) {
-                mirror.toTypeName(typeVariables)
-                typeArgumentNameRefs.add(mirror.toTypeName(typeVariables).javaRef())
+                mirror.toJavaTypeName(typeVariables)
+                typeArgumentNameRefs.add(mirror.toJavaTypeName(typeVariables).ref())
             }
 
             return if (enclosing is JavaParameterizedTypeName) {

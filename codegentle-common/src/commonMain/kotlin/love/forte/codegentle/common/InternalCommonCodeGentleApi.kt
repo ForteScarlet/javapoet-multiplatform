@@ -5,4 +5,4 @@ package love.forte.codegentle.common
         "For internal use only, no compatibility or stability is guaranteed externally.",
     level = RequiresOptIn.Level.WARNING
 )
-public annotation class InternalCommonApi
+public annotation class InternalCommonCodeGentleApi

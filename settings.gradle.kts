@@ -40,4 +40,8 @@ include(":codegentle-java")
 include(":codegentle-kotlin")
 // include(":codegentle-java-apt")
 
-// include(":codegentle-tests:codegentle-java-apt-test")
+include("tests:test-java-apt:proc")
+include("tests:test-java-apt:proj")
+
+include("tests:test-ksp:proc")
+include("tests:test-ksp:proj")

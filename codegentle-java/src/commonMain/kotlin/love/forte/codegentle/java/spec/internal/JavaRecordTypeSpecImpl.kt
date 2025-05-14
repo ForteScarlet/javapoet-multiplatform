@@ -28,7 +28,7 @@ internal class JavaRecordTypeSpecImpl(
     override val modifiers: Set<JavaModifier>,
     override val typeVariables: List<JavaTypeRef<JavaTypeVariableName>>,
     override val superinterfaces: List<JavaTypeName>,
-    override val fields: List<FieldSpec>,
+    override val fields: List<JavaFieldSpec>,
     override val staticBlock: JavaCodeValue,
     override val initializerBlock: JavaCodeValue,
     override val methods: List<JavaMethodSpec>,

@@ -19,30 +19,30 @@
 
 package love.forte.codegentle.java.spec
 
-import love.forte.codegentle.java.naming.toClassName
-import love.forte.codegentle.java.naming.toTypeName
+import love.forte.codegentle.java.naming.toJavaClassName
+import love.forte.codegentle.java.naming.toJavaTypeName
 import love.forte.codegentle.java.ref.JavaAnnotationRefBuilder
-import love.forte.codegentle.java.ref.javaAnnotationRef
+import love.forte.codegentle.java.ref.annotationRef
 import java.lang.reflect.Type
 import kotlin.reflect.KClass
 
 /**
  * Create a [love.forte.codepoet.java.spec.FieldSpec] from [Type] with [Builder][block].
  */
-public inline fun Type.toFieldSpec(name: String, block: FieldSpecBuilder.() -> Unit = {}): FieldSpec {
-    return FieldSpec(this.toTypeName(), name, block)
+public inline fun Type.toFieldSpec(name: String, block: JavaFieldSpecBuilder.() -> Unit = {}): JavaFieldSpec {
+    return JavaFieldSpec(this.toJavaTypeName(), name, block)
 }
 
-public inline fun FieldSpecBuilder.addAnnotationRef(
+public inline fun JavaFieldSpecBuilder.addAnnotationRef(
     cls: Class<*>,
     block: JavaAnnotationRefBuilder.() -> Unit = {}
-): FieldSpecBuilder = apply {
-    addAnnotationRef(cls.toClassName().javaAnnotationRef(block))
+): JavaFieldSpecBuilder = apply {
+    addAnnotationRef(cls.toJavaClassName().annotationRef(block))
 }
 
-public inline fun FieldSpecBuilder.addAnnotationRef(
+public inline fun JavaFieldSpecBuilder.addAnnotationRef(
     cls: KClass<*>,
     block: JavaAnnotationRefBuilder.() -> Unit = {}
-): FieldSpecBuilder = apply {
-    addAnnotationRef(cls.toClassName().javaAnnotationRef(block))
+): JavaFieldSpecBuilder = apply {
+    addAnnotationRef(cls.toJavaClassName().annotationRef(block))
 }

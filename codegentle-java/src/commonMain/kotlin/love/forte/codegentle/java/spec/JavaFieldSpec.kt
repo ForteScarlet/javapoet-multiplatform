@@ -26,8 +26,8 @@ import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaAnnotationRefCollectable
 import love.forte.codegentle.java.ref.JavaTypeRef
-import love.forte.codegentle.java.ref.javaRef
-import love.forte.codegentle.java.spec.internal.FieldSpecImpl
+import love.forte.codegentle.java.ref.ref
+import love.forte.codegentle.java.spec.internal.JavaFieldSpecImpl
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -36,7 +36,7 @@ import kotlin.jvm.JvmName
 /**
  * A generated field declaration.
  */
-public interface FieldSpec : JavaSpec, NamedSpec {
+public interface JavaFieldSpec : JavaSpec, NamedSpec {
     override val name: String
 
     public val type: JavaTypeRef<*>
@@ -61,81 +61,75 @@ public interface FieldSpec : JavaSpec, NamedSpec {
 }
 
 /**
- * @see FieldSpec.builder
+ * @see JavaFieldSpec.builder
  */
-public inline fun FieldSpec(type: JavaTypeRef<*>, name: String, block: FieldSpecBuilder.() -> Unit = {}): FieldSpec =
-    FieldSpecBuilder(type, name).also(block).build()
+public inline fun JavaFieldSpec(
+    type: JavaTypeRef<*>,
+    name: String,
+    block: JavaFieldSpecBuilder.() -> Unit = {}
+): JavaFieldSpec =
+    JavaFieldSpecBuilder(type, name).also(block).build()
 
 
 /**
- * @see FieldSpec.builder
+ * @see JavaFieldSpec.builder
  */
-public inline fun FieldSpec(type: JavaTypeName, name: String, block: FieldSpecBuilder.() -> Unit = {}): FieldSpec =
-    FieldSpec(type.javaRef(), name, block)
+public inline fun JavaFieldSpec(
+    type: JavaTypeName,
+    name: String,
+    block: JavaFieldSpecBuilder.() -> Unit = {}
+): JavaFieldSpec =
+    JavaFieldSpec(type.ref(), name, block)
 
-public inline fun FieldSpecBuilder.addJavadoc(
-    format: String,
-    block: CodeValueSingleFormatBuilderDsl = {}
-): FieldSpecBuilder = apply {
-    addJavadoc(JavaCodeValue(format, block))
-}
-
-public inline fun FieldSpecBuilder.initializer(
-    format: String,
-    block: CodeValueSingleFormatBuilderDsl = {}
-): FieldSpecBuilder = apply {
-    initializer(JavaCodeValue(format, block))
-}
-
-public class FieldSpecBuilder @PublishedApi internal constructor(
+public class JavaFieldSpecBuilder @PublishedApi internal constructor(
     public val type: JavaTypeRef<*>,
     public val name: String,
-) : ModifierBuilderContainer,
-    JavaAnnotationRefCollectable<FieldSpecBuilder> {
+) : JavaModifierBuilderContainer,
+    JavaAnnotationRefCollectable<JavaFieldSpecBuilder> {
     internal val javadoc = JavaCodeValue.builder()
     internal val annotations = mutableListOf<JavaAnnotationRef>()
-    internal val modifiers = ModifierSet()
+    internal val modifiers = JavaModifierSet()
     internal var initializer: JavaCodeValue? = null
 
-    public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): FieldSpecBuilder = apply {
+    public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): JavaFieldSpecBuilder = apply {
         addJavadoc(JavaCodeValue(format, *argumentParts))
     }
 
-    public fun addJavadoc(codeValue: JavaCodeValue): FieldSpecBuilder = apply {
+    public fun addJavadoc(codeValue: JavaCodeValue): JavaFieldSpecBuilder = apply {
         javadoc.add(codeValue)
     }
 
-    override fun addAnnotationRefs(refs: Iterable<JavaAnnotationRef>): FieldSpecBuilder = apply {
+    override fun addAnnotationRefs(refs: Iterable<JavaAnnotationRef>): JavaFieldSpecBuilder = apply {
         annotations.addAll(refs)
     }
 
-    override fun addAnnotationRef(ref: JavaAnnotationRef): FieldSpecBuilder = apply {
+    override fun addAnnotationRef(ref: JavaAnnotationRef): JavaFieldSpecBuilder = apply {
         annotations.add(ref)
     }
 
-    override fun addModifiers(vararg modifiers: JavaModifier): FieldSpecBuilder = apply {
+    override fun addModifiers(vararg modifiers: JavaModifier): JavaFieldSpecBuilder = apply {
         this.modifiers.addAll(*modifiers)
     }
 
-    override fun addModifiers(modifiers: Iterable<JavaModifier>): FieldSpecBuilder = apply {
+    override fun addModifiers(modifiers: Iterable<JavaModifier>): JavaFieldSpecBuilder = apply {
         this.modifiers.addAll(modifiers)
     }
 
-    override fun addModifier(modifier: JavaModifier): FieldSpecBuilder = apply {
+    override fun addModifier(modifier: JavaModifier): JavaFieldSpecBuilder = apply {
         modifiers.add(modifier)
     }
 
-    public fun initializer(format: String, vararg argumentParts: CodeArgumentPart): FieldSpecBuilder = apply {
+    public fun initializer(format: String, vararg argumentParts: CodeArgumentPart): JavaFieldSpecBuilder = apply {
         initializer(JavaCodeValue(format, *argumentParts))
     }
 
-    public fun initializer(codeBlock: JavaCodeValue): FieldSpecBuilder = apply {
+    public fun initializer(codeBlock: JavaCodeValue): JavaFieldSpecBuilder = apply {
         check(initializer == null) { "initializer was already set" }
         initializer = codeBlock
     }
 
-    public fun build(): FieldSpec {
-        return FieldSpecImpl(
+    public fun build(): JavaFieldSpec {
+        return JavaFieldSpecImpl(
             type = type,
             name = name,
             javadoc = javadoc.build(),
@@ -144,4 +138,19 @@ public class FieldSpecBuilder @PublishedApi internal constructor(
             initializer = initializer ?: JavaCodeValue.EMPTY
         )
     }
+}
+
+
+public inline fun JavaFieldSpecBuilder.addJavadoc(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): JavaFieldSpecBuilder = apply {
+    addJavadoc(JavaCodeValue(format, block))
+}
+
+public inline fun JavaFieldSpecBuilder.initializer(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): JavaFieldSpecBuilder = apply {
+    initializer(JavaCodeValue(format, block))
 }

@@ -1,8 +1,8 @@
 package love.forte.codegentle.java
 
 import love.forte.codegentle.java.naming.JavaClassName
-import love.forte.codegentle.java.ref.javaAnnotationRef
-import love.forte.codegentle.java.ref.javaRef
+import love.forte.codegentle.java.ref.annotationRef
+import love.forte.codegentle.java.ref.ref
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -14,8 +14,8 @@ class JavaTypeRefTests {
     @Test
     fun testJavaClassNameRefString() {
         val className = JavaClassName("com.example", "Example")
-        val ref = className.javaRef {
-            addAnnotationRef(JavaClassName("com.example.anno", "Anno").javaAnnotationRef())
+        val ref = className.ref {
+            addAnnotationRef(JavaClassName("com.example.anno", "Anno").annotationRef())
         }
 
         assertEquals(

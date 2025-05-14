@@ -28,16 +28,29 @@ import kotlin.reflect.KClass
 /**
  * Create a [love.forte.codepoet.java.naming.JavaClassName] from [KClass].
  *
- * @see Class.toClassName
+ * @see Class.toJavaClassName
  */
-public fun KClass<*>.toClassName(): JavaClassName {
-    return java.toClassName()
+public fun KClass<*>.toJavaClassName(): JavaClassName {
+    return java.toJavaClassName()
 }
 
 /**
  * Create a [JavaClassName] from [Class].
  */
-public fun Class<*>.toClassName(): JavaClassName {
+public fun Class<*>.toJavaClassName(): JavaClassName {
+    when (this) {
+        VOID_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_VOID
+        BOOLEAN_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_BOOLEAN
+        BYTE_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_BYTE
+        SHORT_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_SHORT
+        INT_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_INT
+        LONG_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_LONG
+        CHAR_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_CHAR
+        FLOAT_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_FLOAT
+        OBJECT_CLASS -> return JavaClassName.Builtins.OBJECT
+        STRING_CLASS -> return JavaClassName.Builtins.STRING
+    }
+
     var java = this
     require(!java.isPrimitive) { "Primitive types cannot be represented as a ClassName" }
     require(Void.TYPE != java) { "'void' type cannot be represented as a ClassName" }
@@ -59,12 +72,12 @@ public fun Class<*>.toClassName(): JavaClassName {
         return JavaClassName(packageName, name)
     }
 
-    return java.enclosingClass.toClassName().nestedClass(name)
+    return java.enclosingClass.toJavaClassName().nestedClass(name)
 }
 
 // javax.lang.model
 
-public fun TypeElement.toClassName(): JavaClassName {
+public fun TypeElement.toJavaClassName(): JavaClassName {
     val simpleName = simpleName.toString()
     val visitor = object : SimpleElementVisitor8<JavaClassName, Void?>() {
         override fun visitPackage(packageElement: PackageElement, p: Void?): JavaClassName {
@@ -72,7 +85,7 @@ public fun TypeElement.toClassName(): JavaClassName {
         }
 
         override fun visitType(typeElement: TypeElement, p: Void?): JavaClassName {
-            return typeElement.toClassName().nestedClass(simpleName)
+            return typeElement.toJavaClassName().nestedClass(simpleName)
         }
 
         override fun visitUnknown(unknown: Element?, p: Void?): JavaClassName? {

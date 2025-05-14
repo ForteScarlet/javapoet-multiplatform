@@ -10,7 +10,7 @@ import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.naming.JavaTypeVariableName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaTypeRef
-import love.forte.codegentle.java.spec.FieldSpec
+import love.forte.codegentle.java.spec.JavaFieldSpec
 import love.forte.codegentle.java.spec.JavaMethodSpec
 import love.forte.codegentle.java.spec.JavaNonSealedTypeSpec
 import love.forte.codegentle.java.spec.JavaTypeSpec
@@ -27,7 +27,7 @@ internal class JavaNonSealedTypeSpecImpl(
     override val typeVariables: List<JavaTypeRef<JavaTypeVariableName>>,
     override val superclass: JavaTypeName?,
     override val superinterfaces: List<JavaTypeName>,
-    override val fields: List<FieldSpec>,
+    override val fields: List<JavaFieldSpec>,
     override val staticBlock: JavaCodeValue,
     override val initializerBlock: JavaCodeValue,
     override val methods: List<JavaMethodSpec>,

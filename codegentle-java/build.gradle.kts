@@ -19,7 +19,7 @@ kotlin {
     compilerOptions {
         optIn.addAll(
             "love.forte.codegentle.common.codepoint.InternalCodePointApi",
-            "love.forte.codegentle.common.InternalCommonApi",
+            "love.forte.codegentle.common.InternalCommonCodeGentleApi",
             "love.forte.codegentle.java.InternalJavaCodeGentleApi"
         )
         freeCompilerArgs.add("-Xexpect-actual-classes")

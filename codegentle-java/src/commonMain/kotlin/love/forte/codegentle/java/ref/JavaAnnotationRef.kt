@@ -17,8 +17,8 @@ public interface JavaAnnotationRef : AnnotationRef, JavaCodeEmitter {
     override val members: Map<String, List<JavaCodeValue>>
 }
 
-public inline fun JavaClassName.javaAnnotationRef(block: JavaAnnotationRefBuilder.() -> Unit = {}): JavaAnnotationRef {
-    return JavaAnnotationRefBuilder(this@javaAnnotationRef).apply {
+public inline fun JavaClassName.annotationRef(block: JavaAnnotationRefBuilder.() -> Unit = {}): JavaAnnotationRef {
+    return JavaAnnotationRefBuilder(this@annotationRef).apply {
         block()
     }.build()
 }

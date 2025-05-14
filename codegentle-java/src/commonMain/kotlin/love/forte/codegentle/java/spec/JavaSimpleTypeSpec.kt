@@ -33,7 +33,7 @@ public class JavaSimpleTypeSpecBuilder @PublishedApi internal constructor(
             kind = kind,
             javadoc = javadoc.build(),
             annotations = annotationRefs.toList(),
-            modifiers = LinkedHashSet(modifiers),
+            modifiers = modifiers.copy(),
             typeVariables = typeVariableRefs.toList(),
             superclass = superclass,
             superinterfaces = superinterfaces.toList(),
@@ -46,7 +46,9 @@ public class JavaSimpleTypeSpecBuilder @PublishedApi internal constructor(
     }
 }
 
-
+/**
+ * @param kind allows [JavaTypeSpec.Kind.CLASS], [JavaTypeSpec.Kind.INTERFACE]
+ */
 public inline fun JavaSimpleTypeSpec(
     kind: JavaTypeSpec.Kind,
     name: String,

@@ -18,27 +18,50 @@
 
 package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.java.ref.JavaTypeRef
-import love.forte.codegentle.java.ref.javaRef
+import love.forte.codegentle.common.computeValue
+import love.forte.codegentle.java.ref.ref
 import java.lang.reflect.Type
 import java.lang.reflect.TypeVariable
+import javax.lang.model.element.TypeParameterElement
 
-public fun TypeVariable<*>.toTypeVariableName(): JavaTypeVariableName =
-    toTypeVariableName(linkedMapOf())
+public fun TypeVariable<*>.toJavaTypeVariableName(): JavaTypeVariableName =
+    toJavaTypeVariableName(linkedMapOf())
 
-internal fun TypeVariable<*>.toTypeVariableName(map: MutableMap<Type, JavaTypeVariableName>): JavaTypeVariableName {
+internal fun TypeVariable<*>.toJavaTypeVariableName(map: MutableMap<Type, JavaTypeVariableName>): JavaTypeVariableName {
     val type = this
-    return map[type] ?: run {
-        val bounds = mutableListOf<JavaTypeRef<*>>()
-
-        for (bound in type.bounds) {
-            if (bound != Object::class.java) {
-                bounds.add(bound.toTypeName(map).javaRef())
+    return map.computeValue(type) { _, old ->
+        old ?: JavaTypeVariableName(
+            name = type.name,
+            bounds = bounds.mapNotNull { bound ->
+                bound.takeIf { it != Object::class.java }?.toJavaTypeName(map)?.ref()
             }
-        }
+        )
+    }!!
+}
 
-        JavaTypeVariableName(type.name, bounds).also {
-            map[type] = it
-        }
-    }
+public fun javax.lang.model.type.TypeVariable.toJavaTypeVariableName(): JavaTypeVariableName =
+    (asElement() as TypeParameterElement).toJavaTypeVariableName()
+
+public fun TypeParameterElement.toJavaTypeVariableName(): JavaTypeVariableName {
+    return JavaTypeVariableName(
+        name = simpleName.toString(),
+        bounds = bounds.map { it.toJavaTypeName().ref() }
+    )
+}
+
+
+internal fun javax.lang.model.type.TypeVariable.toJavaTypeVariableName(
+    typeVariables: MutableMap<TypeParameterElement, JavaTypeVariableName>
+): JavaTypeVariableName {
+    val element = asElement() as TypeParameterElement
+    return typeVariables.computeValue(element) { _, old ->
+        old ?: JavaTypeVariableName(
+            name = element.simpleName.toString(),
+            bounds = element.bounds.mapNotNull { typeMirror ->
+                typeMirror.toJavaTypeName(typeVariables)
+                    .takeIf { it != JavaClassName.Builtins.OBJECT }
+                    ?.ref()
+            }
+        )
+    }!!
 }

@@ -3,7 +3,7 @@ package love.forte.codegentle.java
 import love.forte.codegentle.java.naming.JavaArrayTypeName
 import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.naming.JavaTypeName
-import love.forte.codegentle.java.ref.javaRef
+import love.forte.codegentle.java.ref.ref
 import love.forte.codegentle.java.spec.*
 import love.forte.codegentle.java.strategy.ToStringJavaWriteStrategy
 import kotlin.test.Test
@@ -17,7 +17,7 @@ class HelloWorldTest {
         val method = JavaMethodSpec("main") {
             addModifiers(JavaModifier.PUBLIC, JavaModifier.STATIC)
             returns(JavaTypeName.Builtins.VOID)
-            addParameter(JavaParameterSpec(JavaArrayTypeName(JavaClassName.Builtins.STRING).javaRef(), "args"))
+            addParameter(JavaParameterSpec(JavaArrayTypeName(JavaClassName.Builtins.STRING).ref(), "args"))
             addStatement("%V.out.println(%V)") {
                 type(JavaClassName("java.lang", "System"))
                 string("Hello, World!")

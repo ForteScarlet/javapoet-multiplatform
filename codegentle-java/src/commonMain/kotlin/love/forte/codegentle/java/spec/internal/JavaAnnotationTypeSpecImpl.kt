@@ -9,8 +9,8 @@ import love.forte.codegentle.java.literal
 import love.forte.codegentle.java.naming.JavaTypeVariableName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaTypeRef
-import love.forte.codegentle.java.spec.FieldSpec
 import love.forte.codegentle.java.spec.JavaAnnotationTypeSpec
+import love.forte.codegentle.java.spec.JavaFieldSpec
 import love.forte.codegentle.java.spec.JavaMethodSpec
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.writer.JavaCodeWriter
@@ -29,7 +29,7 @@ internal class JavaAnnotationTypeSpecImpl(
     override val annotations: List<JavaAnnotationRef>,
     override val modifiers: Set<JavaModifier>,
     override val typeVariables: List<JavaTypeRef<JavaTypeVariableName>>,
-    override val fields: List<FieldSpec>,
+    override val fields: List<JavaFieldSpec>,
     override val staticBlock: JavaCodeValue,
     override val initializerBlock: JavaCodeValue,
     override val methods: List<JavaMethodSpec>,

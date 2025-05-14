@@ -6,8 +6,8 @@ package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.code.CodePart.Companion.literal
 import love.forte.codegentle.java.*
-import love.forte.codegentle.java.naming.toClassName
-import love.forte.codegentle.java.naming.toTypeName
+import love.forte.codegentle.java.naming.toJavaClassName
+import love.forte.codegentle.java.naming.toJavaTypeName
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.TypeElement
@@ -16,7 +16,7 @@ import javax.lang.model.util.SimpleAnnotationValueVisitor8
 
 public fun AnnotationMirror.toAnnotationSpec(): JavaAnnotationSpec {
     val element = annotationType.asElement() as TypeElement
-    return JavaAnnotationSpec(element.toClassName()) {
+    return JavaAnnotationSpec(element.toJavaClassName()) {
         val visitor = AnnotationMirrorVisitor(this)
         for (executableElement in this@toAnnotationSpec.elementValues.keys) {
             val name = executableElement.simpleName.toString()
@@ -40,7 +40,7 @@ private class AnnotationMirrorVisitor(
 
     override fun visitEnumConstant(c: VariableElement, name: String): JavaAnnotationSpecBuilder {
         return builder.addMember(name, "%V.%V") {
-            type(c.asType().toTypeName())
+            type(c.asType().toJavaTypeName())
             literal(c.simpleName)
         }
     }
@@ -55,14 +55,14 @@ internal fun JavaAnnotationSpecBuilder.addMemberForValue(memberName: String, val
         is Class<*> -> {
             addMember(memberName, "%V.class") {
                 // TODO type(Class)
-                type(value.toClassName())
+                type(value.toJavaClassName())
             }
         }
 
         is Enum<*> -> {
             addMember(memberName, "%V.%V") {
                 // TODO type(Class)
-                type(value.javaClass.toClassName())
+                type(value.javaClass.toJavaClassName())
                 literal(value.name)
             }
         }

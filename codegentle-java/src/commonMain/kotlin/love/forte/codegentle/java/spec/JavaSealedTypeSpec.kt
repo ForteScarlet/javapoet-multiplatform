@@ -50,7 +50,7 @@ public interface JavaSealedTypeSpec : NamedSpec, JavaTypeSpec {
                 permits = permits.toList(),
                 javadoc = javadoc.build(),
                 annotations = annotationRefs.toList(),
-                modifiers = LinkedHashSet(modifiers),
+                modifiers = modifiers.copy(),
                 typeVariables = typeVariableRefs.toList(),
                 superclass = superclass,
                 superinterfaces = superinterfaces.toList(),

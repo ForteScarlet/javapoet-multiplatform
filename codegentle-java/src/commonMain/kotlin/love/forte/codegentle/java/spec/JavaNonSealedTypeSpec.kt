@@ -42,7 +42,7 @@ public class JavaNonSealedTypeSpecBuilder @PublishedApi internal constructor(
             kind = kind,
             javadoc = javadoc.build(),
             annotations = annotationRefs.toList(),
-            modifiers = LinkedHashSet(modifiers),
+            modifiers = modifiers.copy(),
             typeVariables = typeVariableRefs.toList(),
             superclass = superclass,
             superinterfaces = superinterfaces.toList(),

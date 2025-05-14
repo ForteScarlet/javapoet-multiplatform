@@ -87,7 +87,7 @@ public inline fun JavaMethodSpec(block: JavaMethodSpecBuilder.() -> Unit = {}): 
 public class JavaMethodSpecBuilder internal constructor(
     public var name: String,
 ) : BuilderDsl,
-    ModifierBuilderContainer,
+    JavaModifierBuilderContainer,
     JavaAnnotationRefCollectable<JavaMethodSpecBuilder> {
     internal val javadoc = JavaCodeValue.builder()
     internal var returnType: JavaTypeRef<*>? = null
@@ -101,7 +101,7 @@ public class JavaMethodSpecBuilder internal constructor(
 
     internal val typeVariables: MutableList<JavaTypeRef<JavaTypeVariableName>> = mutableListOf()
     internal val annotations: MutableList<JavaAnnotationRef> = mutableListOf()
-    internal val modifiers: MutableSet<JavaModifier> = linkedSetOf()
+    internal val modifiers = JavaModifierSet()
     internal val parameters: MutableList<JavaParameterSpec> = mutableListOf()
 
     public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): JavaMethodSpecBuilder = apply {
@@ -129,7 +129,7 @@ public class JavaMethodSpecBuilder internal constructor(
     }
 
     override fun addModifiers(vararg modifiers: JavaModifier): JavaMethodSpecBuilder = apply {
-        this.modifiers.addAll(modifiers)
+        this.modifiers.addAll(*modifiers)
     }
 
     public fun addTypeVariable(typeVariable: JavaTypeRef<JavaTypeVariableName>): JavaMethodSpecBuilder = apply {
@@ -256,7 +256,7 @@ public class JavaMethodSpecBuilder internal constructor(
             name = name,
             javadoc = javadoc.build(),
             annotations = annotations.toList(),
-            modifiers = LinkedHashSet(modifiers),
+            modifiers = modifiers.copy(),
             typeVariables = typeVariables.toList(),
             returnType = returnType,
             parameters = parameters.toList(),
@@ -268,23 +268,23 @@ public class JavaMethodSpecBuilder internal constructor(
     }
 }
 
-public inline fun <T : JavaTypeVariableName> JavaMethodSpecBuilder.addTypeVariableRef(
+public inline fun <T : JavaTypeVariableName> JavaMethodSpecBuilder.addTypeVariable(
     variableName: T,
     block: JavaTypeRefBuilder<T>.() -> Unit = {}
 ): JavaMethodSpecBuilder =
-    addException(variableName.javaRef(block))
+    addException(variableName.ref(block))
 
 public inline fun <T : JavaTypeName> JavaMethodSpecBuilder.addException(
     type: T,
     block: JavaTypeRefBuilder<T>.() -> Unit = {}
 ): JavaMethodSpecBuilder =
-    addException(type.javaRef(block))
+    addException(type.ref(block))
 
 public inline fun <T : JavaTypeName> JavaMethodSpecBuilder.returns(
     type: T,
     block: JavaTypeRefBuilder<T>.() -> Unit = {}
 ): JavaMethodSpecBuilder =
-    returns(type.javaRef(block))
+    returns(type.ref(block))
 
 
 public inline fun JavaMethodSpecBuilder.addJavadoc(

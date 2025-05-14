@@ -88,6 +88,12 @@ public class JavaCodeWriter private constructor(
         indentLevel -= levels
     }
 
+    internal inline fun withIndent(level: Int = 1, block: () -> Unit) {
+        indent(level)
+        block()
+        unindent(level)
+    }
+
     internal fun pushPackage(packageName: String) {
         check(this.packageName == null) { "package already set: ${this.packageName}" }
         this.packageName = packageName
