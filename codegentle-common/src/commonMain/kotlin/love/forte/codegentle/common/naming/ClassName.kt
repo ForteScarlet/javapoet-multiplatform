@@ -49,8 +49,6 @@ public interface ClassName : Named, TypeName, Comparable<ClassName> {
 
 
     override fun compareTo(other: ClassName): Int = canonicalName.compareTo(other.canonicalName)
-
-    // TODO BuiltIns
 }
 
 /**

@@ -58,7 +58,8 @@ internal fun CodeValue.emit0(codeWriter: JavaCodeWriter, ensureTrailingNewline: 
 
             is CodeArgumentPart.Type -> {
                 // TODO cast
-                val typeName = part.type as JavaTypeName
+                val typeName = part.type as? JavaTypeName
+                    ?: error("type ${part.type} is not a JavaTypeName, but ${part.type::class}")
                 // TODO 下面这逻辑干啥的？
                 if (typeName is JavaClassName && iterator.hasNext()) {
                     val next = parts[iterator.nextIndex()]
@@ -77,7 +78,9 @@ internal fun CodeValue.emit0(codeWriter: JavaCodeWriter, ensureTrailingNewline: 
             }
 
             is CodeArgumentPart.TypeRef -> {
-                val typeRef = part.type as JavaTypeRef<*>
+                val typeRef = part.type as? JavaTypeRef<*>
+                    ?: error("type ref ${part.type} is not a JavaTypeRef, but ${part.type::class}")
+
                 val typeName = typeRef.typeName
                 // TODO 下面这逻辑干啥的？
                 if (typeName is JavaClassName && iterator.hasNext()) {
