@@ -79,7 +79,8 @@ public expect enum class JavaModifier {
  * 始终按照 [JavaModifier] 的 [JavaModifier.ordinal] 进行排序的 [Set] 实现。
  * 类似 TreeSet 或 SortedSet。
  */
-internal class JavaModifierSet(private var value: Int = 0) : Set<JavaModifier> {
+@InternalJavaCodeGentleApi
+public class JavaModifierSet(private var value: Int = 0) : Set<JavaModifier> {
     override val size: Int
         get() = value.countOneBits()
 
@@ -91,15 +92,15 @@ internal class JavaModifierSet(private var value: Int = 0) : Set<JavaModifier> {
         return elements.all { contains(it) }
     }
 
-    fun add(element: JavaModifier) {
+    public fun add(element: JavaModifier) {
         value = value or (1 shl element.ordinal)
     }
 
-    fun addAll(vararg elements: JavaModifier) {
+    public fun addAll(vararg elements: JavaModifier) {
         elements.forEach { add(it) }
     }
 
-    fun addAll(elements: Iterable<JavaModifier>) {
+    public fun addAll(elements: Iterable<JavaModifier>) {
         if (elements is JavaModifierSet) {
             value = value or elements.value
         } else {
@@ -107,7 +108,7 @@ internal class JavaModifierSet(private var value: Int = 0) : Set<JavaModifier> {
         }
     }
 
-    fun remove(element: JavaModifier) {
+    public fun remove(element: JavaModifier) {
         value or (1 shl element.ordinal)
     }
 
@@ -135,7 +136,7 @@ internal class JavaModifierSet(private var value: Int = 0) : Set<JavaModifier> {
         }
     }
 
-    fun copy(): JavaModifierSet = JavaModifierSet(value)
+    public fun copy(): JavaModifierSet = JavaModifierSet(value)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -154,7 +155,7 @@ internal class JavaModifierSet(private var value: Int = 0) : Set<JavaModifier> {
         return value
     }
 
-    companion object {
+    public companion object {
         private val EMPTY_ITERATOR = object : Iterator<JavaModifier> {
             override fun hasNext(): Boolean = false
 
@@ -223,6 +224,9 @@ public value class JavaModifierOp
     }
 }
 
+public inline val JavaModifierBuilderContainer.modifierOp: JavaModifierOp
+    get() = JavaModifierOp(this)
+
 /**
  * ```kotlin
  * container.modifiers {
@@ -235,5 +239,5 @@ public value class JavaModifierOp
  * ```
  */
 public inline fun JavaModifierBuilderContainer.modifiers(block: JavaModifierOp.() -> Unit) {
-    JavaModifierOp(this).block()
+    modifierOp.block()
 }

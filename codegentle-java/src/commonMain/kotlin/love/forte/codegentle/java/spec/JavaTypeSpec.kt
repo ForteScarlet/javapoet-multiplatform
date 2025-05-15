@@ -224,7 +224,7 @@ public sealed class JavaTypeSpecBuilder<B : JavaTypeSpecBuilder<B, T>, T : JavaT
     internal val initializerBlock = JavaCodeValue.builder()
 
     internal val annotationRefs: MutableList<JavaAnnotationRef> = mutableListOf()
-    internal val modifiers = JavaModifierSet()
+    internal val modifiers: JavaModifierSet = JavaModifierSet()
     internal val typeVariableRefs: MutableList<JavaTypeRef<JavaTypeVariableName>> = mutableListOf()
     internal val superinterfaces: MutableList<JavaTypeName> = mutableListOf()
     internal val fields: MutableList<JavaFieldSpec> = mutableListOf()

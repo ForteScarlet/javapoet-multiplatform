@@ -18,7 +18,6 @@ internal data class JavaClassNameImpl(
     override val packageName: String?,
     override val enclosingClassName: JavaClassName?,
     override val simpleName: String,
-    // override val annotations: List<JavaAnnotationSpec> = emptyList(),
 ) : JavaClassName {
     override val topLevelClassName: JavaClassName
         get() = enclosingClassName?.topLevelClassName ?: this
@@ -30,15 +29,6 @@ internal data class JavaClassNameImpl(
     override fun nestedClass(name: String): JavaClassName {
         return JavaClassNameImpl(packageName, this, name)
     }
-
-    // override fun annotated(annotations: List<JavaAnnotationSpec>): JavaTypeName {
-    //     if (annotations.isEmpty()) return this
-    //     return JavaClassNameImpl(packageName, enclosingClassName, simpleName, this.annotations + annotations)
-    // }
-    //
-    // override fun withoutAnnotations(): JavaTypeName {
-    //     return JavaClassNameImpl(packageName, enclosingClassName, simpleName)
-    // }
 
     override fun unbox(): JavaTypeName {
         if (packageName == JavaClassName.Builtins.JAVA_LANG_PACKAGE && enclosingClassName == null) {
