@@ -19,65 +19,44 @@
 
 package love.forte.codegentle.java.naming
 
+import love.forte.codegentle.common.naming.PlatformTypeName
 import love.forte.codegentle.common.naming.TypeName
-import love.forte.codegentle.java.naming.JavaTypeName.Builtins
 import love.forte.codegentle.java.naming.internal.JavaPrimitiveTypeNameImpl
 import love.forte.codegentle.java.writer.JavaCodeEmitter
-import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
 /**
  * A type name represented in Java。
  */
-public sealed interface JavaTypeName : TypeName, JavaCodeEmitter {
-    /**
-     * If this type is one of the primitive types ([Builtins.VOID], [Builtins.INT], etc.),
-     * return the boxed type ([JavaClassName.Builtins.BOXED_VOID], [JavaClassName.Builtins.BOXED_INT], etc.).
-     * Otherwise, return itself.
-     */
-    public fun box(): JavaTypeName {
-        // Only primitive TypeNames implement this fun.
-        return this
-    }
-
-    public fun unbox(): JavaTypeName {
-        // Only ClassNames and primitive TypeNames implement this fun.
-        throw UnsupportedOperationException("Can't unbox $this")
-    }
-
+public sealed interface JavaTypeName : PlatformTypeName, JavaCodeEmitter {
     public object Builtins {
-        @JvmField
         public val VOID: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.VOID)
 
-        @JvmField
         public val BOOLEAN: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.BOOLEAN)
 
-        @JvmField
         public val BYTE: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.BYTE)
 
-        @JvmField
         public val SHORT: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.SHORT)
 
-        @JvmField
         public val INT: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.INT)
 
-        @JvmField
         public val LONG: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.LONG)
 
-        @JvmField
         public val CHAR: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.CHAR)
 
-        @JvmField
         public val FLOAT: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.FLOAT)
 
-        @JvmField
         public val DOUBLE: JavaTypeName = JavaPrimitiveTypeNameImpl(JavaPrimitiveTypeName.DOUBLE)
     }
 }
 
 internal interface JavaPrimitiveTypeName : JavaTypeName {
     val keyword: String
+
+    fun box(): JavaTypeName
+    fun unbox(): JavaTypeName
+
 
     companion object {
         const val VOID = "void"
@@ -99,4 +78,20 @@ internal interface JavaPrimitiveTypeName : JavaTypeName {
  * Types including boxed primitives and `void`.
  */
 public val JavaTypeName.isPrimitive: Boolean
-    get() = this is JavaPrimitiveTypeName && this != Builtins.VOID
+    get() = this is JavaPrimitiveTypeName && this != JavaPrimitiveTypeNames.VOID
+
+/**
+ * If this type is one of the primitive types ([JavaPrimitiveTypeNames.VOID],
+ * [JavaPrimitiveTypeNames.INT], etc.),
+ * return the boxed type ([JavaClassNames.BOXED_VOID], [JavaClassNames.BOXED_INT], etc.).
+ * Otherwise, return itself.
+ */
+public fun JavaTypeName.box(): JavaTypeName {
+    return (this as? JavaPrimitiveTypeName)?.box() ?: this
+}
+
+public fun JavaTypeName.unbox(): TypeName {
+    return (this as? JavaPrimitiveTypeName)?.unbox()
+    // Only ClassNames and primitive TypeNames implement this fun.
+        ?: throw UnsupportedOperationException("Can't unbox $this")
+}

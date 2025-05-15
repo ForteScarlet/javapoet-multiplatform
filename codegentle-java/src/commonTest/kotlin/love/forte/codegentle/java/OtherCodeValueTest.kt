@@ -1,7 +1,7 @@
 package love.forte.codegentle.java
 
 import love.forte.codegentle.common.code.CodePart
-import love.forte.codegentle.java.naming.JavaClassName
+import love.forte.codegentle.common.naming.ClassName
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -12,7 +12,7 @@ class OtherCodeValueTest {
     fun testCodeValueFormat() {
         with(
             JavaCodeValue("%V%V = %V%V;") {
-                type(JavaClassName("java.lang", "String"))
+                type(ClassName("java.lang", "String"))
                 literal(" name")
                 literal("")
                 string("Hello World")
@@ -20,7 +20,7 @@ class OtherCodeValueTest {
         ) {
             assertEquals(parts.size, 6)
 
-            assertEquals(CodePart.type(JavaClassName("java.lang", "String")), parts[0])
+            assertEquals(CodePart.type(ClassName("java.lang", "String")), parts[0])
             assertEquals(CodePart.literal(" name"), parts[1])
             assertEquals(CodePart.simple(" = "), parts[2])
             assertEquals(CodePart.literal(""), parts[3])
@@ -31,7 +31,7 @@ class OtherCodeValueTest {
 
         with(
             JavaCodeValue("%V%V = %V%V") {
-                type(JavaClassName("java.lang", "String"))
+                type(ClassName("java.lang", "String"))
                 literal(" name")
                 literal("")
                 string("Hello World")
@@ -39,7 +39,7 @@ class OtherCodeValueTest {
         ) {
             assertEquals(parts.size, 5)
 
-            assertEquals(CodePart.type(JavaClassName("java.lang", "String")), parts[0])
+            assertEquals(CodePart.type(ClassName("java.lang", "String")), parts[0])
             assertEquals(CodePart.literal(" name"), parts[1])
             assertEquals(CodePart.simple(" = "), parts[2])
             assertEquals(CodePart.literal(""), parts[3])
@@ -49,14 +49,14 @@ class OtherCodeValueTest {
 
         with(
             JavaCodeValue("%V %V = %V;") {
-                type(JavaClassName("java.lang", "String"))
+                type(ClassName("java.lang", "String"))
                 literal("name")
                 string("Hello World")
             }
         ) {
             assertEquals(parts.size, 6)
 
-            assertEquals(CodePart.type(JavaClassName("java.lang", "String")), parts[0])
+            assertEquals(CodePart.type(ClassName("java.lang", "String")), parts[0])
             assertEquals(CodePart.simple(" "), parts[1])
             assertEquals(CodePart.literal("name"), parts[2])
             assertEquals(CodePart.simple(" = "), parts[3])
@@ -67,14 +67,14 @@ class OtherCodeValueTest {
 
         with(
             JavaCodeValue("%V %V = %V") {
-                type(JavaClassName("java.lang", "String"))
+                type(ClassName("java.lang", "String"))
                 literal("name")
                 string("Hello World")
             }
         ) {
             assertEquals(parts.size, 5)
 
-            assertEquals(CodePart.type(JavaClassName("java.lang", "String")), parts[0])
+            assertEquals(CodePart.type(ClassName("java.lang", "String")), parts[0])
             assertEquals(CodePart.simple(" "), parts[1])
             assertEquals(CodePart.literal("name"), parts[2])
             assertEquals(CodePart.simple(" = "), parts[3])

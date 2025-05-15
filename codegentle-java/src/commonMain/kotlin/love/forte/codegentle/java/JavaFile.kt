@@ -21,10 +21,10 @@ package love.forte.codegentle.java
 
 import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.code.CodeArgumentPart
+import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.canonicalName
 import love.forte.codegentle.java.JavaFile.Builder
 import love.forte.codegentle.java.internal.JavaFileImpl
-import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.strategy.JavaWriteStrategy
 import love.forte.codegentle.java.writer.JavaCodeEmitter
@@ -84,14 +84,14 @@ public interface JavaFile : JavaCodeEmitter {
             staticImports.add(import)
         }
 
-        public fun addStaticImport(className: JavaClassName, vararg names: String): Builder = apply {
+        public fun addStaticImport(className: ClassName, vararg names: String): Builder = apply {
             require(names.isNotEmpty()) { "`names` is empty" }
             for (name in names) {
                 staticImports.add(className.canonicalName + "." + name)
             }
         }
 
-        public fun addStaticImport(className: JavaClassName, names: Iterable<String>): Builder = apply {
+        public fun addStaticImport(className: ClassName, names: Iterable<String>): Builder = apply {
             val iter = names.iterator()
             require(!iter.hasNext()) { "`names` is empty" }
 

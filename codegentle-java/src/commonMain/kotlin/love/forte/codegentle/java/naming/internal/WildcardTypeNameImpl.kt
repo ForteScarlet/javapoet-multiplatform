@@ -1,6 +1,6 @@
 package love.forte.codegentle.java.naming.internal
 
-import love.forte.codegentle.java.naming.JavaClassName
+import love.forte.codegentle.java.naming.JavaClassNames
 import love.forte.codegentle.java.naming.JavaSubtypeWildcardTypeName
 import love.forte.codegentle.java.naming.JavaSupertypeWildcardTypeName
 import love.forte.codegentle.java.ref.JavaTypeRef
@@ -59,7 +59,7 @@ internal class JavaSupertypeWildcardTypeNameImpl(
                     codeWriter.emit("?")
                 }
 
-                if (typeRef.typeName == JavaClassName.Builtins.OBJECT) {
+                if (typeRef.typeName == JavaClassNames.OBJECT) {
                     // continue
                     return@forEachIndexed
                 }

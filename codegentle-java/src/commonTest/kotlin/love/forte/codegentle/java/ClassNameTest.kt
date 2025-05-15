@@ -1,6 +1,7 @@
 package love.forte.codegentle.java
 
-import love.forte.codegentle.java.naming.JavaClassName
+import love.forte.codegentle.common.naming.ClassName
+import love.forte.codegentle.java.naming.JavaClassNames
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -12,32 +13,32 @@ class ClassNameTest {
 
     @Test
     fun justTest() {
-        println(JavaClassName::class)
-        println(JavaClassName.Builtins.STRING)
+        println(ClassName::class)
+        println(JavaClassNames.STRING)
 
         println(formatIsoControlCode(68))
         println('a'.characterLiteralWithoutSingleQuotes())
         println("ABC".literalWithDoubleQuotes(" "))
 
-        println("ClassName: " + JavaClassName(packageName = "java.lang", simpleName = "String"))
+        println("ClassName: " + ClassName(packageName = "java.lang", simpleName = "String"))
     }
 
     @Test
     fun classNameToString() {
-        assertEquals("java.lang.String", JavaClassName(packageName = "java.lang", simpleName = "String").toString())
-        assertEquals("java.lang.String", JavaClassName.Builtins.STRING.toString())
+        assertEquals("java.lang.String", ClassName(packageName = "java.lang", simpleName = "String").toString())
+        assertEquals("java.lang.String", JavaClassNames.STRING.toString())
 
         assertEquals(
             "import java.lang.String;",
             JavaCodeValue("import %V;") {
-                literal(JavaClassName("java.lang", "String"))
+                literal(ClassName("java.lang", "String"))
             }.toString()
         )
 
         assertEquals(
             "import java.lang.String;",
             JavaCodeValue("import %V;") {
-                literal(JavaClassName("java.lang", "String"))
+                literal(ClassName("java.lang", "String"))
             }.toString()
         )
     }

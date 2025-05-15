@@ -22,4 +22,6 @@ public interface Strategy {
      */
     public fun newline(): String = "\n"
 
+
+    public fun isIdentifier(value: String): Boolean
 }

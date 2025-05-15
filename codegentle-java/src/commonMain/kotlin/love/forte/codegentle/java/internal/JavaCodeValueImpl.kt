@@ -4,18 +4,21 @@ import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.code.CodePart
 import love.forte.codegentle.common.code.CodeSimplePart
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.canonicalName
+import love.forte.codegentle.common.writer.InternalWriterApi
 import love.forte.codegentle.java.JavaCodeValue
 import love.forte.codegentle.java.literalWithDoubleQuotes
-import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.naming.JavaTypeName
+import love.forte.codegentle.java.naming.internal.emitTo
 import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import love.forte.codegentle.java.writer.emitToString
 
 
+@OptIn(InternalWriterApi::class)
 internal fun CodeValue.emit0(codeWriter: JavaCodeWriter, ensureTrailingNewline: Boolean = false) {
-    var deferredTypeName: JavaClassName? = null
+    var deferredTypeName: ClassName? = null
     val iterator = parts.listIterator()
 
     while (iterator.hasNext()) {
@@ -31,7 +34,7 @@ internal fun CodeValue.emit0(codeWriter: JavaCodeWriter, ensureTrailingNewline: 
                             continue
                         }
                     }
-                    deferredTypeName.emit(codeWriter)
+                    deferredTypeName.emitTo(codeWriter)
                     deferredTypeName = null
                 }
                 codeWriter.emitAndIndent(value)
@@ -61,11 +64,11 @@ internal fun CodeValue.emit0(codeWriter: JavaCodeWriter, ensureTrailingNewline: 
                 val typeName = part.type as? JavaTypeName
                     ?: error("type ${part.type} is not a JavaTypeName, but ${part.type::class}")
                 // TODO 下面这逻辑干啥的？
-                if (typeName is JavaClassName && iterator.hasNext()) {
+                if (typeName is ClassName && iterator.hasNext()) {
                     val next = parts[iterator.nextIndex()]
                     // !next.start('$')
                     if (next !is CodeArgumentPart) {
-                        val candidate: JavaClassName = typeName
+                        val candidate: ClassName = typeName
                         if (codeWriter.staticImportClassNames.contains(candidate)) {
                             check(deferredTypeName == null) { "pending type for static import?!" }
                             deferredTypeName = candidate
@@ -83,11 +86,11 @@ internal fun CodeValue.emit0(codeWriter: JavaCodeWriter, ensureTrailingNewline: 
 
                 val typeName = typeRef.typeName
                 // TODO 下面这逻辑干啥的？
-                if (typeName is JavaClassName && iterator.hasNext()) {
+                if (typeName is ClassName && iterator.hasNext()) {
                     val next = parts[iterator.nextIndex()]
                     // !next.start('$')
                     if (next !is CodeArgumentPart) {
-                        val candidate: JavaClassName = typeName
+                        val candidate: ClassName = typeName
                         if (codeWriter.staticImportClassNames.contains(candidate)) {
                             check(deferredTypeName == null) { "pending type for static import?!" }
                             deferredTypeName = candidate

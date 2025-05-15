@@ -8,7 +8,7 @@ import love.forte.codegentle.common.ref.TypeRef
  * @author ForteScarlet
  */
 public interface WildcardTypeName : TypeName {
-    public val bounds: List<TypeRef>
+    public val bounds: List<TypeRef<*>>
 
     // Java:
     //  uppers: ? extends T1 & T2

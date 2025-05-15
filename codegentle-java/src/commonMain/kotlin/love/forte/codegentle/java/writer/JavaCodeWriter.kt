@@ -18,14 +18,15 @@ package love.forte.codegentle.java.writer
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.common.computeValue
+import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.writer.CodeWriter
 import love.forte.codegentle.common.writer.CodeWriter.Companion.DEFAULT_COLUMN_LIMIT
 import love.forte.codegentle.common.writer.CodeWriter.Companion.DEFAULT_INDENT
+import love.forte.codegentle.common.writer.InternalWriterApi
+import love.forte.codegentle.common.writer.LineWrapper
 import love.forte.codegentle.java.*
-import love.forte.codegentle.java.internal.LineWrapper
 import love.forte.codegentle.java.internal.emit0
 import love.forte.codegentle.java.internal.isSourceIdentifier
-import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.naming.JavaTypeVariableName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaTypeRef
@@ -37,16 +38,17 @@ import love.forte.codegentle.java.strategy.JavaWriteStrategy
 import love.forte.codegentle.java.strategy.ToStringJavaWriteStrategy
 
 
+@OptIn(InternalWriterApi::class)
 @InternalJavaCodeGentleApi
 public class JavaCodeWriter private constructor(
     override val strategy: JavaWriteStrategy,
     override val indentValue: String,
     internal val out: LineWrapper,
 
-    override val staticImportClassNames: Set<JavaClassName> = emptySet(),
+    override val staticImportClassNames: Set<ClassName> = emptySet(),
     override val staticImports: Set<String> = emptySet(),
     override val alwaysQualify: Set<String> = emptySet(),
-    internal val importedTypes: Map<String, JavaClassName> = emptyMap()
+    internal val importedTypes: Map<String, ClassName> = emptyMap()
 ) : CodeWriter {
 
     internal enum class CommentType(
@@ -62,10 +64,10 @@ public class JavaCodeWriter private constructor(
 
     // internal var javadoc = false
     // private var comment = false
-    internal var packageName: String? = null // com.squareup.javapoet.CodeWriter.NO_PACKAGE
+    internal var packageName: String? = null
 
     // simple name -> class name
-    internal val importableTypes: MutableMap<String, JavaClassName> = linkedMapOf()
+    internal val importableTypes: MutableMap<String, ClassName> = linkedMapOf()
     internal val referencedNames: MutableSet<String> = linkedSetOf()
 
     // private val typeSpecStack: MutableList<TypeSpec> = mutableListOf()
@@ -331,7 +333,7 @@ public class JavaCodeWriter private constructor(
         }
     }
 
-    internal fun suggestedImports(): Map<String, JavaClassName> {
+    internal fun suggestedImports(): Map<String, ClassName> {
         val result = LinkedHashMap(importableTypes)
         result.keys.removeAll(referencedNames)
         return result
@@ -372,7 +374,7 @@ public class JavaCodeWriter private constructor(
             dialect: JavaWriteStrategy,
             out: Appendable,
             indent: String,
-            importedTypes: Map<String, JavaClassName>,
+            importedTypes: Map<String, ClassName>,
             // TODO sealed class StaticImports { className, propertyName, functionName }
             staticImports: Set<String>,
             alwaysQualify: Set<String>
@@ -386,7 +388,7 @@ public class JavaCodeWriter private constructor(
                 alwaysQualify = alwaysQualify,
                 staticImportClassNames = staticImports.mapTo(linkedSetOf()) {
                     // static import 不止可以import class，还有字段、方法啥的
-                    JavaClassName(it)
+                    ClassName(it)
                     // TODO("")
                     // it.substringBeforeLast('.')
                 },

@@ -11,4 +11,7 @@ import kotlin.jvm.JvmName
  *
  * @author ForteScarlet
  */
-public interface TypeName : Naming
+public sealed interface TypeName : Naming
+
+
+public interface PlatformTypeName : TypeName

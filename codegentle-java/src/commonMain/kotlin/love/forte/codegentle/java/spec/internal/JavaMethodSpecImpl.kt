@@ -2,7 +2,7 @@ package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.java.*
-import love.forte.codegentle.java.naming.JavaTypeName
+import love.forte.codegentle.java.naming.JavaPrimitiveTypeNames
 import love.forte.codegentle.java.naming.JavaTypeVariableName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaTypeRef
@@ -43,7 +43,7 @@ internal class JavaMethodSpecImpl(
             }
         } else {
             codeWriter.emit("%V ${this.name}(%V") {
-                type(returnType ?: JavaTypeName.Builtins.VOID.ref())
+                type(returnType ?: JavaPrimitiveTypeNames.VOID.ref())
                 zeroWidthSpace()
             }
         }

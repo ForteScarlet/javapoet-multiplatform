@@ -59,24 +59,24 @@ internal fun Type.toJavaTypeName(map: MutableMap<Type, JavaTypeVariableName>): J
     return when (val type = this) {
         is Class<*> -> {
             when (type) {
-                VOID_CLASS -> return JavaTypeName.Builtins.VOID
-                BOOLEAN_CLASS -> return JavaTypeName.Builtins.BOOLEAN
-                BYTE_CLASS -> return JavaTypeName.Builtins.BYTE
-                SHORT_CLASS -> return JavaTypeName.Builtins.SHORT
-                INT_CLASS -> return JavaTypeName.Builtins.INT
-                LONG_CLASS -> return JavaTypeName.Builtins.LONG
-                CHAR_CLASS -> return JavaTypeName.Builtins.CHAR
-                FLOAT_CLASS -> return JavaTypeName.Builtins.FLOAT
-                VOID_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_VOID
-                BOOLEAN_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_BOOLEAN
-                BYTE_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_BYTE
-                SHORT_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_SHORT
-                INT_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_INT
-                LONG_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_LONG
-                CHAR_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_CHAR
-                FLOAT_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_FLOAT
-                OBJECT_CLASS -> return JavaClassName.Builtins.OBJECT
-                STRING_CLASS -> return JavaClassName.Builtins.STRING
+                VOID_CLASS -> return JavaPrimitiveTypeNames.VOID
+                BOOLEAN_CLASS -> return JavaPrimitiveTypeNames.BOOLEAN
+                BYTE_CLASS -> return JavaPrimitiveTypeNames.BYTE
+                SHORT_CLASS -> return JavaPrimitiveTypeNames.SHORT
+                INT_CLASS -> return JavaPrimitiveTypeNames.INT
+                LONG_CLASS -> return JavaPrimitiveTypeNames.LONG
+                CHAR_CLASS -> return JavaPrimitiveTypeNames.CHAR
+                FLOAT_CLASS -> return JavaPrimitiveTypeNames.FLOAT
+                VOID_BOXED_CLASS -> return JavaClassNames.BOXED_VOID
+                BOOLEAN_BOXED_CLASS -> return JavaClassNames.BOXED_BOOLEAN
+                BYTE_BOXED_CLASS -> return JavaClassNames.BOXED_BYTE
+                SHORT_BOXED_CLASS -> return JavaClassNames.BOXED_SHORT
+                INT_BOXED_CLASS -> return JavaClassNames.BOXED_INT
+                LONG_BOXED_CLASS -> return JavaClassNames.BOXED_LONG
+                CHAR_BOXED_CLASS -> return JavaClassNames.BOXED_CHAR
+                FLOAT_BOXED_CLASS -> return JavaClassNames.BOXED_FLOAT
+                OBJECT_CLASS -> return JavaClassNames.OBJECT
+                STRING_CLASS -> return JavaClassNames.STRING
             }
 
             if (type.isArray) {
@@ -97,7 +97,7 @@ internal fun Type.toJavaTypeName(map: MutableMap<Type, JavaTypeVariableName>): J
                 JavaSubtypeWildcardTypeName(
                     type.upperBounds
                         .map { it.toJavaTypeName().ref() }
-                        .ifEmpty { listOf(JavaClassName.Builtins.OBJECT.ref()) }
+                        .ifEmpty { listOf(JavaClassNames.OBJECT.ref()) }
                 )
             }
         }
@@ -119,14 +119,14 @@ internal fun TypeMirror.toJavaTypeName(typeVariables: MutableMap<TypeParameterEl
     val visitor = object : SimpleTypeVisitor8<JavaTypeName, Void?>() {
         override fun visitPrimitive(t: PrimitiveType, p: Void?): JavaTypeName {
             return when (t.kind) {
-                TypeKind.BOOLEAN -> JavaTypeName.Builtins.BOOLEAN
-                TypeKind.BYTE -> JavaTypeName.Builtins.BYTE
-                TypeKind.SHORT -> JavaTypeName.Builtins.SHORT
-                TypeKind.INT -> JavaTypeName.Builtins.INT
-                TypeKind.LONG -> JavaTypeName.Builtins.LONG
-                TypeKind.CHAR -> JavaTypeName.Builtins.CHAR
-                TypeKind.FLOAT -> JavaTypeName.Builtins.FLOAT
-                TypeKind.DOUBLE -> JavaTypeName.Builtins.DOUBLE
+                TypeKind.BOOLEAN -> JavaPrimitiveTypeNames.BOOLEAN
+                TypeKind.BYTE -> JavaPrimitiveTypeNames.BYTE
+                TypeKind.SHORT -> JavaPrimitiveTypeNames.SHORT
+                TypeKind.INT -> JavaPrimitiveTypeNames.INT
+                TypeKind.LONG -> JavaPrimitiveTypeNames.LONG
+                TypeKind.CHAR -> JavaPrimitiveTypeNames.CHAR
+                TypeKind.FLOAT -> JavaPrimitiveTypeNames.FLOAT
+                TypeKind.DOUBLE -> JavaPrimitiveTypeNames.DOUBLE
                 else -> throw AssertionError()
             }
         }
@@ -177,7 +177,7 @@ internal fun TypeMirror.toJavaTypeName(typeVariables: MutableMap<TypeParameterEl
 
         override fun visitNoType(t: NoType, p: Void?): JavaTypeName {
             return when (t.kind) {
-                TypeKind.VOID -> JavaTypeName.Builtins.VOID
+                TypeKind.VOID -> JavaPrimitiveTypeNames.VOID
                 else -> super.visitUnknown(t, p)
             }
         }

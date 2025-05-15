@@ -6,7 +6,6 @@ import love.forte.codegentle.common.writer.withIndent
 import love.forte.codegentle.java.JavaCodeValue
 import love.forte.codegentle.java.internal.emit0
 import love.forte.codegentle.java.literal
-import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.spec.JavaAnnotationSpec
 import love.forte.codegentle.java.type
@@ -72,7 +71,7 @@ private fun JavaCodeWriter.emitAnnotationValues(
 }
 
 internal class JavaAnnotationSpecImpl(
-    override val type: JavaTypeName,
+    override val type: TypeName,
     override val members: Map<String, List<JavaCodeValue>>,
     override val annotations: List<JavaAnnotationRef>,
 ) : JavaAnnotationSpec {

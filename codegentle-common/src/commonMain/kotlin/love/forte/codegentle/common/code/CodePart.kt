@@ -4,7 +4,6 @@ import love.forte.codegentle.common.naming.Named
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.ref.TypeRef
 import kotlin.jvm.JvmOverloads
-import kotlin.jvm.JvmStatic
 
 /**
  * Mark a CodePart factory function in its companion object
@@ -23,14 +22,12 @@ public sealed class CodePart {
     public companion object {
         public const val PLACEHOLDER: String = "%V"
 
-        @JvmStatic
         @CodePartFactory
         public fun simple(value: String): CodeSimplePart = CodeSimplePart(value)
 
         /**
          * Skip this `%V`, Just write `%V` itself.
          */
-        @JvmStatic
         @CodePartFactory
         public fun skip(): CodeArgumentPart = CodeArgumentPart.Skip
 
@@ -41,7 +38,6 @@ public sealed class CodePart {
          * [annotations][AnnotationSpec] and even other [code values][CodeValue]
          * or [code emitters][JavaCodeEmitter].
          */
-        @JvmStatic
         @CodePartFactory
         public fun literal(value: Any?): CodeArgumentPart = CodeArgumentPart.Literal(value)
 
@@ -51,7 +47,6 @@ public sealed class CodePart {
          * [parameters][ParameterSpec], [fields][FieldSpec],
          * [methods][MethodSpec], and [types][TypeSpec].
          */
-        @JvmStatic
         @CodePartFactory
         public fun name(name: String?): CodeArgumentPart = CodeArgumentPart.Name(name)
 
@@ -61,7 +56,6 @@ public sealed class CodePart {
          * [parameters][ParameterSpec], [fields][FieldSpec],
          * [methods][MethodSpec], and [types][TypeSpec].
          */
-        @JvmStatic
         @CodePartFactory
         public fun name(nameValue: Any): CodeArgumentPart = CodeArgumentPart.Name(nameValue)
 
@@ -69,7 +63,6 @@ public sealed class CodePart {
          * Escapes the value as a `string`, wraps it with double quotes, and emits
          *  that. For example, `6" sandwich` is emitted `"6\" sandwich"`.
          */
-        @JvmStatic
         @CodePartFactory
         public fun string(value: String?): CodeArgumentPart = CodeArgumentPart.Str(value)
 
@@ -78,7 +71,6 @@ public sealed class CodePart {
          * for types may be `Class` classes, `TypeMirror` type mirrors,
          * and `Element` elements.
          */
-        @JvmStatic
         @CodePartFactory
         public fun type(type: TypeName): CodeArgumentPart = CodeArgumentPart.Type(type)
 
@@ -92,15 +84,13 @@ public sealed class CodePart {
          * for types may be `Class` classes, `TypeMirror` type mirrors,
          * and `Element` elements.
          */
-        @JvmStatic
         @CodePartFactory
-        public fun type(type: TypeRef): CodeArgumentPart = CodeArgumentPart.TypeRef(type)
+        public fun type(type: TypeRef<*>): CodeArgumentPart = CodeArgumentPart.TypeRef(type)
 
 
         /**
          * Increases the indentation level.
          */
-        @JvmStatic
         @JvmOverloads
         @CodePartFactory
         public fun indent(levels: Int = 1): CodeArgumentPart = CodeArgumentPart.Indent(levels)
@@ -108,7 +98,6 @@ public sealed class CodePart {
         /**
          * Decreases the indentation level.
          */
-        @JvmStatic
         @JvmOverloads
         @CodePartFactory
         public fun unindent(levels: Int = 1): CodeArgumentPart = CodeArgumentPart.Unindent(levels)
@@ -119,14 +108,12 @@ public sealed class CodePart {
          * For multiline statements, every line after the first line
          * is double-indented.
          */
-        @JvmStatic
         @CodePartFactory
         public fun statementBegin(): CodeArgumentPart = CodeArgumentPart.StatementBegin
 
         /**
          * Ends a statement.
          */
-        @JvmStatic
         @CodePartFactory
         public fun statementEnd(): CodeArgumentPart = CodeArgumentPart.StatementEnd
 
@@ -134,18 +121,15 @@ public sealed class CodePart {
          * Emits a space or a newline, depending on its position on the line. This prefers
          * to wrap lines before 100 columns.
          */
-        @JvmStatic
         @CodePartFactory
         public fun wrappingSpace(): CodeArgumentPart = CodeArgumentPart.WrappingSpace
 
         /**
          * Acts as a zero-width space. This prefers to wrap lines before 100 columns.
          */
-        @JvmStatic
         @CodePartFactory
         public fun zeroWidthSpace(): CodeArgumentPart = CodeArgumentPart.ZeroWidthSpace
 
-        // @JvmStatic
         // @CodePartFactory
         public fun otherCodeValue(value: CodeValue): CodeArgumentPart =
             CodeArgumentPart.OtherCodeValue(value)
@@ -284,7 +268,7 @@ public sealed class CodeArgumentPart : CodePart() {
         }
     }
 
-    public class TypeRef internal constructor(public val type: love.forte.codegentle.common.ref.TypeRef) : CodeArgumentPart() {
+    public class TypeRef internal constructor(public val type: love.forte.codegentle.common.ref.TypeRef<*>) : CodeArgumentPart() {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other !is Type) return false

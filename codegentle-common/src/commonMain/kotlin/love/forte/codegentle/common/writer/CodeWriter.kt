@@ -34,6 +34,9 @@ public interface CodeWriter {
 
     public fun emitAndIndent(s: String)
 
+    // TODO public fun emitTypeName(typeName: TypeName)
+    // TODO public fun emitTypeRef(typeRef: TypeRef<*>)
+
     // TODO imports
     /**
      * Key: the identifier
@@ -57,16 +60,15 @@ public inline fun <C : CodeWriter> C.withIndent(
 }
 
 
-public interface Import {
+public interface Import : CodeEmitter {
     // import a.b.c.d.$name1.$name2;
     // import static a.b.c.d.$name1.$name2;
     public val packageName: String?
+
     public val names: List<String>
 
     /**
      * The import's identifier.
      */
     public val identifier: String
-    public val static: Boolean
 }
-

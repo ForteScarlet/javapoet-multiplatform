@@ -1,9 +1,9 @@
 package love.forte.codegentle.java.ref
 
 import love.forte.codegentle.common.computeValueIfAbsent
+import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.java.JavaCodeValue
-import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.ref.internal.JavaAnnotationRefImpl
 import love.forte.codegentle.java.writer.JavaCodeEmitter
 
@@ -13,11 +13,11 @@ import love.forte.codegentle.java.writer.JavaCodeEmitter
  * @author ForteScarlet
  */
 public interface JavaAnnotationRef : AnnotationRef, JavaCodeEmitter {
-    override val className: JavaClassName
+    override val className: ClassName
     override val members: Map<String, List<JavaCodeValue>>
 }
 
-public inline fun JavaClassName.annotationRef(block: JavaAnnotationRefBuilder.() -> Unit = {}): JavaAnnotationRef {
+public inline fun ClassName.annotationRef(block: JavaAnnotationRefBuilder.() -> Unit = {}): JavaAnnotationRef {
     return JavaAnnotationRefBuilder(this@annotationRef).apply {
         block()
     }.build()
@@ -26,7 +26,7 @@ public inline fun JavaClassName.annotationRef(block: JavaAnnotationRefBuilder.()
 /**
  * Builder for [JavaAnnotationRef].
  */
-public class JavaAnnotationRefBuilder(public val className: JavaClassName) :
+public class JavaAnnotationRefBuilder(public val className: ClassName) :
     JavaAnnotationRefBuildable<JavaAnnotationRefBuilder> {
     private val members: MutableMap<String, MutableList<JavaCodeValue>> = linkedMapOf()
 

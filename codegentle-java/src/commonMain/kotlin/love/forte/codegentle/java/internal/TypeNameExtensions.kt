@@ -2,7 +2,7 @@ package love.forte.codegentle.java.internal
 
 import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.java.JavaModifier
-import love.forte.codegentle.java.naming.JavaClassName
+import love.forte.codegentle.java.naming.JavaClassNames
 import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.spec.internal.JavaSimpleTypeSpecImpl
@@ -41,7 +41,7 @@ internal fun JavaTypeSpec.emitSupers(codeWriter: JavaCodeWriter) {
         implementsTypes = emptyList()
     } else {
         extendsTypes = superclass?.let {
-            if (it != JavaClassName.Builtins.OBJECT) {
+            if (it != JavaClassNames.OBJECT) {
                 listOf(it)
             } else null
         } ?: emptyList()

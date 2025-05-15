@@ -1,9 +1,9 @@
 package love.forte.codegentle.java.ref
 
 import love.forte.codegentle.common.BuilderDsl
+import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.java.literal
 import love.forte.codegentle.java.naming.JavaAnnotationNames
-import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.string
 import love.forte.codegentle.java.type
 import kotlin.jvm.JvmInline
@@ -32,7 +32,7 @@ public interface JavaAnnotationRefCollectable<B : JavaAnnotationRefCollectable<B
 }
 
 public inline fun <B : JavaAnnotationRefCollectable<B>> B.addAnnotationRef(
-    className: JavaClassName,
+    className: ClassName,
     block: JavaAnnotationRefBuilder.() -> Unit = {}
 ): B = addAnnotationRef(JavaAnnotationRefBuilder(className).apply(block).build())
 
@@ -125,7 +125,7 @@ internal constructor(public val collectable: B) {
 
             javaRetentionName?.also { retentionName ->
                 addMember("value", "%V.%V") {
-                    type(JavaClassName("java.lang.annotation", "Retention"))
+                    type(ClassName("java.lang.annotation", "Retention"))
                     literal(retentionName)
                 }
             }
@@ -149,7 +149,7 @@ internal constructor(public val collectable: B) {
                     val elementName = value.uppercase()
                     require(elementName.all { it in 'A'..'Z' || it == '_' })
                     addMember("value", "%V.%V") {
-                        type(JavaClassName("java.lang.annotation", "ElementType"))
+                        type(ClassName("java.lang.annotation", "ElementType"))
                         literal(elementName)
                     }
                 }
@@ -169,7 +169,7 @@ internal constructor(public val collectable: B) {
      *
      * @param value `value` of `java.lang.annotation.Repeatable`
      */
-    public fun addRepeatable(value: JavaClassName): B {
+    public fun addRepeatable(value: ClassName): B {
         return collectable.addAnnotationRef(JavaAnnotationNames.Repeatable) {
             addMember("value", "%V.class") {
                 type(value)

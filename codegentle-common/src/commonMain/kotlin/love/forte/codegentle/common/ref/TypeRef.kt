@@ -7,8 +7,8 @@ import love.forte.codegentle.common.naming.TypeName
  *
  * @author ForteScarlet
  */
-public interface TypeRef {
-    public val typeName: TypeName
+public interface TypeRef<out T : TypeName> {
+    public val typeName: T
     public val status: TypeNameRefStatus
 }
 

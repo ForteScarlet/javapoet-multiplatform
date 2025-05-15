@@ -8,7 +8,7 @@ import love.forte.codegentle.common.ref.TypeRef
  */
 public interface ParameterizedTypeName : TypeName, Named {
     public val rawType: ClassName
-    public val typeArguments: List<TypeRef>
+    public val typeArguments: List<TypeRef<*>>
 
     /**
      * Same as [rawType.name][ClassName.name]
@@ -25,13 +25,13 @@ public interface ParameterizedTypeName : TypeName, Named {
      * Returns a new [ParameterizedTypeName] instance for the specified [name] as nested
      * inside this class, with the specified [typeArguments].
      */
-    public fun nestedClass(name: String, typeArguments: List<TypeRef>): ParameterizedTypeName
+    public fun nestedClass(name: String, typeArguments: List<TypeRef<*>>): ParameterizedTypeName
 
     /**
      * Returns a new [ParameterizedTypeName] instance for the specified [name] as nested
      * inside this class, with the specified [typeArguments].
      */
-    public fun nestedClass(name: String, vararg typeArguments: TypeRef): ParameterizedTypeName =
+    public fun nestedClass(name: String, vararg typeArguments: TypeRef<*>): ParameterizedTypeName =
         nestedClass(name, typeArguments.asList())
 
 }

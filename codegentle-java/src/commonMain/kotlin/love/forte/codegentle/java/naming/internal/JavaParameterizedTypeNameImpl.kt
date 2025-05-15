@@ -1,6 +1,6 @@
 package love.forte.codegentle.java.naming.internal
 
-import love.forte.codegentle.java.naming.JavaClassName
+import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.java.naming.JavaParameterizedTypeName
 import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.writer.JavaCodeWriter
@@ -13,7 +13,7 @@ import love.forte.codegentle.java.writer.emitToString
  */
 internal class JavaParameterizedTypeNameImpl(
     private val enclosingType: JavaParameterizedTypeName?,
-    override val rawType: JavaClassName,
+    override val rawType: ClassName,
     override val typeArguments: List<JavaTypeRef<*>> = emptyList(),
     // override val annotations: List<JavaAnnotationSpec> = emptyList(),
 ) : JavaParameterizedTypeName {
@@ -42,7 +42,7 @@ internal class JavaParameterizedTypeNameImpl(
             // }
             codeWriter.emit(rawType.simpleName)
         } else {
-            rawType.emit(codeWriter)
+            rawType.emitTo(codeWriter)
         }
 
         if (typeArguments.isNotEmpty()) {

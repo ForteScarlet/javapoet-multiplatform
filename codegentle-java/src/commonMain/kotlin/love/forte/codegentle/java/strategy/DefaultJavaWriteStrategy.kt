@@ -1,8 +1,10 @@
 package love.forte.codegentle.java.strategy
 
 import love.forte.codegentle.common.naming.ClassName
+import love.forte.codegentle.common.naming.Named
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.simpleNames
+import love.forte.codegentle.java.internal.isSourceIdentifier
 import love.forte.codegentle.java.internal.isSourceName
 
 /**
@@ -11,10 +13,22 @@ import love.forte.codegentle.java.internal.isSourceName
  */
 public open class DefaultJavaWriteStrategy : JavaWriteStrategy {
     override fun isValidName(name: TypeName): Boolean {
+
         return when (name) {
-            is ClassName -> name.simpleNames.all { it.isSourceName() }
-            // TODO
+            is ClassName -> {
+                // TODO packageName ?
+                name.simpleNames.all { it.isSourceName() }
+            }
+
+            is Named -> {
+                name.name.isSourceName()
+            }
+
             else -> true
         }
+    }
+
+    override fun isIdentifier(value: String): Boolean {
+        return value.isSourceIdentifier()
     }
 }

@@ -1,6 +1,6 @@
 import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.modifiers
-import love.forte.codegentle.java.naming.JavaTypeName
+import love.forte.codegentle.java.naming.JavaPrimitiveTypeNames
 import love.forte.codegentle.java.spec.JavaSimpleTypeSpec
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.spec.addField
@@ -23,7 +23,7 @@ class TypeSpecTest {
                 modifiers { public() }
             }
 
-            addField(JavaTypeName.Builtins.INT, "valuePub") {
+            addField(JavaPrimitiveTypeNames.INT, "valuePub") {
                 modifiers {
                     public()
                     static()
@@ -32,7 +32,7 @@ class TypeSpecTest {
                 initializer("1")
             }
 
-            addField(JavaTypeName.Builtins.INT, "valuePri") {
+            addField(JavaPrimitiveTypeNames.INT, "valuePri") {
                 modifiers {
                     private()
                     static()

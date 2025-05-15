@@ -22,12 +22,12 @@ package love.forte.codegentle.java.spec
 import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.computeValueIfAbsent
+import love.forte.codegentle.common.naming.ClassName
+import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.java.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.java.InternalJavaCodeGentleApi
 import love.forte.codegentle.java.JavaCodeValue
 import love.forte.codegentle.java.internal.isSourceName
-import love.forte.codegentle.java.naming.JavaClassName
-import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaAnnotationRefCollectable
 import love.forte.codegentle.java.spec.internal.JavaAnnotationSpecImpl
@@ -41,7 +41,7 @@ import kotlin.jvm.JvmStatic
  */
 public interface JavaAnnotationSpec : JavaSpec {
 
-    public val type: JavaTypeName
+    public val type: TypeName
 
     public val members: Map<String, List<JavaCodeValue>>
 
@@ -59,12 +59,12 @@ public interface JavaAnnotationSpec : JavaSpec {
         public const val VALUE: String = "value"
 
         @JvmStatic
-        public fun builder(type: JavaClassName): JavaAnnotationSpecBuilder = JavaAnnotationSpecBuilder(type)
+        public fun builder(type: ClassName): JavaAnnotationSpecBuilder = JavaAnnotationSpecBuilder(type)
     }
 }
 
 public inline fun JavaAnnotationSpec(
-    annotation: JavaClassName,
+    annotation: ClassName,
     block: JavaAnnotationSpecBuilder.() -> Unit = {}
 ): JavaAnnotationSpec =
     JavaAnnotationSpec.builder(annotation).also(block).build()
@@ -77,7 +77,7 @@ public inline fun JavaAnnotationSpecBuilder.addMember(
 ): JavaAnnotationSpecBuilder =
     addMember(name, JavaCodeValue(format, block))
 
-public class JavaAnnotationSpecBuilder internal constructor(private val type: JavaTypeName) :
+public class JavaAnnotationSpecBuilder internal constructor(private val type: TypeName) :
     JavaAnnotationRefCollectable<JavaAnnotationSpecBuilder>,
     BuilderDsl {
     private val members: MutableMap<String, MutableList<JavaCodeValue>> = linkedMapOf()

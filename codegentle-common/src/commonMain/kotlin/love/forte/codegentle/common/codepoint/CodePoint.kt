@@ -6,7 +6,6 @@ import kotlin.jvm.JvmInline
 @InternalCodePointApi
 public value class CodePoint internal constructor(public val code: Int)
 
-
 @InternalCodePointApi
 public expect fun String.codePointAt(index: Int): CodePoint
 

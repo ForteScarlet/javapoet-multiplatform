@@ -15,7 +15,7 @@
  */
 package love.forte.codegentle.java
 
-import love.forte.codegentle.java.naming.JavaTypeName
+import love.forte.codegentle.java.naming.JavaPrimitiveTypeNames
 import love.forte.codegentle.java.spec.JavaFieldSpec
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -24,20 +24,20 @@ import kotlin.test.assertEquals
 class FieldSpecTest {
     @Test
     fun equalsAndHashCode() {
-        var a = JavaFieldSpec(JavaTypeName.Builtins.INT, "foo")
-        var b = JavaFieldSpec(JavaTypeName.Builtins.INT, "foo")
+        var a = JavaFieldSpec(JavaPrimitiveTypeNames.INT, "foo")
+        var b = JavaFieldSpec(JavaPrimitiveTypeNames.INT, "foo")
         assertEquals(a, b)
         assertEquals(a.hashCode(), b.hashCode())
         assertEquals(a.toString(), b.toString())
         a = JavaFieldSpec(
-            JavaTypeName.Builtins.INT,
+            JavaPrimitiveTypeNames.INT,
             "FOO",
         ) {
             addModifiers(JavaModifier.PUBLIC, JavaModifier.STATIC)
         }
 
         b = JavaFieldSpec(
-            JavaTypeName.Builtins.INT,
+            JavaPrimitiveTypeNames.INT,
             "FOO",
         ) {
             addModifiers(JavaModifier.PUBLIC, JavaModifier.STATIC)

@@ -59,7 +59,7 @@ internal fun javax.lang.model.type.TypeVariable.toJavaTypeVariableName(
             name = element.simpleName.toString(),
             bounds = element.bounds.mapNotNull { typeMirror ->
                 typeMirror.toJavaTypeName(typeVariables)
-                    .takeIf { it != JavaClassName.Builtins.OBJECT }
+                    .takeIf { it != JavaClassNames.OBJECT }
                     ?.ref()
             }
         )

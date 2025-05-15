@@ -19,6 +19,7 @@
 
 package love.forte.codegentle.java.naming
 
+import love.forte.codegentle.common.naming.ArrayTypeName
 import love.forte.codegentle.java.InternalJavaCodeGentleApi
 import love.forte.codegentle.java.naming.internal.JavaArrayTypeNameImpl
 import love.forte.codegentle.java.ref.JavaTypeRef
@@ -33,8 +34,8 @@ import kotlin.jvm.JvmName
  *
  *
  */
-public interface JavaArrayTypeName : JavaTypeName {
-    public val componentType: JavaTypeRef<*>
+public interface JavaArrayTypeName : JavaTypeName, ArrayTypeName {
+    override val componentType: JavaTypeRef<*>
 
     override fun emit(codeWriter: JavaCodeWriter) {
         emit(codeWriter, false)

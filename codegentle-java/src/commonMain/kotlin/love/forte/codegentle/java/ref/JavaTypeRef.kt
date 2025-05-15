@@ -1,9 +1,9 @@
 package love.forte.codegentle.java.ref
 
 import love.forte.codegentle.common.BuilderDsl
+import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.ref.TypeNameRefStatus
 import love.forte.codegentle.common.ref.TypeRef
-import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.ref.internal.JavaTypeNameRefStatusImpl
 import love.forte.codegentle.java.ref.internal.JavaTypeRefImpl
@@ -12,7 +12,7 @@ import love.forte.codegentle.java.writer.JavaCodeEmitter
 /**
  * Java's [TypeRef].
  */
-public interface JavaTypeRef<out T : JavaTypeName> : TypeRef, JavaCodeEmitter {
+public interface JavaTypeRef<out T : JavaTypeName> : TypeRef<T>, JavaCodeEmitter {
     override val typeName: T
     override val status: JavaTypeNameRefStatus
 }
@@ -99,7 +99,7 @@ public class JavaTypeNameRefStatusBuilder @PublishedApi internal constructor() :
 }
 
 public inline fun JavaTypeNameRefStatusBuilder.addAnnotationRef(
-    className: JavaClassName,
+    className: ClassName,
     block: JavaAnnotationRefBuilder.() -> Unit = {}
 ): JavaTypeNameRefStatusBuilder =
     addAnnotationRef(JavaAnnotationRefBuilder(className).apply(block).build())

@@ -1,6 +1,6 @@
 package love.forte.codegentle.java.naming.internal
 
-import love.forte.codegentle.java.naming.JavaClassName
+import love.forte.codegentle.java.naming.JavaClassNames
 import love.forte.codegentle.java.naming.JavaPrimitiveTypeName
 import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.writer.JavaCodeWriter
@@ -15,39 +15,39 @@ internal class JavaPrimitiveTypeNameImpl(
     override fun box(): JavaTypeName {
         return when (keyword) {
             JavaPrimitiveTypeName.VOID -> {
-                JavaClassName.Builtins.BOXED_VOID //.annotated(annotations)
+                JavaClassNames.BOXED_VOID //.annotated(annotations)
             }
 
             JavaPrimitiveTypeName.BOOLEAN -> {
-                JavaClassName.Builtins.BOXED_BOOLEAN // .annotated(annotations)
+                JavaClassNames.BOXED_BOOLEAN // .annotated(annotations)
             }
 
             JavaPrimitiveTypeName.BYTE -> {
-                JavaClassName.Builtins.BOXED_BYTE // .annotated(annotations)
+                JavaClassNames.BOXED_BYTE // .annotated(annotations)
             }
 
             JavaPrimitiveTypeName.SHORT -> {
-                JavaClassName.Builtins.BOXED_SHORT // .annotated(annotations)
+                JavaClassNames.BOXED_SHORT // .annotated(annotations)
             }
 
             JavaPrimitiveTypeName.INT -> {
-                JavaClassName.Builtins.BOXED_INT // .annotated(annotations)
+                JavaClassNames.BOXED_INT // .annotated(annotations)
             }
 
             JavaPrimitiveTypeName.LONG -> {
-                JavaClassName.Builtins.BOXED_LONG // .annotated(annotations)
+                JavaClassNames.BOXED_LONG // .annotated(annotations)
             }
 
             JavaPrimitiveTypeName.CHAR -> {
-                JavaClassName.Builtins.BOXED_CHAR // .annotated(annotations)
+                JavaClassNames.BOXED_CHAR // .annotated(annotations)
             }
 
             JavaPrimitiveTypeName.FLOAT -> {
-                JavaClassName.Builtins.BOXED_FLOAT // .annotated(annotations)
+                JavaClassNames.BOXED_FLOAT // .annotated(annotations)
             }
 
             JavaPrimitiveTypeName.DOUBLE -> {
-                JavaClassName.Builtins.BOXED_DOUBLE // .annotated(annotations)
+                JavaClassNames.BOXED_DOUBLE // .annotated(annotations)
             }
 
             else -> throw IllegalArgumentException("Unknown primitive type's keyword $keyword")
@@ -59,11 +59,6 @@ internal class JavaPrimitiveTypeNameImpl(
     }
 
     override fun emit(codeWriter: JavaCodeWriter) {
-        // if (isAnnotated) {
-        //     codeWriter.emit("")
-        //     emitAnnotations(codeWriter)
-        // }
-
         codeWriter.emitAndIndent(keyword)
     }
 

@@ -38,7 +38,7 @@ internal class JavaArrayTypeNameImpl(
 }
 
 private fun JavaArrayTypeName.emitLeafType(out: JavaCodeWriter) {
-    val asArray = componentType as? JavaArrayTypeName
+    val asArray = componentType.typeName as? JavaArrayTypeName
     if (asArray != null) {
         return asArray.emitLeafType(out)
     }
@@ -46,10 +46,6 @@ private fun JavaArrayTypeName.emitLeafType(out: JavaCodeWriter) {
 }
 
 private fun JavaArrayTypeName.emitBrackets(out: JavaCodeWriter, varargs: Boolean) {
-    // if (isAnnotated) {
-    //     out.emit(" ")
-    //     emitAnnotations(out)
-    // }
 
     val asArray = componentType as? JavaArrayTypeName
 

@@ -19,6 +19,7 @@
 
 package love.forte.codegentle.java.naming
 
+import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.java.naming.internal.JavaParameterizedTypeNameImpl
 import love.forte.codegentle.java.ref.JavaTypeRef
 import kotlin.jvm.JvmMultifileClass
@@ -26,7 +27,7 @@ import kotlin.jvm.JvmName
 
 
 public interface JavaParameterizedTypeName : JavaTypeName {
-    public val rawType: JavaClassName
+    public val rawType: ClassName
 
     public val typeArguments: List<JavaTypeRef<*>>
 
@@ -51,27 +52,13 @@ public interface JavaParameterizedTypeName : JavaTypeName {
     public companion object
 }
 
-/*
-  TODO ParameterizedTypeName from Class, Type
-  /** Returns a parameterized type, applying {@code typeArguments} to {@code rawType}. */
-  public static ParameterizedTypeName get(Class<?> rawType, Type... typeArguments) {
-    return new ParameterizedTypeName(null, ClassName.get(rawType), list(typeArguments));
-  }
-
-  TODO ParameterizedTypeName from ParameterizedType
-  /** Returns a parameterized type equivalent to {@code type}. */
-  public static ParameterizedTypeName get(ParameterizedType type) {
-    return get(type, new LinkedHashMap<>());
-  }
- */
-
 /** Returns a parameterized type, applying [typeArguments] to [rawType]. */
 @JvmName("of")
-public fun JavaParameterizedTypeName(rawType: JavaClassName, vararg typeArguments: JavaTypeRef<*>): JavaParameterizedTypeName {
+public fun JavaParameterizedTypeName(rawType: ClassName, vararg typeArguments: JavaTypeRef<*>): JavaParameterizedTypeName {
     return JavaParameterizedTypeNameImpl(null, rawType, typeArguments.asList())
 }
 /** Returns a parameterized type, applying [typeArguments] to [rawType]. */
 @JvmName("of")
-public fun JavaParameterizedTypeName(rawType: JavaClassName, typeArguments: Iterable<JavaTypeRef<*>>): JavaParameterizedTypeName {
+public fun JavaParameterizedTypeName(rawType: ClassName, typeArguments: Iterable<JavaTypeRef<*>>): JavaParameterizedTypeName {
     return JavaParameterizedTypeNameImpl(null, rawType, typeArguments.toList())
 }

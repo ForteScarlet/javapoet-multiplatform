@@ -1,10 +1,10 @@
 package love.forte.codegentle.java.internal
 
 import love.forte.codegentle.common.code.isEmpty
+import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.java.JavaCodeValue
 import love.forte.codegentle.java.JavaFile
 import love.forte.codegentle.java.literal
-import love.forte.codegentle.java.naming.JavaClassName
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.strategy.JavaWriteStrategy
 import love.forte.codegentle.java.strategy.ToStringJavaWriteStrategy
@@ -38,7 +38,7 @@ internal class JavaFileImpl(
             alwaysQualify = alwaysQualify
         )
         emit(importsCollector)
-        val suggestedImports: Map<String, JavaClassName> = importsCollector.suggestedImports()
+        val suggestedImports: Map<String, ClassName> = importsCollector.suggestedImports()
 
         val codeWriter = JavaCodeWriter.create(
             dialect = strategy,

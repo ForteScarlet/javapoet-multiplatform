@@ -79,7 +79,7 @@ public fun JavaCodeValueSingleFormatBuilder.type(type: TypeName): JavaCodeValueS
     // TODO Type -> Ref?
     value(CodePart.type(type))
 
-public fun JavaCodeValueSingleFormatBuilder.type(type: TypeRef): JavaCodeValueSingleFormatBuilder =
+public fun JavaCodeValueSingleFormatBuilder.type(type: TypeRef<*>): JavaCodeValueSingleFormatBuilder =
     // TODO Type -> Ref?
     value(CodePart.type(type))
 

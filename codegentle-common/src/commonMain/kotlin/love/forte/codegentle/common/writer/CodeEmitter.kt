@@ -5,4 +5,6 @@ package love.forte.codegentle.common.writer
  *
  * @author ForteScarlet
  */
-public interface CodeEmitter
+public interface CodeEmitter {
+
+}

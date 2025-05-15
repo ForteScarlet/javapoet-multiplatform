@@ -19,83 +19,37 @@
 
 package love.forte.codegentle.java.naming
 
-import javax.lang.model.element.Element
-import javax.lang.model.element.PackageElement
+import love.forte.codegentle.common.naming.toClassName
 import javax.lang.model.element.TypeElement
-import javax.lang.model.util.SimpleElementVisitor8
 import kotlin.reflect.KClass
 
 /**
- * Create a [love.forte.codepoet.java.naming.JavaClassName] from [KClass].
+ * Create a [love.forte.codegentle.java.naming.JavaClassName] from [KClass].
  *
  * @see Class.toJavaClassName
  */
-public fun KClass<*>.toJavaClassName(): JavaClassName {
-    return java.toJavaClassName()
-}
+public fun KClass<*>.toJavaClassName(): JavaClassName = java.toJavaClassName()
 
 /**
  * Create a [JavaClassName] from [Class].
  */
 public fun Class<*>.toJavaClassName(): JavaClassName {
     when (this) {
-        VOID_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_VOID
-        BOOLEAN_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_BOOLEAN
-        BYTE_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_BYTE
-        SHORT_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_SHORT
-        INT_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_INT
-        LONG_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_LONG
-        CHAR_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_CHAR
-        FLOAT_BOXED_CLASS -> return JavaClassName.Builtins.BOXED_FLOAT
-        OBJECT_CLASS -> return JavaClassName.Builtins.OBJECT
-        STRING_CLASS -> return JavaClassName.Builtins.STRING
+        VOID_BOXED_CLASS -> return JavaClassNames.BOXED_VOID
+        BOOLEAN_BOXED_CLASS -> return JavaClassNames.BOXED_BOOLEAN
+        BYTE_BOXED_CLASS -> return JavaClassNames.BOXED_BYTE
+        SHORT_BOXED_CLASS -> return JavaClassNames.BOXED_SHORT
+        INT_BOXED_CLASS -> return JavaClassNames.BOXED_INT
+        LONG_BOXED_CLASS -> return JavaClassNames.BOXED_LONG
+        CHAR_BOXED_CLASS -> return JavaClassNames.BOXED_CHAR
+        FLOAT_BOXED_CLASS -> return JavaClassNames.BOXED_FLOAT
+        OBJECT_CLASS -> return JavaClassNames.OBJECT
+        STRING_CLASS -> return JavaClassNames.STRING
     }
 
-    var java = this
-    require(!java.isPrimitive) { "Primitive types cannot be represented as a ClassName" }
-    require(Void.TYPE != java) { "'void' type cannot be represented as a ClassName" }
-    require(!java.isArray) { "Array types cannot be represented as a ClassName" }
-
-    var anonymousSuffix = ""
-    while (java.isAnonymousClass) {
-        val lastDollar: Int = java.getName().lastIndexOf('$')
-        anonymousSuffix = java.getName().substring(lastDollar) + anonymousSuffix
-        java = java.getEnclosingClass()
-    }
-    val name: String = java.getSimpleName() + anonymousSuffix
-
-    if (java.getEnclosingClass() == null) {
-        // Avoid unreliable Class.getPackage(). https://github.com/square/javapoet/issues/295
-        val lastDot: Int = java.getName().lastIndexOf('.')
-        val packageName: String? = if (lastDot != -1) java.getName().substring(0, lastDot) else null
-
-        return JavaClassName(packageName, name)
-    }
-
-    return java.enclosingClass.toJavaClassName().nestedClass(name)
+    return toClassName().java()
 }
 
 // javax.lang.model
 
-public fun TypeElement.toJavaClassName(): JavaClassName {
-    val simpleName = simpleName.toString()
-    val visitor = object : SimpleElementVisitor8<JavaClassName, Void?>() {
-        override fun visitPackage(packageElement: PackageElement, p: Void?): JavaClassName {
-            return JavaClassName(packageElement.qualifiedName.toString(), simpleName)
-        }
-
-        override fun visitType(typeElement: TypeElement, p: Void?): JavaClassName {
-            return typeElement.toJavaClassName().nestedClass(simpleName)
-        }
-
-        override fun visitUnknown(unknown: Element?, p: Void?): JavaClassName? {
-            return JavaClassName("", simpleName)
-        }
-
-        override fun defaultAction(element: Element?, p: Void?): JavaClassName? {
-            throw IllegalArgumentException("Unexpected type nesting: $element")
-        }
-    }
-
-    return enclosingElement.accept(visitor, null)
-}
+public fun TypeElement.toJavaClassName(): JavaClassName = toClassName().java()
