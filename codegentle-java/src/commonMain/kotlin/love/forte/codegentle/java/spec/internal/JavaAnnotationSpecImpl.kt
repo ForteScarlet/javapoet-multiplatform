@@ -2,6 +2,7 @@ package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.writer.withIndent
 import love.forte.codegentle.java.JavaCodeValue
 import love.forte.codegentle.java.internal.emit0
 import love.forte.codegentle.java.literal

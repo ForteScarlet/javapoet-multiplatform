@@ -41,7 +41,7 @@ internal class JavaAnnotationTypeSpecImpl(
             // Push an empty type (specifically without nested types) for type-resolution.
             codeWriter.pushType(this.toVirtualTypeSpec(name))
 
-            codeWriter.emitJavadoc(javadoc)
+            codeWriter.emitDoc(javadoc)
             codeWriter.emitAnnotationRefs(annotations, false)
             codeWriter.emitModifiers(modifiers, implicitModifiers + kind.asMemberModifiers)
             codeWriter.emit("@interface %V") {

@@ -19,6 +19,8 @@ import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.common.computeValue
 import love.forte.codegentle.common.writer.CodeWriter
+import love.forte.codegentle.common.writer.CodeWriter.Companion.DEFAULT_COLUMN_LIMIT
+import love.forte.codegentle.common.writer.CodeWriter.Companion.DEFAULT_INDENT
 import love.forte.codegentle.java.*
 import love.forte.codegentle.java.internal.LineWrapper
 import love.forte.codegentle.java.internal.emit0
@@ -79,19 +81,13 @@ public class JavaCodeWriter private constructor(
      */
     internal var statementLine: Int = -1
 
-    internal fun indent(levels: Int = 1) {
+    override fun indent(levels: Int) {
         indentLevel += levels
     }
 
-    internal fun unindent(levels: Int = 1) {
+    override fun unindent(levels: Int) {
         check(indentLevel - levels >= 0) { "cannot unindent $levels from $indentLevel" }
         indentLevel -= levels
-    }
-
-    internal inline fun withIndent(level: Int = 1, block: () -> Unit) {
-        indent(level)
-        block()
-        unindent(level)
     }
 
     internal fun pushPackage(packageName: String) {
@@ -112,12 +108,13 @@ public class JavaCodeWriter private constructor(
         this.typeSpecStack.removeLast()
     }
 
-    internal fun emitComment(codeBlock: JavaCodeValue) {
+    override fun emitComment(comment: CodeValue) {
         trailingNewline = true
         commentType = CommentType.COMMENT
         // comment = true
         try {
-            codeBlock.emit(this)
+            comment.emit0(this)
+            // codeBlock.emit(this)
             emit("\n")
         } finally {
             commentType = null
@@ -125,14 +122,15 @@ public class JavaCodeWriter private constructor(
         }
     }
 
-    internal fun emitJavadoc(javadoc: CodeValue) {
-        if (javadoc.isEmpty) return
+
+    override fun emitDoc(doc: CodeValue) {
+        if (doc.isEmpty) return
 
         emit("/**\n")
         this.commentType = CommentType.JAVADOC
         // this.javadoc = true
         try {
-            javadoc.emit0(this, true)
+            doc.emit0(this, true)
         } finally {
             this.commentType = null
             // this.javadoc = false
@@ -263,12 +261,12 @@ public class JavaCodeWriter private constructor(
         }
     }
 
-    internal fun emit(s: String) {
+    override fun emit(s: String) {
         emitAndIndent(s)
     }
 
-    internal fun emit(codeValue: CodeValue) {
-        codeValue.emit0(this)
+    override fun emit(code: CodeValue) {
+        code.emit0(this)
     }
 
     internal fun emitNewline() {
@@ -281,7 +279,7 @@ public class JavaCodeWriter private constructor(
         emitIndentation()
     }
 
-    internal fun emitAndIndent(s: String) {
+    override fun emitAndIndent(s: String) {
         var first = true
         val lines = s.lines()
         for (line in lines) {
@@ -340,9 +338,6 @@ public class JavaCodeWriter private constructor(
     }
 
     public companion object {
-        private const val DEFAULT_COLUMN_LIMIT = 100
-        private const val DEFAULT_INDENT = "    "
-
         internal fun create(
             out: Appendable,
             dialect: JavaWriteStrategy = DefaultJavaWriteStrategy()

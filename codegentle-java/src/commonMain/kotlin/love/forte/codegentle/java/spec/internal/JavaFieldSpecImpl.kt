@@ -26,7 +26,7 @@ internal class JavaFieldSpecImpl internal constructor(
 ) : JavaFieldSpec {
 
     override fun emit(codeWriter: JavaCodeWriter, implicitModifiers: Set<JavaModifier>) {
-        codeWriter.emitJavadoc(javadoc)
+        codeWriter.emitDoc(javadoc)
         codeWriter.emitAnnotationRefs(annotations, false)
         codeWriter.emitModifiers(modifiers, implicitModifiers)
         codeWriter.emit("%V $name") {
