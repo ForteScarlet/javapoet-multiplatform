@@ -55,3 +55,30 @@ public inline fun <T : JavaTypeName> JavaArrayTypeName(
     block: JavaTypeRefBuilder<T>.() -> Unit = {}
 ): JavaArrayTypeName =
     JavaArrayTypeName(componentType.ref(block))
+
+public fun JavaArrayTypeName.emitTo(writer: JavaCodeWriter) {
+
+}
+
+
+private fun ArrayTypeName.emitLeafType(out: JavaCodeWriter) {
+    val asArray = componentType.typeName as? ArrayTypeName
+    if (asArray != null) {
+        return asArray.emitLeafType(out)
+    }
+    return TODO() // componentType.emit(out)
+}
+
+private fun ArrayTypeName.emitBrackets(out: JavaCodeWriter, varargs: Boolean) {
+
+    val asArray = componentType.typeName as? ArrayTypeName
+
+    if (asArray == null) {
+        // Last bracket.
+        out.emit(if (varargs) "..." else "[]")
+        return
+    }
+
+    out.emit("[]")
+    return asArray.emitBrackets(out, varargs)
+}

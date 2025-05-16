@@ -6,6 +6,7 @@ import love.forte.codegentle.java.writer.JavaCodeWriter
 import love.forte.codegentle.java.writer.emitToString
 
 
+
 /**
  *
  * @author ForteScarlet

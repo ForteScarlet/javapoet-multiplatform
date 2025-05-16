@@ -1,8 +1,8 @@
 package love.forte.codegentle.java.naming.internal
 
 import love.forte.codegentle.common.naming.ClassName
+import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.java.naming.JavaParameterizedTypeName
-import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import love.forte.codegentle.java.writer.emitToString
 
@@ -12,19 +12,19 @@ import love.forte.codegentle.java.writer.emitToString
  * @author ForteScarlet
  */
 internal class JavaParameterizedTypeNameImpl(
-    private val enclosingType: JavaParameterizedTypeName?,
+    override val enclosingType: JavaParameterizedTypeName?,
     override val rawType: ClassName,
-    override val typeArguments: List<JavaTypeRef<*>> = emptyList(),
-    // override val annotations: List<JavaAnnotationSpec> = emptyList(),
+    override val typeArguments: List<TypeRef<*>>,
 ) : JavaParameterizedTypeName {
     override fun nestedClass(name: String): JavaParameterizedTypeName {
         return JavaParameterizedTypeNameImpl(
             this,
             rawType.nestedClass(name),
+            typeArguments
         )
     }
 
-    override fun nestedClass(name: String, typeArguments: List<JavaTypeRef<*>>): JavaParameterizedTypeName {
+    override fun nestedClass(name: String, typeArguments: List<TypeRef<*>>): JavaParameterizedTypeName {
         return JavaParameterizedTypeNameImpl(
             this,
             rawType.nestedClass(name),
@@ -50,7 +50,7 @@ internal class JavaParameterizedTypeNameImpl(
             var firstParameter = true
             for (parameter in typeArguments) {
                 if (!firstParameter) codeWriter.emitAndIndent(", ")
-                parameter.emit(codeWriter)
+                // TODO parameter.emit(codeWriter)
                 firstParameter = false
             }
             codeWriter.emitAndIndent(">")

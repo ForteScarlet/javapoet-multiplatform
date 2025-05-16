@@ -18,7 +18,8 @@
 
 package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.common.naming.WildcardTypeName
+import love.forte.codegentle.common.naming.LowerWildcardTypeName
+import love.forte.codegentle.common.naming.UpperWildcardTypeName
 import love.forte.codegentle.java.naming.internal.JavaSubtypeWildcardTypeNameImpl
 import love.forte.codegentle.java.naming.internal.JavaSupertypeWildcardTypeNameImpl
 import love.forte.codegentle.java.ref.JavaTypeRef
@@ -26,19 +27,19 @@ import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
 
-public sealed interface JavaWildcardTypeName : JavaTypeName, WildcardTypeName {
-    override val bounds: List<JavaTypeRef<*>>
+public sealed interface JavaWildcardTypeName : JavaTypeName {
+    public val bounds: List<JavaTypeRef<*>>
     // public val upperBounds: List<JavaTypeName> // ? extends T1 & T2
     // public val lowerBounds: List<JavaTypeName> // ? super T1 & T2
 }
 
-public interface JavaSubtypeWildcardTypeName : JavaWildcardTypeName {
+public interface JavaSubtypeWildcardTypeName : JavaWildcardTypeName, UpperWildcardTypeName {
     // lowerBounds, ? super A
     public val lowerBounds: List<JavaTypeRef<*>>
         get() = bounds
 }
 
-public interface JavaSupertypeWildcardTypeName : JavaWildcardTypeName {
+public interface JavaSupertypeWildcardTypeName : JavaWildcardTypeName, LowerWildcardTypeName {
     // upperBounds, ? extends A & B,
     // 接口在后，类在前
     public val upperBounds: List<JavaTypeRef<*>>

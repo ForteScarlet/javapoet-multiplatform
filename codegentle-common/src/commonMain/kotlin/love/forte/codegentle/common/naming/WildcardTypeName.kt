@@ -1,5 +1,7 @@
 package love.forte.codegentle.common.naming
 
+import love.forte.codegentle.common.naming.internal.LowerWildcardTypeNameImpl
+import love.forte.codegentle.common.naming.internal.UpperWildcardTypeNameImpl
 import love.forte.codegentle.common.ref.TypeRef
 
 /**
@@ -7,12 +9,29 @@ import love.forte.codegentle.common.ref.TypeRef
  *
  * @author ForteScarlet
  */
-public interface WildcardTypeName : TypeName {
+public sealed interface WildcardTypeName : TypeName {
     public val bounds: List<TypeRef<*>>
 
     // Java:
-    //  uppers: ? extends T1 & T2
-    //  lowers: ? super T1 & T2
+    //  uppers: ? extends T1 & T2; Kotlin: out A, out B
+    //  lowers: ? super T1 & T2; Kotlin: in A, in B
     // Kotlin:
     //  outs, ins
 }
+
+public interface UpperWildcardTypeName : WildcardTypeName
+
+public interface LowerWildcardTypeName : WildcardTypeName
+
+
+public fun LowerWildcardTypeName(upperBound: TypeRef<*>): LowerWildcardTypeName =
+    LowerWildcardTypeNameImpl(listOf(upperBound))
+
+public fun UpperWildcardTypeName(lowerBound: TypeRef<*>): UpperWildcardTypeName =
+    UpperWildcardTypeNameImpl(listOf(lowerBound))
+
+public fun LowerWildcardTypeName(upperBounds: List<TypeRef<*>>): LowerWildcardTypeName =
+    LowerWildcardTypeNameImpl(upperBounds)
+
+public fun UpperWildcardTypeName(lowerBounds: List<TypeRef<*>>): UpperWildcardTypeName =
+    UpperWildcardTypeNameImpl(lowerBounds)

@@ -20,34 +20,30 @@
 package love.forte.codegentle.java.naming
 
 import love.forte.codegentle.common.naming.ClassName
+import love.forte.codegentle.common.naming.ParameterizedTypeName
+import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.java.naming.internal.JavaParameterizedTypeNameImpl
 import love.forte.codegentle.java.ref.JavaTypeRef
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
 
-public interface JavaParameterizedTypeName : JavaTypeName {
-    public val rawType: ClassName
+public interface JavaParameterizedTypeName : JavaTypeName, ParameterizedTypeName {
+    override val enclosingType: JavaParameterizedTypeName?
+    override val rawType: ClassName
 
-    public val typeArguments: List<JavaTypeRef<*>>
+    override val typeArguments: List<TypeRef<*>>
 
     /**
      * Returns a new [JavaParameterizedTypeName] instance for the specified [name] as nested inside this class.
      */
-    public fun nestedClass(name: String): JavaParameterizedTypeName
+    override fun nestedClass(name: String): JavaParameterizedTypeName
 
     /**
      * Returns a new [JavaParameterizedTypeName] instance for the specified [name] as nested
      * inside this class, with the specified [typeArguments].
      */
-    public fun nestedClass(name: String, typeArguments: List<JavaTypeRef<*>>): JavaParameterizedTypeName
-
-    /**
-     * Returns a new [JavaParameterizedTypeName] instance for the specified [name] as nested
-     * inside this class, with the specified [typeArguments].
-     */
-    public fun nestedClass(name: String, vararg typeArguments: JavaTypeRef<*>): JavaParameterizedTypeName =
-        nestedClass(name, typeArguments.asList())
+    override fun nestedClass(name: String, typeArguments: List<TypeRef<*>>): JavaParameterizedTypeName
 
     public companion object
 }
