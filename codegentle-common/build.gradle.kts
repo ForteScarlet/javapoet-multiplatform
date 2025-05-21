@@ -11,8 +11,11 @@ kotlin {
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     compilerOptions {
         optIn.addAll(
+            "love.forte.codegentle.common.InternalCommonCodeGentleApi",
             "love.forte.codegentle.common.codepoint.InternalCodePointApi",
-            "love.forte.codegentle.common.InternalCommonApi"
+            "love.forte.codegentle.common.InternalCommonApi",
+            "love.forte.codegentle.common.naming.CodeGentleNamingImplementation",
+            "love.forte.codegentle.common.ref.CodeGentleRefImplementation",
         )
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }

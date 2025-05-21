@@ -20,13 +20,13 @@
 package love.forte.codegentle.java.naming
 
 import love.forte.codegentle.java.naming.internal.JavaParameterizedTypeNameImpl
-import love.forte.codegentle.java.ref.ref
+import love.forte.codegentle.java.ref.javaRef
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 public fun Class<*>.toJavaParameterizedTypeName(vararg typeArguments: Type): JavaParameterizedTypeName {
-    return JavaParameterizedTypeNameImpl(null, this.toJavaClassName(), typeArguments.map { it.toJavaTypeName().ref() })
+    return JavaParameterizedTypeNameImpl(null, this.toJavaClassName(), typeArguments.map { it.toJavaTypeName().javaRef() })
 }
 
 public fun ParameterizedType.toJavaParameterizedTypeName(): JavaParameterizedTypeName =
@@ -45,7 +45,7 @@ internal fun ParameterizedType.toJavaParameterizedTypeName(map: MutableMap<Type,
         null
     }
 
-    val typeArguments = type.actualTypeArguments.map { it.toJavaTypeName(map).ref() }
+    val typeArguments = type.actualTypeArguments.map { it.toJavaTypeName(map).javaRef() }
 
     return ownerType?.toJavaParameterizedTypeName(map)?.nestedClass(rawType.simpleName, typeArguments)
         ?: JavaParameterizedTypeNameImpl(null, rawType, typeArguments)

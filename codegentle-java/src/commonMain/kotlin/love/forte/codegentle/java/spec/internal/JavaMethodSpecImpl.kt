@@ -1,12 +1,13 @@
 package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.common.code.isEmpty
+import love.forte.codegentle.common.ref.javaRef
 import love.forte.codegentle.java.*
 import love.forte.codegentle.java.naming.JavaPrimitiveTypeNames
 import love.forte.codegentle.java.naming.JavaTypeVariableName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaTypeRef
-import love.forte.codegentle.java.ref.ref
+import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.JavaMethodSpec
 import love.forte.codegentle.java.spec.JavaParameterSpec
 import love.forte.codegentle.java.writer.JavaCodeWriter
@@ -43,7 +44,7 @@ internal class JavaMethodSpecImpl(
             }
         } else {
             codeWriter.emit("%V ${this.name}(%V") {
-                type(returnType ?: JavaPrimitiveTypeNames.VOID.ref())
+                type(returnType ?: JavaPrimitiveTypeNames.VOID.javaRef())
                 zeroWidthSpace()
             }
         }

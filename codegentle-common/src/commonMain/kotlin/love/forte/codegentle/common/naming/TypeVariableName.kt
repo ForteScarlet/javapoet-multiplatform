@@ -8,6 +8,7 @@ import love.forte.codegentle.common.ref.TypeRef
  *
  * @author ForteScarlet
  */
+@SubclassOptInRequired(CodeGentleNamingImplementation::class)
 public interface TypeVariableName : TypeName, Named {
     override val name: String
     public val bounds: List<TypeRef<*>>

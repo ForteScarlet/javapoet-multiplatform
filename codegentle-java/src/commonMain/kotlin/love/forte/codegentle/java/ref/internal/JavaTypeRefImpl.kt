@@ -1,5 +1,6 @@
 package love.forte.codegentle.java.ref.internal
 
+import love.forte.codegentle.common.ref.JavaTypeNameRefStatus
 import love.forte.codegentle.java.InternalJavaCodeGentleApi
 import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
@@ -25,8 +26,8 @@ internal data class JavaTypeRefImpl<T : JavaTypeName>(
 }
 
 internal data class JavaTypeNameRefStatusImpl(
-    override val annotations: List<JavaAnnotationRef>
-) : JavaTypeNameRefStatus
+    val annotations: List<JavaAnnotationRef>
+) //  : JavaTypeNameRefStatus
 
 internal fun JavaTypeRef<*>.emitTo(codeWriter: JavaCodeWriter) {
     emitAnnotations(codeWriter)

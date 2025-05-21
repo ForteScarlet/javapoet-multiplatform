@@ -20,7 +20,7 @@
 package love.forte.codegentle.java.naming
 
 import love.forte.codegentle.java.ref.JavaTypeRefBuilder
-import love.forte.codegentle.java.ref.ref
+import love.forte.codegentle.java.ref.javaRef
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.Type
 import javax.lang.model.element.TypeParameterElement
@@ -30,7 +30,7 @@ public inline fun JavaArrayTypeName(
     componentType: Type,
     block: JavaTypeRefBuilder<*>.() -> Unit = {}
 ): JavaArrayTypeName {
-    return JavaArrayTypeName(componentType.toJavaTypeName().ref(block))
+    return JavaArrayTypeName(componentType.toJavaTypeName().javaRef(block))
 }
 
 /**
@@ -47,7 +47,7 @@ internal inline fun GenericArrayType.toJavaArrayTypeName(
     map: MutableMap<Type, JavaTypeVariableName>,
     block: JavaTypeRefBuilder<*>.() -> Unit
 ): JavaArrayTypeName {
-    return JavaArrayTypeName(genericComponentType.toJavaTypeName(map).ref(block))
+    return JavaArrayTypeName(genericComponentType.toJavaTypeName(map).javaRef(block))
 }
 
 // javax.lang.model
@@ -62,5 +62,5 @@ internal fun ArrayType.toJavaArrayTypeName(
     map: MutableMap<TypeParameterElement, JavaTypeVariableName>,
     block: JavaTypeRefBuilder<*>.() -> Unit = {}
 ): JavaArrayTypeName {
-    return JavaArrayTypeName(componentType.toJavaTypeName(map).ref(block))
+    return JavaArrayTypeName(componentType.toJavaTypeName(map).javaRef(block))
 }

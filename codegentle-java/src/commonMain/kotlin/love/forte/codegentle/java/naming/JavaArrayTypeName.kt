@@ -20,44 +20,40 @@
 package love.forte.codegentle.java.naming
 
 import love.forte.codegentle.common.naming.ArrayTypeName
-import love.forte.codegentle.java.InternalJavaCodeGentleApi
-import love.forte.codegentle.java.naming.internal.JavaArrayTypeNameImpl
-import love.forte.codegentle.java.ref.JavaTypeRef
-import love.forte.codegentle.java.ref.JavaTypeRefBuilder
-import love.forte.codegentle.java.ref.ref
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
+//
+// /**
+//  *
+//  *
+//  */
+// public interface JavaArrayTypeName : JavaTypeName, ArrayTypeName {
+//     override val componentType: JavaTypeRef<*>
+//
+//     override fun emit(codeWriter: JavaCodeWriter) {
+//         emit(codeWriter, false)
+//     }
+//
+//     @InternalJavaCodeGentleApi
+//     public fun emit(codeWriter: JavaCodeWriter, varargs: Boolean)
+// }
+//
+// @JvmName("of")
+// public fun JavaArrayTypeName(componentType: JavaTypeRef<*>): JavaArrayTypeName =
+//     JavaArrayTypeNameImpl(componentType)
 
-/**
- *
- *
- */
-public interface JavaArrayTypeName : JavaTypeName, ArrayTypeName {
-    override val componentType: JavaTypeRef<*>
 
-    override fun emit(codeWriter: JavaCodeWriter) {
-        emit(codeWriter, false)
-    }
+// public inline fun <T : JavaTypeName> JavaArrayTypeName(
+//     componentType: T,
+//     block: JavaTypeRefBuilder<T>.() -> Unit = {}
+// ): JavaArrayTypeName =
+//     JavaArrayTypeName(componentType.javaRef(block))
 
-    @InternalJavaCodeGentleApi
-    public fun emit(codeWriter: JavaCodeWriter, varargs: Boolean)
-}
-
-@JvmName("of")
-public fun JavaArrayTypeName(componentType: JavaTypeRef<*>): JavaArrayTypeName =
-    JavaArrayTypeNameImpl(componentType)
-
-
-public inline fun <T : JavaTypeName> JavaArrayTypeName(
-    componentType: T,
-    block: JavaTypeRefBuilder<T>.() -> Unit = {}
-): JavaArrayTypeName =
-    JavaArrayTypeName(componentType.ref(block))
-
-public fun JavaArrayTypeName.emitTo(writer: JavaCodeWriter) {
-
+public fun ArrayTypeName.emitTo(codeWriter: JavaCodeWriter, varargs: Boolean) {
+    emitLeafType(codeWriter)
+    emitBrackets(codeWriter, varargs)
 }
 
 
@@ -66,7 +62,7 @@ private fun ArrayTypeName.emitLeafType(out: JavaCodeWriter) {
     if (asArray != null) {
         return asArray.emitLeafType(out)
     }
-    return TODO() // componentType.emit(out)
+    return TODO("componentType.emit(out)") // componentType.emit(out)
 }
 
 private fun ArrayTypeName.emitBrackets(out: JavaCodeWriter, varargs: Boolean) {

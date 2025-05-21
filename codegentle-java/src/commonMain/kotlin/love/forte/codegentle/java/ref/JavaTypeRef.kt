@@ -2,7 +2,7 @@ package love.forte.codegentle.java.ref
 
 import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.naming.ClassName
-import love.forte.codegentle.common.ref.TypeNameRefStatus
+import love.forte.codegentle.common.ref.JavaTypeNameRefStatus
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.ref.internal.JavaTypeNameRefStatusImpl
@@ -16,18 +16,18 @@ public interface JavaTypeRef<out T : JavaTypeName> : TypeRef<T>, JavaCodeEmitter
     override val typeName: T
     override val status: JavaTypeNameRefStatus
 }
-
-/**
- * Java's [TypeNameRefStatus].
- */
-public interface JavaTypeNameRefStatus : TypeNameRefStatus {
-    public val annotations: List<JavaAnnotationRef>
-}
+//
+// /**
+//  * Java's [TypeNameRefStatus].
+//  */
+// public interface JavaTypeNameRefStatus : TypeNameRefStatus {
+//     public val annotations: List<JavaAnnotationRef>
+// }
 
 /**
  * @see TypeRef
  */
-public inline fun <T : JavaTypeName> T.ref(block: JavaTypeRefBuilder<T>.() -> Unit = {}): JavaTypeRef<T> =
+public inline fun <T : JavaTypeName> T.javaRef(block: JavaTypeRefBuilder<T>.() -> Unit = {}): JavaTypeRef<T> =
     JavaTypeRefBuilder(this).also(block).build()
 
 /**

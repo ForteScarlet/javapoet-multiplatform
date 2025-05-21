@@ -32,6 +32,7 @@ import love.forte.codegentle.common.naming.internal.PackageNameImpl
  *
  * @author ForteScarlet
  */
+@SubclassOptInRequired(CodeGentleNamingImplementation::class)
 public interface PackageName {
     /**
      * The previous package name.
@@ -107,7 +108,7 @@ public fun PackageName(paths: List<String>): PackageName {
         return PackageName(paths[0])
     }
 
-    var current = PackageName.EMPTY
+    var current = EMPTY
 
     for (currentPath in paths) {
         current = PackageName(current, currentPath)

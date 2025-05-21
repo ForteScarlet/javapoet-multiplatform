@@ -7,6 +7,7 @@ import love.forte.codegentle.common.ref.TypeRef
  *
  * @author ForteScarlet
  */
+@SubclassOptInRequired(CodeGentleNamingImplementation::class)
 public interface ParameterizedTypeName : TypeName, Named {
     public val enclosingType: ParameterizedTypeName?
     public val rawType: ClassName

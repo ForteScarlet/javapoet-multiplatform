@@ -19,8 +19,9 @@
 
 package love.forte.codegentle.java.naming
 
+import love.forte.codegentle.common.ref.javaRef
 import love.forte.codegentle.java.ref.JavaTypeRef
-import love.forte.codegentle.java.ref.ref
+import love.forte.codegentle.java.ref.javaRef
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -80,7 +81,7 @@ internal fun Type.toJavaTypeName(map: MutableMap<Type, JavaTypeVariableName>): J
             }
 
             if (type.isArray) {
-                JavaArrayTypeName(type.componentType.toJavaTypeName(map).ref())
+                JavaArrayTypeName(type.componentType.toJavaTypeName(map).javaRef())
             } else {
                 type.toJavaClassName()
             }
@@ -92,12 +93,12 @@ internal fun Type.toJavaTypeName(map: MutableMap<Type, JavaTypeVariableName>): J
             val lowerBounds = type.lowerBounds
 
             if (lowerBounds.isNotEmpty()) {
-                JavaSupertypeWildcardTypeName(lowerBounds.map { it.toJavaTypeName().ref() })
+                JavaSupertypeWildcardTypeName(lowerBounds.map { it.toJavaTypeName().javaRef() })
             } else {
                 JavaSubtypeWildcardTypeName(
                     type.upperBounds
-                        .map { it.toJavaTypeName().ref() }
-                        .ifEmpty { listOf(JavaClassNames.OBJECT.ref()) }
+                        .map { it.toJavaTypeName().javaRef() }
+                        .ifEmpty { listOf(JavaClassNames.OBJECT.javaRef()) }
                 )
             }
         }
@@ -149,7 +150,7 @@ internal fun TypeMirror.toJavaTypeName(typeVariables: MutableMap<TypeParameterEl
             val typeArgumentNameRefs = mutableListOf<JavaTypeRef<*>>()
             for (mirror in t.typeArguments) {
                 mirror.toJavaTypeName(typeVariables)
-                typeArgumentNameRefs.add(mirror.toJavaTypeName(typeVariables).ref())
+                typeArgumentNameRefs.add(mirror.toJavaTypeName(typeVariables).javaRef())
             }
 
             return if (enclosing is JavaParameterizedTypeName) {

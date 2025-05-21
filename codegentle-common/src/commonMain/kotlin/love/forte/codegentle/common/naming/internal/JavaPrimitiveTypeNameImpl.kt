@@ -1,21 +1,17 @@
-package love.forte.codegentle.java.naming.internal
+package love.forte.codegentle.common.naming.internal
 
+import love.forte.codegentle.common.naming.JavaClassNames
+import love.forte.codegentle.common.naming.JavaPrimitiveTypeName
 import love.forte.codegentle.common.naming.TypeName
-import love.forte.codegentle.java.naming.JavaClassNames
-import love.forte.codegentle.java.naming.JavaPrimitiveTypeName
-import love.forte.codegentle.java.writer.JavaCodeWriter
-import love.forte.codegentle.java.writer.emitToString
 
-
-internal class JavaPrimitiveTypeNameImpl(
+internal data class JavaPrimitiveTypeNameImpl(
     override val keyword: String,
-    // override val annotations: List<JavaAnnotationSpec> = emptyList(),
 ) : JavaPrimitiveTypeName {
 
     override fun box(): TypeName {
         return when (keyword) {
             JavaPrimitiveTypeName.VOID -> {
-                JavaClassNames.BOXED_VOID //.annotated(annotations)
+                JavaClassNames.BOXED_VOID
             }
 
             JavaPrimitiveTypeName.BOOLEAN -> {
@@ -54,24 +50,7 @@ internal class JavaPrimitiveTypeNameImpl(
         }
     }
 
-    override fun emit(codeWriter: JavaCodeWriter) {
-        codeWriter.emitAndIndent(keyword)
-    }
-
     override fun toString(): String {
-        return emitToString()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is JavaPrimitiveTypeNameImpl) return false
-
-        if (keyword != other.keyword) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return keyword.hashCode()
+        return keyword
     }
 }

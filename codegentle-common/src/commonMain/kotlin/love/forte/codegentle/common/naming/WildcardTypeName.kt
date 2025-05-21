@@ -19,8 +19,10 @@ public sealed interface WildcardTypeName : TypeName {
     //  outs, ins
 }
 
+@SubclassOptInRequired(CodeGentleNamingImplementation::class)
 public interface UpperWildcardTypeName : WildcardTypeName
 
+@SubclassOptInRequired(CodeGentleNamingImplementation::class)
 public interface LowerWildcardTypeName : WildcardTypeName
 
 

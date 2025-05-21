@@ -272,19 +272,19 @@ public inline fun <T : JavaTypeVariableName> JavaMethodSpecBuilder.addTypeVariab
     variableName: T,
     block: JavaTypeRefBuilder<T>.() -> Unit = {}
 ): JavaMethodSpecBuilder =
-    addException(variableName.ref(block))
+    addException(variableName.javaRef(block))
 
 public inline fun <T : JavaTypeName> JavaMethodSpecBuilder.addException(
     type: T,
     block: JavaTypeRefBuilder<T>.() -> Unit = {}
 ): JavaMethodSpecBuilder =
-    addException(type.ref(block))
+    addException(type.javaRef(block))
 
 public inline fun <T : JavaTypeName> JavaMethodSpecBuilder.returns(
     type: T,
     block: JavaTypeRefBuilder<T>.() -> Unit = {}
 ): JavaMethodSpecBuilder =
-    returns(type.ref(block))
+    returns(type.javaRef(block))
 
 
 public inline fun JavaMethodSpecBuilder.addJavadoc(

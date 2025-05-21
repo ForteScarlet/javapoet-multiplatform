@@ -26,7 +26,7 @@ import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.ref.JavaAnnotationRefCollectable
 import love.forte.codegentle.java.ref.JavaTypeRef
-import love.forte.codegentle.java.ref.ref
+import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.internal.JavaFieldSpecImpl
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import kotlin.jvm.JvmMultifileClass
@@ -79,7 +79,7 @@ public inline fun JavaFieldSpec(
     name: String,
     block: JavaFieldSpecBuilder.() -> Unit = {}
 ): JavaFieldSpec =
-    JavaFieldSpec(type.ref(), name, block)
+    JavaFieldSpec(type.javaRef(), name, block)
 
 public class JavaFieldSpecBuilder @PublishedApi internal constructor(
     public val type: JavaTypeRef<*>,

@@ -17,7 +17,7 @@ import kotlin.jvm.JvmName
  *
  * @author ForteScarlet
  */
-public sealed interface TypeName : Naming
-
+@SubclassOptInRequired(CodeGentleNamingImplementation::class)
+public interface TypeName : Naming
 
 public interface PlatformTypeName : TypeName

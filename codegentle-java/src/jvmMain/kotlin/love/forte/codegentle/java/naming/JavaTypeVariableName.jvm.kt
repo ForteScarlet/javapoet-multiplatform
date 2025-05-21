@@ -19,7 +19,7 @@
 package love.forte.codegentle.java.naming
 
 import love.forte.codegentle.common.computeValue
-import love.forte.codegentle.java.ref.ref
+import love.forte.codegentle.java.ref.javaRef
 import java.lang.reflect.Type
 import java.lang.reflect.TypeVariable
 import javax.lang.model.element.TypeParameterElement
@@ -33,7 +33,7 @@ internal fun TypeVariable<*>.toJavaTypeVariableName(map: MutableMap<Type, JavaTy
         old ?: JavaTypeVariableName(
             name = type.name,
             bounds = bounds.mapNotNull { bound ->
-                bound.takeIf { it != Object::class.java }?.toJavaTypeName(map)?.ref()
+                bound.takeIf { it != Object::class.java }?.toJavaTypeName(map)?.javaRef()
             }
         )
     }!!
@@ -45,7 +45,7 @@ public fun javax.lang.model.type.TypeVariable.toJavaTypeVariableName(): JavaType
 public fun TypeParameterElement.toJavaTypeVariableName(): JavaTypeVariableName {
     return JavaTypeVariableName(
         name = simpleName.toString(),
-        bounds = bounds.map { it.toJavaTypeName().ref() }
+        bounds = bounds.map { it.toJavaTypeName().javaRef() }
     )
 }
 
@@ -60,7 +60,7 @@ internal fun javax.lang.model.type.TypeVariable.toJavaTypeVariableName(
             bounds = element.bounds.mapNotNull { typeMirror ->
                 typeMirror.toJavaTypeName(typeVariables)
                     .takeIf { it != JavaClassNames.OBJECT }
-                    ?.ref()
+                    ?.javaRef()
             }
         )
     }!!

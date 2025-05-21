@@ -1,6 +1,4 @@
-package love.forte.codegentle.java.naming
-
-import love.forte.codegentle.common.naming.ClassName
+package love.forte.codegentle.common.naming
 
 public object JavaClassNames {
 

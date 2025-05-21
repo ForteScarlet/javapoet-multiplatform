@@ -10,6 +10,7 @@ import love.forte.codegentle.common.naming.internal.ClassNameImpl
  *
  * @author ForteScarlet
  */
+@SubclassOptInRequired(CodeGentleNamingImplementation::class)
 public interface ClassName : Named, TypeName, Comparable<ClassName> {
     /**
      * Returns the simple name of this class, like `"Entry"` for `Map.Entry`.
