@@ -2,11 +2,15 @@ package love.forte.codegentle.common.writer
 
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.naming.ClassName
+import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.TypeRef
 
 /**
  *
  * @author ForteScarlet
  */
+@SubclassOptInRequired(CodeGentleCodeWriterImplementation::class)
 public interface CodeWriter {
     public val strategy: Strategy
 
@@ -14,7 +18,7 @@ public interface CodeWriter {
 
     // out?
     public val staticImportClassNames: Set<ClassName>
-    public val staticImports: Set<String> // String?
+    public val staticImports: Set<String> // String? or a MemberName?
     public val alwaysQualify: Set<String>
 
     public fun indent(levels: Int = 1)
@@ -24,17 +28,22 @@ public interface CodeWriter {
 
     // comments and javadocs
 
-    public fun emitComment(comment: CodeValue)
+    public fun emitComment(comment: CodeValue, vararg options: CodeValueEmitOption)
 
-    public fun emitDoc(doc: CodeValue)
+    public fun emitDoc(doc: CodeValue, vararg options: CodeValueEmitOption)
 
-    public fun emit(code: CodeValue)
+    public fun emit(code: CodeValue, vararg options: CodeValueEmitOption)
+
+    public fun emit(typeName: TypeName, vararg options: TypeNameEmitOption)
+
+    public fun emit(typeRef: TypeRef<*>, vararg options: TypeRefEmitOption)
+
+    public fun emit(annotationRef: AnnotationRef, vararg options: AnnotationRefEmitOption)
 
     public fun emit(s: String)
 
     public fun emitAndIndent(s: String)
 
-    // TODO public fun emitTypeName(typeName: TypeName)
     // TODO public fun emitTypeRef(typeRef: TypeRef<*>)
 
     // TODO imports

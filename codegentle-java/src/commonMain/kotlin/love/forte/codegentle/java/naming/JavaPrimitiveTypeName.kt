@@ -1,8 +1,11 @@
 package love.forte.codegentle.java.naming
 
+import love.forte.codegentle.common.naming.CodeGentleNamingImplementation
 import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.java.writer.JavaCodeWriter
 
-public interface JavaPrimitiveTypeName : TypeName, JavaTypeName {
+@SubclassOptInRequired(CodeGentleNamingImplementation::class)
+public interface JavaPrimitiveTypeName : TypeName {
     public val keyword: String
 
     public fun box(): TypeName
@@ -19,4 +22,8 @@ public interface JavaPrimitiveTypeName : TypeName, JavaTypeName {
         internal const val FLOAT = "float"
         internal const val DOUBLE = "double"
     }
+}
+
+internal fun JavaPrimitiveTypeName.emitTo(codeWriter: JavaCodeWriter) {
+    codeWriter.emitAndIndent(keyword)
 }

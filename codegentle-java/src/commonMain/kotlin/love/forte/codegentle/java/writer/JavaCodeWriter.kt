@@ -18,19 +18,22 @@ package love.forte.codegentle.java.writer
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.common.computeValue
+import love.forte.codegentle.common.naming.ArrayTypeName
 import love.forte.codegentle.common.naming.ClassName
-import love.forte.codegentle.common.writer.CodeWriter
+import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.naming.TypeVariableName
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.TypeRef
+import love.forte.codegentle.common.writer.*
 import love.forte.codegentle.common.writer.CodeWriter.Companion.DEFAULT_COLUMN_LIMIT
 import love.forte.codegentle.common.writer.CodeWriter.Companion.DEFAULT_INDENT
-import love.forte.codegentle.common.writer.InternalWriterApi
-import love.forte.codegentle.common.writer.LineWrapper
 import love.forte.codegentle.java.*
 import love.forte.codegentle.java.internal.emit0
 import love.forte.codegentle.java.internal.isSourceIdentifier
-import love.forte.codegentle.java.naming.JavaTypeVariableName
-import love.forte.codegentle.java.ref.JavaAnnotationRef
-import love.forte.codegentle.java.ref.JavaTypeRef
-import love.forte.codegentle.java.ref.internal.emitTo
+import love.forte.codegentle.java.naming.JavaPrimitiveTypeName
+import love.forte.codegentle.java.naming.emitTo
+import love.forte.codegentle.java.ref.emitTo
+import love.forte.codegentle.java.ref.javaOrNull
 import love.forte.codegentle.java.spec.JavaAnnotationSpec
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.strategy.DefaultJavaWriteStrategy
@@ -110,7 +113,7 @@ public class JavaCodeWriter private constructor(
         this.typeSpecStack.removeLast()
     }
 
-    override fun emitComment(comment: CodeValue) {
+    override fun emitComment(comment: CodeValue, vararg options: CodeValueEmitOption) {
         trailingNewline = true
         commentType = CommentType.COMMENT
         // comment = true
@@ -125,7 +128,7 @@ public class JavaCodeWriter private constructor(
     }
 
 
-    override fun emitDoc(doc: CodeValue) {
+    override fun emitDoc(doc: CodeValue, vararg options: CodeValueEmitOption) {
         if (doc.isEmpty) return
 
         emit("/**\n")
@@ -148,7 +151,7 @@ public class JavaCodeWriter private constructor(
         }
     }
 
-    internal fun emitAnnotationRefs(annotations: Iterable<JavaAnnotationRef>, inline: Boolean) {
+    internal fun emitAnnotationRefs(annotations: Iterable<AnnotationRef>, inline: Boolean) {
         for (annotation in annotations) {
             annotation.emitTo(this, inline)
             emit(if (inline) " " else "\n")
@@ -165,7 +168,7 @@ public class JavaCodeWriter private constructor(
         }
     }
 
-    internal fun emitTypeVariables(typeVariables: List<JavaTypeVariableName>) {
+    internal fun emitTypeVariables(typeVariables: List<TypeVariableName>) {
         if (typeVariables.isEmpty()) return
 
         typeVariables.forEach { typeVariable -> currentTypeVariables.add(typeVariable.name) }
@@ -189,7 +192,7 @@ public class JavaCodeWriter private constructor(
         emit(">")
     }
 
-    internal fun emitTypeVariableRefs(typeVariables: List<JavaTypeRef<JavaTypeVariableName>>) {
+    internal fun emitTypeVariableRefs(typeVariables: List<TypeRef<TypeVariableName>>) {
         if (typeVariables.isEmpty()) return
 
         typeVariables.forEach { typeVariable -> currentTypeVariables.add(typeVariable.typeName.name) }
@@ -199,7 +202,9 @@ public class JavaCodeWriter private constructor(
         for (typeVariable in typeVariables) {
             if (!firstTypeVariable) emit(", ")
             // TODO typeVariableRef
-            emitAnnotationRefs(typeVariable.status.annotations, true)
+            typeVariable.status.javaOrNull?.annotations?.also { annotations ->
+                emitAnnotationRefs(annotations, true)
+            }
             emit("%V") { literal(typeVariable.typeName.name) }
             var firstBound = true
             for (bound in typeVariable.typeName.bounds) {
@@ -213,11 +218,11 @@ public class JavaCodeWriter private constructor(
         emit(">")
     }
 
-    internal fun popTypeVariables(typeVariables: List<JavaTypeVariableName>) {
+    internal fun popTypeVariables(typeVariables: List<TypeVariableName>) {
         typeVariables.forEach { typeVariable -> currentTypeVariables.remove(typeVariable.name) }
     }
 
-    internal fun popTypeVariableRefs(typeVariableRefs: List<JavaTypeRef<JavaTypeVariableName>>) {
+    internal fun popTypeVariableRefs(typeVariableRefs: List<TypeRef<TypeVariableName>>) {
         typeVariableRefs.forEach { typeVariableRef -> currentTypeVariables.remove(typeVariableRef.typeName.name) }
     }
 
@@ -267,18 +272,45 @@ public class JavaCodeWriter private constructor(
         emitAndIndent(s)
     }
 
-    override fun emit(code: CodeValue) {
+    override fun emit(code: CodeValue, vararg options: CodeValueEmitOption) {
         code.emit0(this)
     }
 
-    internal fun emitNewline() {
-        out.append(strategy.newline())
-        trailingNewline = true
+    override fun emit(typeName: TypeName, vararg options: TypeNameEmitOption) {
+        when (typeName) {
+            is JavaPrimitiveTypeName -> {
+                typeName
+            }
+
+            is ClassName -> {
+                typeName.emitTo(this)
+            }
+
+            is ArrayTypeName -> {
+                typeName.emitTo(this, false)
+            }
+
+            is TypeVariableName -> {
+                typeName.emitTo(this)
+            }
+
+
+            else -> throw IllegalArgumentException("Unsupported TypeName for Java code writer $typeName (${typeName::class})")
+        }
     }
 
-    internal fun emitNewlineAndIndent() {
-        emitNewline()
-        emitIndentation()
+    override fun emit(annotationRef: AnnotationRef, vararg options: AnnotationRefEmitOption) {
+        val inline = options.contains(StandardAnnotationRefEmitOption.Inline)
+        annotationRef.emitTo(this, inline)
+    }
+
+    override fun emit(typeRef: TypeRef<*>, vararg options: TypeRefEmitOption) {
+        // typeRef.emitAnnotations(this)
+        typeRef.status.javaOrNull?.annotations?.forEach { annotation ->
+            emit(annotation)
+            emit(" ")
+        }
+        emit(typeRef.typeName)
     }
 
     override fun emitAndIndent(s: String) {

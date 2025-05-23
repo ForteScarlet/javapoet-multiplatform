@@ -21,11 +21,18 @@ package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.code.CodeArgumentPart
+import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.naming.TypeVariableName
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.AnnotationRefCollectable
+import love.forte.codegentle.common.ref.TypeRef
+import love.forte.codegentle.common.ref.TypeRefBuilder
 import love.forte.codegentle.common.spec.NamedSpec
 import love.forte.codegentle.java.*
-import love.forte.codegentle.java.naming.JavaTypeName
-import love.forte.codegentle.java.naming.JavaTypeVariableName
-import love.forte.codegentle.java.ref.*
+import love.forte.codegentle.java.ref.JavaTypeNameRefStatus
+import love.forte.codegentle.java.ref.JavaTypeNameRefStatusBuilder
+import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.internal.JavaMethodSpecImpl
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import kotlin.jvm.JvmMultifileClass
@@ -38,16 +45,16 @@ import kotlin.jvm.JvmStatic
  */
 public interface JavaMethodSpec : JavaSpec, NamedSpec {
     override val name: String
-    public val javadoc: JavaCodeValue
-    public val annotations: List<JavaAnnotationRef>
+    public val javadoc: CodeValue
+    public val annotations: List<AnnotationRef>
     public val modifiers: Set<JavaModifier>
-    public val typeVariables: List<JavaTypeRef<JavaTypeVariableName>>
-    public val returnType: JavaTypeRef<*>?
+    public val typeVariables: List<TypeRef<TypeVariableName>>
+    public val returnType: TypeRef<*>?
     public val parameters: List<JavaParameterSpec>
     public val isVarargs: Boolean
-    public val exceptions: List<JavaTypeRef<*>>
-    public val code: JavaCodeValue
-    public val defaultValue: JavaCodeValue
+    public val exceptions: List<TypeRef<*>>
+    public val code: CodeValue
+    public val defaultValue: CodeValue
 
     public fun hasModifier(modifier: JavaModifier): Boolean = modifier in modifiers
 
@@ -88,19 +95,19 @@ public class JavaMethodSpecBuilder internal constructor(
     public var name: String,
 ) : BuilderDsl,
     JavaModifierBuilderContainer,
-    JavaAnnotationRefCollectable<JavaMethodSpecBuilder> {
+    AnnotationRefCollectable<JavaMethodSpecBuilder> {
     internal val javadoc = JavaCodeValue.builder()
-    internal var returnType: JavaTypeRef<*>? = null
+    internal var returnType: TypeRef<*>? = null
 
     @PublishedApi
     internal val code: JavaCodeValueBuilder = JavaCodeValue.builder()
     internal var defaultValue: JavaCodeValue? = null
-    internal val exceptions = linkedSetOf<JavaTypeRef<*>>()
+    internal val exceptions = linkedSetOf<TypeRef<*>>()
 
     public var isVarargs: Boolean = false
 
-    internal val typeVariables: MutableList<JavaTypeRef<JavaTypeVariableName>> = mutableListOf()
-    internal val annotations: MutableList<JavaAnnotationRef> = mutableListOf()
+    internal val typeVariables: MutableList<TypeRef<TypeVariableName>> = mutableListOf()
+    internal val annotations: MutableList<AnnotationRef> = mutableListOf()
     internal val modifiers = JavaModifierSet()
     internal val parameters: MutableList<JavaParameterSpec> = mutableListOf()
 
@@ -112,11 +119,11 @@ public class JavaMethodSpecBuilder internal constructor(
         javadoc.add(codeValue)
     }
 
-    override fun addAnnotationRef(ref: JavaAnnotationRef): JavaMethodSpecBuilder = apply {
+    override fun addAnnotationRef(ref: AnnotationRef): JavaMethodSpecBuilder = apply {
         annotations.add(ref)
     }
 
-    override fun addAnnotationRefs(refs: Iterable<JavaAnnotationRef>): JavaMethodSpecBuilder = apply {
+    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): JavaMethodSpecBuilder = apply {
         this.annotations.addAll(refs)
     }
 
@@ -132,16 +139,16 @@ public class JavaMethodSpecBuilder internal constructor(
         this.modifiers.addAll(*modifiers)
     }
 
-    public fun addTypeVariable(typeVariable: JavaTypeRef<JavaTypeVariableName>): JavaMethodSpecBuilder = apply {
+    public fun addTypeVariable(typeVariable: TypeRef<TypeVariableName>): JavaMethodSpecBuilder = apply {
         typeVariables.add(typeVariable)
     }
 
-    public fun addTypeVariables(vararg typeVariables: JavaTypeRef<JavaTypeVariableName>): JavaMethodSpecBuilder =
+    public fun addTypeVariables(vararg typeVariables: TypeRef<TypeVariableName>): JavaMethodSpecBuilder =
         apply {
             this.typeVariables.addAll(typeVariables)
         }
 
-    public fun addTypeVariables(typeVariables: Iterable<JavaTypeRef<JavaTypeVariableName>>): JavaMethodSpecBuilder =
+    public fun addTypeVariables(typeVariables: Iterable<TypeRef<TypeVariableName>>): JavaMethodSpecBuilder =
         apply {
             this.typeVariables.addAll(typeVariables)
         }
@@ -160,7 +167,7 @@ public class JavaMethodSpecBuilder internal constructor(
 
     // TODO returns KType? KClass?
 
-    public fun returns(typeRef: JavaTypeRef<*>): JavaMethodSpecBuilder = apply {
+    public fun returns(typeRef: TypeRef<*>): JavaMethodSpecBuilder = apply {
         check(name != JavaMethodSpec.CONSTRUCTOR) { "Constructor cannot have return type." }
         returnType = typeRef
     }
@@ -171,15 +178,15 @@ public class JavaMethodSpecBuilder internal constructor(
         this.isVarargs = varargs
     }
 
-    public fun addException(exception: JavaTypeRef<*>): JavaMethodSpecBuilder = apply {
+    public fun addException(exception: TypeRef<*>): JavaMethodSpecBuilder = apply {
         exceptions.add(exception)
     }
 
-    public fun addExceptions(vararg exceptions: JavaTypeRef<*>): JavaMethodSpecBuilder = apply {
+    public fun addExceptions(vararg exceptions: TypeRef<*>): JavaMethodSpecBuilder = apply {
         this.exceptions.addAll(exceptions)
     }
 
-    public fun addExceptions(exceptions: Iterable<JavaTypeRef<*>>): JavaMethodSpecBuilder = apply {
+    public fun addExceptions(exceptions: Iterable<TypeRef<*>>): JavaMethodSpecBuilder = apply {
         this.exceptions.addAll(exceptions)
     }
     // TODO exceptions KType? KClass?
@@ -268,21 +275,21 @@ public class JavaMethodSpecBuilder internal constructor(
     }
 }
 
-public inline fun <T : JavaTypeVariableName> JavaMethodSpecBuilder.addTypeVariable(
+public inline fun <T : TypeVariableName> JavaMethodSpecBuilder.addTypeVariable(
     variableName: T,
-    block: JavaTypeRefBuilder<T>.() -> Unit = {}
+    block: TypeRefBuilder<T, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit = {}
 ): JavaMethodSpecBuilder =
     addException(variableName.javaRef(block))
 
-public inline fun <T : JavaTypeName> JavaMethodSpecBuilder.addException(
+public inline fun <T : TypeName> JavaMethodSpecBuilder.addException(
     type: T,
-    block: JavaTypeRefBuilder<T>.() -> Unit = {}
+    block: TypeRefBuilder<T, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit = {}
 ): JavaMethodSpecBuilder =
     addException(type.javaRef(block))
 
-public inline fun <T : JavaTypeName> JavaMethodSpecBuilder.returns(
+public inline fun <T : TypeName> JavaMethodSpecBuilder.returns(
     type: T,
-    block: JavaTypeRefBuilder<T>.() -> Unit = {}
+    block: TypeRefBuilder<T, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit = {}
 ): JavaMethodSpecBuilder =
     returns(type.javaRef(block))
 

@@ -19,9 +19,26 @@ public sealed interface WildcardTypeName : TypeName {
     //  outs, ins
 }
 
+
+/**
+ * Upper wildcard type name, subtype wildcard type name.
+ * Java: `? super T`.
+ * Kotlin `in T`.
+ *
+ * The bounds are *lower bounds*.
+ *
+ * @author ForteScarlet
+ */
 @SubclassOptInRequired(CodeGentleNamingImplementation::class)
 public interface UpperWildcardTypeName : WildcardTypeName
 
+/**
+ * Lower wildcard type name, supertype wildcard type name.
+ * Java: `? extends T`.
+ * Kotlin: `T : ?`, `out T`.
+ *
+ * The bounds are *upper bounds*.
+ */
 @SubclassOptInRequired(CodeGentleNamingImplementation::class)
 public interface LowerWildcardTypeName : WildcardTypeName
 

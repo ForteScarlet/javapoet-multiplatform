@@ -21,7 +21,9 @@ kotlin {
             "love.forte.codegentle.common.codepoint.InternalCodePointApi",
             "love.forte.codegentle.common.InternalCommonCodeGentleApi",
             "love.forte.codegentle.java.InternalJavaCodeGentleApi",
-            "love.forte.codegentle.common.naming.CodeGentleNamingImplementation"
+            "love.forte.codegentle.common.naming.CodeGentleNamingImplementation",
+            "love.forte.codegentle.common.ref.CodeGentleRefImplementation",
+            "love.forte.codegentle.common.writer.CodeGentleCodeWriterImplementation"
         )
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }

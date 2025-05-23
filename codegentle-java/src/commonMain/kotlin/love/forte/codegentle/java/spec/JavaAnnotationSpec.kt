@@ -24,12 +24,12 @@ import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.computeValueIfAbsent
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.AnnotationRefCollectable
 import love.forte.codegentle.java.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.java.InternalJavaCodeGentleApi
 import love.forte.codegentle.java.JavaCodeValue
 import love.forte.codegentle.java.internal.isSourceName
-import love.forte.codegentle.java.ref.JavaAnnotationRef
-import love.forte.codegentle.java.ref.JavaAnnotationRefCollectable
 import love.forte.codegentle.java.spec.internal.JavaAnnotationSpecImpl
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import kotlin.jvm.JvmMultifileClass
@@ -45,7 +45,7 @@ public interface JavaAnnotationSpec : JavaSpec {
 
     public val members: Map<String, List<JavaCodeValue>>
 
-    public val annotations: List<JavaAnnotationRef>
+    public val annotations: List<AnnotationRef>
 
     @InternalJavaCodeGentleApi
     override fun emit(codeWriter: JavaCodeWriter) {
@@ -78,10 +78,10 @@ public inline fun JavaAnnotationSpecBuilder.addMember(
     addMember(name, JavaCodeValue(format, block))
 
 public class JavaAnnotationSpecBuilder internal constructor(private val type: TypeName) :
-    JavaAnnotationRefCollectable<JavaAnnotationSpecBuilder>,
+    AnnotationRefCollectable<JavaAnnotationSpecBuilder>,
     BuilderDsl {
     private val members: MutableMap<String, MutableList<JavaCodeValue>> = linkedMapOf()
-    private val annotations: MutableList<JavaAnnotationRef> = mutableListOf()
+    private val annotations: MutableList<AnnotationRef> = mutableListOf()
 
     public fun addMember(name: String, codeValue: JavaCodeValue): JavaAnnotationSpecBuilder = apply {
         val values = members.computeValueIfAbsent(name) { mutableListOf() }
@@ -95,11 +95,11 @@ public class JavaAnnotationSpecBuilder internal constructor(private val type: Ty
     ): JavaAnnotationSpecBuilder =
         addMember(name, JavaCodeValue(format, *argumentParts))
 
-    override fun addAnnotationRef(ref: JavaAnnotationRef): JavaAnnotationSpecBuilder = apply {
+    override fun addAnnotationRef(ref: AnnotationRef): JavaAnnotationSpecBuilder = apply {
         annotations.add(ref)
     }
 
-    override fun addAnnotationRefs(refs: Iterable<JavaAnnotationRef>): JavaAnnotationSpecBuilder = apply {
+    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): JavaAnnotationSpecBuilder = apply {
         annotations.addAll(refs)
     }
 

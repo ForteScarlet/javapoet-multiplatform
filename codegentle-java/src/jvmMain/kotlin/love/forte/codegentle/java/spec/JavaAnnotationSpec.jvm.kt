@@ -7,7 +7,7 @@ package love.forte.codegentle.java.spec
 import love.forte.codegentle.common.code.CodePart.Companion.literal
 import love.forte.codegentle.java.*
 import love.forte.codegentle.java.naming.toJavaClassName
-import love.forte.codegentle.java.naming.toJavaTypeName
+import love.forte.codegentle.java.naming.toTypeName
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.TypeElement
@@ -40,7 +40,7 @@ private class AnnotationMirrorVisitor(
 
     override fun visitEnumConstant(c: VariableElement, name: String): JavaAnnotationSpecBuilder {
         return builder.addMember(name, "%V.%V") {
-            type(c.asType().toJavaTypeName())
+            type(c.asType().toTypeName())
             literal(c.simpleName)
         }
     }

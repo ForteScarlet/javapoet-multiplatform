@@ -30,15 +30,6 @@ public inline fun <T : TypeName, S : TypeNameRefStatus, B : TypeNameRefStatusBui
 ): TypeRef<T> = TypeRefBuilder(this, statusBuilderFactory).also(block).build()
 
 /**
- * Create a [TypeRef] with [T] and [JavaTypeNameRefStatus].
- *
- * @see TypeRef
- */
-public inline fun <T : TypeName> T.javaRef(
-    block: TypeRefBuilder<T, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit = {}
-): TypeRef<T> = ref(JavaTypeNameRefStatus, block)
-
-/**
  * Builder for [TypeRef].
  */
 public class TypeRefBuilder<T : TypeName, S : TypeNameRefStatus, B : TypeNameRefStatusBuilder<S>> @PublishedApi internal constructor(
@@ -53,7 +44,6 @@ public class TypeRefBuilder<T : TypeName, S : TypeNameRefStatus, B : TypeNameRef
         )
     }
 }
-
 
 /**
  * ```Kotlin

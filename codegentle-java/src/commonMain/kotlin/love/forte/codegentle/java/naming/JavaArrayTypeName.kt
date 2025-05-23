@@ -57,18 +57,17 @@ public fun ArrayTypeName.emitTo(codeWriter: JavaCodeWriter, varargs: Boolean) {
 }
 
 
-private fun ArrayTypeName.emitLeafType(out: JavaCodeWriter) {
+private fun ArrayTypeName.emitLeafType(codeWriter: JavaCodeWriter) {
     val asArray = componentType.typeName as? ArrayTypeName
     if (asArray != null) {
-        return asArray.emitLeafType(out)
+        return asArray.emitLeafType(codeWriter)
     }
-    return TODO("componentType.emit(out)") // componentType.emit(out)
+
+    codeWriter.emit(componentType)
 }
 
 private fun ArrayTypeName.emitBrackets(out: JavaCodeWriter, varargs: Boolean) {
-
     val asArray = componentType.typeName as? ArrayTypeName
-
     if (asArray == null) {
         // Last bracket.
         out.emit(if (varargs) "..." else "[]")

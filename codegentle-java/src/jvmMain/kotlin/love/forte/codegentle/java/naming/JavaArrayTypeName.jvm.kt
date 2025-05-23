@@ -14,53 +14,53 @@
  * limitations under the License.
  */
 
-@file:JvmName("JavaArrayTypeNames")
-@file:JvmMultifileClass
-
 package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.java.ref.JavaTypeRefBuilder
+import love.forte.codegentle.common.naming.ArrayTypeName
+import love.forte.codegentle.common.naming.TypeVariableName
+import love.forte.codegentle.common.ref.TypeRefBuilder
+import love.forte.codegentle.java.ref.JavaTypeNameRefStatus
+import love.forte.codegentle.java.ref.JavaTypeNameRefStatusBuilder
 import love.forte.codegentle.java.ref.javaRef
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.Type
 import javax.lang.model.element.TypeParameterElement
 import javax.lang.model.type.ArrayType
 
-public inline fun JavaArrayTypeName(
-    componentType: Type,
-    block: JavaTypeRefBuilder<*>.() -> Unit = {}
-): JavaArrayTypeName {
-    return JavaArrayTypeName(componentType.toJavaTypeName().javaRef(block))
+public inline fun Type.toJavaArrayTypeNameComponent(
+    block: TypeRefBuilder<*, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit = {}
+): ArrayTypeName {
+    return ArrayTypeName(toTypeName().javaRef(block))
 }
 
 /**
  * Create an [JavaArrayTypeName] from [GenericArrayType].
  */
 public inline fun GenericArrayType.toJavaArrayTypeName(
-    block: JavaTypeRefBuilder<*>.() -> Unit = {}
-): JavaArrayTypeName {
+    block: TypeRefBuilder<*, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit = {}
+): ArrayTypeName {
     return toJavaArrayTypeName(linkedMapOf(), block)
 }
 
 @PublishedApi
 internal inline fun GenericArrayType.toJavaArrayTypeName(
-    map: MutableMap<Type, JavaTypeVariableName>,
-    block: JavaTypeRefBuilder<*>.() -> Unit
-): JavaArrayTypeName {
-    return JavaArrayTypeName(genericComponentType.toJavaTypeName(map).javaRef(block))
+    map: MutableMap<Type, TypeVariableName>,
+    block: TypeRefBuilder<*, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit = {}
+): ArrayTypeName {
+    return ArrayTypeName(genericComponentType.toTypeName(map).javaRef(block))
 }
 
 // javax.lang.model
 
 public fun ArrayType.toJavaArrayTypeName(
-    block: JavaTypeRefBuilder<*>.() -> Unit = {}
-): JavaArrayTypeName {
+    block: TypeRefBuilder<*, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit = {}
+): ArrayTypeName {
     return toJavaArrayTypeName(mutableMapOf(), block)
 }
 
 internal fun ArrayType.toJavaArrayTypeName(
-    map: MutableMap<TypeParameterElement, JavaTypeVariableName>,
-    block: JavaTypeRefBuilder<*>.() -> Unit = {}
-): JavaArrayTypeName {
-    return JavaArrayTypeName(componentType.toJavaTypeName(map).javaRef(block))
+    map: MutableMap<TypeParameterElement, TypeVariableName>,
+    block: TypeRefBuilder<*, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit = {}
+): ArrayTypeName {
+    return ArrayTypeName(componentType.toTypeName(map).javaRef(block))
 }

@@ -30,7 +30,7 @@ public fun Type.toJavaSupertypeWildcardTypeName(): JavaSupertypeWildcardTypeName
     listOf(this).toJavaSupertypeWildcardTypeName()
 
 public fun Iterable<Type>.toJavaSubtypeWildcardTypeName(): JavaSubtypeWildcardTypeName =
-    JavaSubtypeWildcardTypeNameImpl(this.map { it.toJavaTypeName().javaRef() })
+    JavaSubtypeWildcardTypeNameImpl(this.map { it.toTypeName().javaRef() })
 
 public fun Iterable<Type>.toJavaSupertypeWildcardTypeName(): JavaSupertypeWildcardTypeName =
-    JavaSupertypeWildcardTypeNameImpl(this.map { it.toJavaTypeName().javaRef() })
+    JavaSupertypeWildcardTypeNameImpl(this.map { it.toTypeName().javaRef() })

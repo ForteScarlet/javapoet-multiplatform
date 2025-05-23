@@ -9,7 +9,6 @@ import love.forte.codegentle.java.writer.emitToString
 
 internal class JavaPrimitiveTypeNameImpl(
     override val keyword: String,
-    // override val annotations: List<JavaAnnotationSpec> = emptyList(),
 ) : JavaPrimitiveTypeName {
 
     override fun box(): TypeName {

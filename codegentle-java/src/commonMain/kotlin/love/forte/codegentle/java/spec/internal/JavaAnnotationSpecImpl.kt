@@ -2,11 +2,11 @@ package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.writer.withIndent
 import love.forte.codegentle.java.JavaCodeValue
 import love.forte.codegentle.java.internal.emit0
 import love.forte.codegentle.java.literal
-import love.forte.codegentle.java.ref.JavaAnnotationRef
 import love.forte.codegentle.java.spec.JavaAnnotationSpec
 import love.forte.codegentle.java.type
 import love.forte.codegentle.java.writer.JavaCodeWriter
@@ -73,7 +73,7 @@ private fun JavaCodeWriter.emitAnnotationValues(
 internal class JavaAnnotationSpecImpl(
     override val type: TypeName,
     override val members: Map<String, List<JavaCodeValue>>,
-    override val annotations: List<JavaAnnotationRef>,
+    override val annotations: List<AnnotationRef>,
 ) : JavaAnnotationSpec {
 
     override fun emit(codeWriter: JavaCodeWriter, inline: Boolean) {

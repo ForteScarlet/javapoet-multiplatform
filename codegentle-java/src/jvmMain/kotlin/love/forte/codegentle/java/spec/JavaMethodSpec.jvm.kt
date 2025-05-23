@@ -5,8 +5,8 @@ package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.naming.JavaAnnotationNames
-import love.forte.codegentle.java.naming.toJavaTypeName
 import love.forte.codegentle.java.naming.toJavaTypeVariableName
+import love.forte.codegentle.java.naming.toTypeName
 import love.forte.codegentle.java.ref.annotationRef
 import love.forte.codegentle.java.ref.javaRef
 import javax.lang.model.element.ExecutableElement
@@ -49,11 +49,11 @@ public inline fun ExecutableElement.toJavaMethodSpecOverring(
             addTypeVariable(typeParameterElementAsType.toJavaTypeVariableName())
         }
 
-        returns(method.returnType.toJavaTypeName())
+        returns(method.returnType.toTypeName())
         addParameters(method.javaParameterSpecs)
         varargs(method.isVarArgs)
 
-        addExceptions(method.thrownTypes.map { it.toJavaTypeName().javaRef() })
+        addExceptions(method.thrownTypes.map { it.toTypeName().javaRef() })
 
         block()
     }

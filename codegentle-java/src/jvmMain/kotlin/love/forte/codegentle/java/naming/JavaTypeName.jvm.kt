@@ -19,7 +19,9 @@
 
 package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.common.ref.javaRef
+import love.forte.codegentle.common.naming.ArrayTypeName
+import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.ref.javaRef
 import java.lang.reflect.GenericArrayType
@@ -31,7 +33,7 @@ import javax.lang.model.element.TypeParameterElement
 import javax.lang.model.type.*
 import javax.lang.model.util.SimpleTypeVisitor8
 
-public fun Type.toJavaTypeName(): JavaTypeName = toJavaTypeName(linkedMapOf())
+public fun Type.toTypeName(): TypeName = toTypeName(linkedMapOf())
 
 
 private val VOID_CLASS = Void::class.javaPrimitiveType!!
@@ -56,7 +58,7 @@ internal val OBJECT_CLASS = Object::class.java
 internal val STRING_CLASS = String::class.java
 
 @PublishedApi
-internal fun Type.toJavaTypeName(map: MutableMap<Type, JavaTypeVariableName>): JavaTypeName {
+internal fun Type.toTypeName(map: MutableMap<Type, TypeVariableName>): TypeName {
     return when (val type = this) {
         is Class<*> -> {
             when (type) {
@@ -81,7 +83,7 @@ internal fun Type.toJavaTypeName(map: MutableMap<Type, JavaTypeVariableName>): J
             }
 
             if (type.isArray) {
-                JavaArrayTypeName(type.componentType.toJavaTypeName(map).javaRef())
+                ArrayTypeName(type.componentType.toTypeName(map).javaRef())
             } else {
                 type.toJavaClassName()
             }
@@ -93,11 +95,11 @@ internal fun Type.toJavaTypeName(map: MutableMap<Type, JavaTypeVariableName>): J
             val lowerBounds = type.lowerBounds
 
             if (lowerBounds.isNotEmpty()) {
-                JavaSupertypeWildcardTypeName(lowerBounds.map { it.toJavaTypeName().javaRef() })
+                JavaSupertypeWildcardTypeName(lowerBounds.map { it.toTypeName().javaRef() })
             } else {
                 JavaSubtypeWildcardTypeName(
                     type.upperBounds
-                        .map { it.toJavaTypeName().javaRef() }
+                        .map { it.toTypeName().javaRef() }
                         .ifEmpty { listOf(JavaClassNames.OBJECT.javaRef()) }
                 )
             }
@@ -114,9 +116,9 @@ internal fun Type.toJavaTypeName(map: MutableMap<Type, JavaTypeVariableName>): J
 
 // javax.model.element
 
-public fun TypeMirror.toJavaTypeName(): JavaTypeName = toJavaTypeName(linkedMapOf())
+public fun TypeMirror.toTypeName(): JavaTypeName = toTypeName(linkedMapOf())
 
-internal fun TypeMirror.toJavaTypeName(typeVariables: MutableMap<TypeParameterElement, JavaTypeVariableName>): JavaTypeName {
+internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElement, JavaTypeVariableName>): JavaTypeName {
     val visitor = object : SimpleTypeVisitor8<JavaTypeName, Void?>() {
         override fun visitPrimitive(t: PrimitiveType, p: Void?): JavaTypeName {
             return when (t.kind) {
@@ -149,8 +151,8 @@ internal fun TypeMirror.toJavaTypeName(typeVariables: MutableMap<TypeParameterEl
 
             val typeArgumentNameRefs = mutableListOf<JavaTypeRef<*>>()
             for (mirror in t.typeArguments) {
-                mirror.toJavaTypeName(typeVariables)
-                typeArgumentNameRefs.add(mirror.toJavaTypeName(typeVariables).javaRef())
+                mirror.toTypeName(typeVariables)
+                typeArgumentNameRefs.add(mirror.toTypeName(typeVariables).javaRef())
             }
 
             return if (enclosing is JavaParameterizedTypeName) {

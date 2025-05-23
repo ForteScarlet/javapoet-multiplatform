@@ -3,7 +3,7 @@
 
 package love.forte.codegentle.java.spec
 
-import love.forte.codegentle.java.naming.toJavaTypeName
+import love.forte.codegentle.java.naming.toTypeName
 import love.forte.codegentle.java.ref.javaRef
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
@@ -24,7 +24,7 @@ public fun VariableElement.toJavaParameterSpec(): JavaParameterSpec {
         "Element.kind must be ElementKind.PARAMETER, but is $kind"
     }
 
-    val type = asType().toJavaTypeName()
+    val type = asType().toTypeName()
     val name = simpleName.toString()
 
     // TODO annotationMirrors?

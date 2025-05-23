@@ -26,7 +26,7 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 public fun Class<*>.toJavaParameterizedTypeName(vararg typeArguments: Type): JavaParameterizedTypeName {
-    return JavaParameterizedTypeNameImpl(null, this.toJavaClassName(), typeArguments.map { it.toJavaTypeName().javaRef() })
+    return JavaParameterizedTypeNameImpl(null, this.toJavaClassName(), typeArguments.map { it.toTypeName().javaRef() })
 }
 
 public fun ParameterizedType.toJavaParameterizedTypeName(): JavaParameterizedTypeName =
@@ -45,7 +45,7 @@ internal fun ParameterizedType.toJavaParameterizedTypeName(map: MutableMap<Type,
         null
     }
 
-    val typeArguments = type.actualTypeArguments.map { it.toJavaTypeName(map).javaRef() }
+    val typeArguments = type.actualTypeArguments.map { it.toTypeName(map).javaRef() }
 
     return ownerType?.toJavaParameterizedTypeName(map)?.nestedClass(rawType.simpleName, typeArguments)
         ?: JavaParameterizedTypeNameImpl(null, rawType, typeArguments)

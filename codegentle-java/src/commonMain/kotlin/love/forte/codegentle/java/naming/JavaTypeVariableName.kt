@@ -13,45 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:JvmName("JavaTypeVariableNames")
-@file:JvmMultifileClass
 
 package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.java.naming.internal.JavaTypeVariableNameImpl
-import love.forte.codegentle.java.ref.JavaTypeRef
-import kotlin.jvm.JvmMultifileClass
-import kotlin.jvm.JvmName
+import love.forte.codegentle.common.naming.TypeVariableName
+import love.forte.codegentle.java.writer.JavaCodeWriter
 
 
-public interface JavaTypeVariableName : JavaTypeName {
-    public val name: String
-    public val bounds: List<JavaTypeRef<*>>
+// public interface JavaTypeVariableName : JavaTypeName, TypeVariableName {
+//     override val name: String
+//     override val bounds: List<TypeRef<*>>
+//
+//     public fun withBounds(bounds: List<TypeRef<*>>): JavaTypeVariableName
+//
+//     public fun withBounds(vararg bounds: TypeRef<*>): JavaTypeVariableName {
+//         return withBounds(bounds.asList())
+//     }
+// }
+//
+// /**
+//  * Returns type variable named `name` without bounds.
+//  */
+// @JvmName("of")
+// public fun JavaTypeVariableName(name: String): JavaTypeVariableName =
+//     JavaTypeVariableNameImpl(name)
+//
+// /**
+//  * Returns type variable named `name` with `bounds`.
+//  */
+// @JvmName("of")
+// public fun JavaTypeVariableName(name: String, vararg bounds: TypeRef<*>): JavaTypeVariableName =
+//     JavaTypeVariableNameImpl(name, bounds.asList())
+//
+// /**
+//  * Returns type variable named `name` with `bounds`.
+//  */
+// @JvmName("of")
+// public fun JavaTypeVariableName(name: String, bounds: Iterable<TypeRef<*>>): JavaTypeVariableName =
+//     JavaTypeVariableNameImpl(name, bounds.toList())
 
-    public fun withBounds(bounds: List<JavaTypeRef<*>>): JavaTypeVariableName
 
-    public fun withBounds(vararg bounds: JavaTypeRef<*>): JavaTypeVariableName {
-        return withBounds(bounds.asList())
-    }
+internal fun TypeVariableName.emitTo(codeWriter: JavaCodeWriter) {
+    codeWriter.emitAndIndent(name)
 }
-
-/**
- * Returns type variable named `name` without bounds.
- */
-@JvmName("of")
-public fun JavaTypeVariableName(name: String): JavaTypeVariableName =
-    JavaTypeVariableNameImpl(name)
-
-/**
- * Returns type variable named `name` with `bounds`.
- */
-@JvmName("of")
-public fun JavaTypeVariableName(name: String, vararg bounds: JavaTypeRef<*>): JavaTypeVariableName =
-    JavaTypeVariableNameImpl(name, bounds.asList())
-
-/**
- * Returns type variable named `name` with `bounds`.
- */
-@JvmName("of")
-public fun JavaTypeVariableName(name: String, bounds: Iterable<JavaTypeRef<*>>): JavaTypeVariableName =
-    JavaTypeVariableNameImpl(name, bounds.toList())

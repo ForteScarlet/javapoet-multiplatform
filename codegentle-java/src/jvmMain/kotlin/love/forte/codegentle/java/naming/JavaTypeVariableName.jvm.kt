@@ -33,7 +33,7 @@ internal fun TypeVariable<*>.toJavaTypeVariableName(map: MutableMap<Type, JavaTy
         old ?: JavaTypeVariableName(
             name = type.name,
             bounds = bounds.mapNotNull { bound ->
-                bound.takeIf { it != Object::class.java }?.toJavaTypeName(map)?.javaRef()
+                bound.takeIf { it != Object::class.java }?.toTypeName(map)?.javaRef()
             }
         )
     }!!
@@ -45,7 +45,7 @@ public fun javax.lang.model.type.TypeVariable.toJavaTypeVariableName(): JavaType
 public fun TypeParameterElement.toJavaTypeVariableName(): JavaTypeVariableName {
     return JavaTypeVariableName(
         name = simpleName.toString(),
-        bounds = bounds.map { it.toJavaTypeName().javaRef() }
+        bounds = bounds.map { it.toTypeName().javaRef() }
     )
 }
 
@@ -58,7 +58,7 @@ internal fun javax.lang.model.type.TypeVariable.toJavaTypeVariableName(
         old ?: JavaTypeVariableName(
             name = element.simpleName.toString(),
             bounds = element.bounds.mapNotNull { typeMirror ->
-                typeMirror.toJavaTypeName(typeVariables)
+                typeMirror.toTypeName(typeVariables)
                     .takeIf { it != JavaClassNames.OBJECT }
                     ?.javaRef()
             }

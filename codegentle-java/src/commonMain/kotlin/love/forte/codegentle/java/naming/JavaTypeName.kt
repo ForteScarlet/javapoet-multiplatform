@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-@file:JvmName("JavaTypeNames")
-@file:JvmMultifileClass
-
 package love.forte.codegentle.java.naming
 
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.PlatformTypeName
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.java.writer.JavaCodeEmitter
-import kotlin.jvm.JvmMultifileClass
-import kotlin.jvm.JvmName
 
 /**
  * A type name represented in Java。
@@ -33,10 +28,11 @@ public interface JavaTypeName : PlatformTypeName, JavaCodeEmitter
 
 
 /**
- * Returns true if this is a primitive type like `int`.
- * Returns false for all other types
+ * Indicates whether this `TypeName` represents a primitive type in Java,
+ * excluding the `void` type.
  *
- * Types including boxed primitives and `void`.
+ * A `TypeName` is considered a primitive type if it is an instance of
+ * `JavaPrimitiveTypeName` and does not represent the `void` type.
  */
 public val TypeName.isPrimitive: Boolean
     get() = this is JavaPrimitiveTypeName && this != JavaPrimitiveTypeNames.VOID
@@ -51,14 +47,57 @@ public fun TypeName.box(): TypeName {
     return (this as? JavaPrimitiveTypeName)?.box() ?: this
 }
 
-
-public fun TypeName.unbox(): TypeName {
-    return when (this) {
+/**
+ * Converts the current `TypeName` into its unboxed representation if it corresponds
+ * to a boxed primitive type. If the `TypeName` is not a boxed primitive or cannot
+ * be unboxed, an exception is thrown.
+ *
+ *
+ * @return The unboxed `TypeName` corresponding to the given `TypeName`.
+ * @throws UnsupportedOperationException if the current `TypeName` cannot be unboxed.
+ * @see JavaPrimitiveTypeNames
+ */
+public fun TypeName.unbox(): TypeName =
+    when (this) {
         is JavaPrimitiveTypeName -> this
-        is ClassName -> TODO()
+        is ClassName -> when (this) {
+            JavaClassNames.BOXED_INT -> JavaPrimitiveTypeNames.INT
+            JavaClassNames.BOXED_LONG -> JavaPrimitiveTypeNames.LONG
+            JavaClassNames.BOXED_FLOAT -> JavaPrimitiveTypeNames.FLOAT
+            JavaClassNames.BOXED_DOUBLE -> JavaPrimitiveTypeNames.DOUBLE
+            JavaClassNames.BOXED_BYTE -> JavaPrimitiveTypeNames.BYTE
+            JavaClassNames.BOXED_SHORT -> JavaPrimitiveTypeNames.SHORT
+            JavaClassNames.BOXED_CHAR -> JavaPrimitiveTypeNames.CHAR
+            JavaClassNames.BOXED_BOOLEAN -> JavaPrimitiveTypeNames.BOOLEAN
+            JavaClassNames.BOXED_VOID -> JavaPrimitiveTypeNames.VOID
+            else -> throw UnsupportedOperationException("Can't unbox ClassName $this")
+        }
+
         else -> throw UnsupportedOperationException("Can't unbox $this")
     }
-    // return (this as? JavaPrimitiveTypeName)?.unbox()
-    // // Only ClassNames and primitive TypeNames implement this fun.
-    //     ?: throw UnsupportedOperationException("Can't unbox $this")
-}
+
+/**
+ * Attempts to unbox a boxed Java type to its primitive equivalent or returns null if
+ * the type cannot be unboxed.
+ *
+ * @return the corresponding unboxed primitive type if the type is a known boxed Java type,
+ * or null if unboxing is not applicable.
+ */
+public fun TypeName.unboxOrNull(): TypeName? =
+    when (this) {
+        is JavaPrimitiveTypeName -> this
+        is ClassName -> when (this) {
+            JavaClassNames.BOXED_INT -> JavaPrimitiveTypeNames.INT
+            JavaClassNames.BOXED_LONG -> JavaPrimitiveTypeNames.LONG
+            JavaClassNames.BOXED_FLOAT -> JavaPrimitiveTypeNames.FLOAT
+            JavaClassNames.BOXED_DOUBLE -> JavaPrimitiveTypeNames.DOUBLE
+            JavaClassNames.BOXED_BYTE -> JavaPrimitiveTypeNames.BYTE
+            JavaClassNames.BOXED_SHORT -> JavaPrimitiveTypeNames.SHORT
+            JavaClassNames.BOXED_CHAR -> JavaPrimitiveTypeNames.CHAR
+            JavaClassNames.BOXED_BOOLEAN -> JavaPrimitiveTypeNames.BOOLEAN
+            JavaClassNames.BOXED_VOID -> JavaPrimitiveTypeNames.VOID
+            else -> null
+        }
+
+        else -> null
+    }

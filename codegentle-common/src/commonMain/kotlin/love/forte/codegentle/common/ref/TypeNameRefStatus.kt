@@ -1,7 +1,5 @@
 package love.forte.codegentle.common.ref
 
-import love.forte.codegentle.common.ref.internal.JavaTypeNameRefStatusImpl
-
 /**
  * A reference status.
  *
@@ -12,39 +10,39 @@ public interface TypeNameRefStatus
 
 
 //region JavaTypeNameRefStatus
-@SubclassOptInRequired(CodeGentleRefImplementation::class)
-public interface JavaTypeNameRefStatus : TypeNameRefStatus {
-    public val annotations: List<AnnotationRef>
-
-    public companion object : TypeNameRefStatusBuilderFactory<JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder> {
-        override fun createBuilder(): JavaTypeNameRefStatusBuilder {
-            TODO("Not yet implemented")
-        }
-    }
-}
-
-/**
- * A builder for [JavaTypeNameRefStatus].
- */
-public class JavaTypeNameRefStatusBuilder @PublishedApi internal constructor() :
-    AnnotationRefCollectable<JavaTypeNameRefStatusBuilder>,
-    TypeNameRefStatusBuilder<JavaTypeNameRefStatus> {
-    private val annotations: MutableList<AnnotationRef> = mutableListOf()
-
-    override fun addAnnotationRef(ref: AnnotationRef): JavaTypeNameRefStatusBuilder = apply {
-        annotations.add(ref)
-    }
-
-    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): JavaTypeNameRefStatusBuilder = apply {
-        annotations.addAll(refs)
-    }
-
-    override fun build(): JavaTypeNameRefStatus {
-        return JavaTypeNameRefStatusImpl(
-            annotations = annotations.toList()
-        )
-    }
-}
+// @SubclassOptInRequired(CodeGentleRefImplementation::class)
+// public interface JavaTypeNameRefStatus : TypeNameRefStatus {
+//     public val annotations: List<AnnotationRef>
+//
+//     public companion object : TypeNameRefStatusBuilderFactory<JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder> {
+//         override fun createBuilder(): JavaTypeNameRefStatusBuilder {
+//             TODO("Not yet implemented")
+//         }
+//     }
+// }
+//
+// /**
+//  * A builder for [JavaTypeNameRefStatus].
+//  */
+// public class JavaTypeNameRefStatusBuilder @PublishedApi internal constructor() :
+//     AnnotationRefCollectable<JavaTypeNameRefStatusBuilder>,
+//     TypeNameRefStatusBuilder<JavaTypeNameRefStatus> {
+//     private val annotations: MutableList<AnnotationRef> = mutableListOf()
+//
+//     override fun addAnnotationRef(ref: AnnotationRef): JavaTypeNameRefStatusBuilder = apply {
+//         annotations.add(ref)
+//     }
+//
+//     override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): JavaTypeNameRefStatusBuilder = apply {
+//         annotations.addAll(refs)
+//     }
+//
+//     override fun build(): JavaTypeNameRefStatus {
+//         return JavaTypeNameRefStatusImpl(
+//             annotations = annotations.toList()
+//         )
+//     }
+// }
 //endregion
 
 

@@ -3,9 +3,8 @@ package love.forte.codegentle.test.apt.proc
 import love.forte.codegentle.java.JavaFile
 import love.forte.codegentle.java.literal
 import love.forte.codegentle.java.naming.toJavaClassName
-import love.forte.codegentle.java.naming.toJavaTypeName
 import love.forte.codegentle.java.naming.toJavaTypeVariableName
-import love.forte.codegentle.java.ref.annotationRefs
+import love.forte.codegentle.java.naming.toTypeName
 import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.*
 import love.forte.codegentle.java.type
@@ -103,10 +102,10 @@ class TestProcessor : AbstractProcessor() {
             val newMethod =
                 JavaMethodSpec(enclosingElement.simpleName.toString() + "_" + method.simpleName.toString()) {
                     addModifiers(Modifier.STATIC, Modifier.PUBLIC)
-                    addExceptions(method.thrownTypes.map { it.toJavaTypeName().javaRef() })
+                    addExceptions(method.thrownTypes.map { it.toTypeName().javaRef() })
                     addTypeVariables(method.typeParameters.map { it.toJavaTypeVariableName().javaRef() })
                     addParameters(method.javaParameterSpecs)
-                    returns(method.returnType.toJavaTypeName().javaRef())
+                    returns(method.returnType.toTypeName().javaRef())
                     val names = method.parameters.map { it.simpleName.toString() }
 
                     // Call this method
