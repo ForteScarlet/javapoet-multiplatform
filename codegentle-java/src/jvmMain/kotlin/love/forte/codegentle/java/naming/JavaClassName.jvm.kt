@@ -19,21 +19,22 @@
 
 package love.forte.codegentle.java.naming
 
+import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.toClassName
 import javax.lang.model.element.TypeElement
 import kotlin.reflect.KClass
 
 /**
- * Create a [love.forte.codegentle.java.naming.JavaClassName] from [KClass].
+ * Create a [ClassName] from [KClass].
  *
  * @see Class.toJavaClassName
  */
-public fun KClass<*>.toJavaClassName(): JavaClassName = java.toJavaClassName()
+public fun KClass<*>.toJavaClassName(): ClassName = java.toJavaClassName()
 
 /**
- * Create a [JavaClassName] from [Class].
+ * Create a [ClassName] from [Class].
  */
-public fun Class<*>.toJavaClassName(): JavaClassName {
+public fun Class<*>.toJavaClassName(): ClassName {
     when (this) {
         VOID_BOXED_CLASS -> return JavaClassNames.BOXED_VOID
         BOOLEAN_BOXED_CLASS -> return JavaClassNames.BOXED_BOOLEAN
@@ -47,9 +48,10 @@ public fun Class<*>.toJavaClassName(): JavaClassName {
         STRING_CLASS -> return JavaClassNames.STRING
     }
 
-    return toClassName().java()
+    return toClassName()
 }
 
 // javax.lang.model
 
-public fun TypeElement.toJavaClassName(): JavaClassName = toClassName().java()
+@Deprecated("Use toClassName()", ReplaceWith("toClassName()"))
+public fun TypeElement.toJavaClassName(): ClassName = toClassName()

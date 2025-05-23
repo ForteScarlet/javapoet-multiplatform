@@ -19,10 +19,8 @@
 
 package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.common.naming.ArrayTypeName
-import love.forte.codegentle.common.naming.TypeName
-import love.forte.codegentle.common.naming.TypeVariableName
-import love.forte.codegentle.java.ref.JavaTypeRef
+import love.forte.codegentle.common.naming.*
+import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.java.ref.javaRef
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.ParameterizedType
@@ -89,15 +87,15 @@ internal fun Type.toTypeName(map: MutableMap<Type, TypeVariableName>): TypeName 
             }
         }
 
-        is ParameterizedType -> type.toJavaParameterizedTypeName(map)
+        is ParameterizedType -> type.toParameterizedTypeName(map)
 
         is java.lang.reflect.WildcardType -> {
             val lowerBounds = type.lowerBounds
 
             if (lowerBounds.isNotEmpty()) {
-                JavaSupertypeWildcardTypeName(lowerBounds.map { it.toTypeName().javaRef() })
+                UpperWildcardTypeName(lowerBounds.map { it.toTypeName().javaRef() })
             } else {
-                JavaSubtypeWildcardTypeName(
+                LowerWildcardTypeName(
                     type.upperBounds
                         .map { it.toTypeName().javaRef() }
                         .ifEmpty { listOf(JavaClassNames.OBJECT.javaRef()) }
@@ -105,9 +103,9 @@ internal fun Type.toTypeName(map: MutableMap<Type, TypeVariableName>): TypeName 
             }
         }
 
-        is java.lang.reflect.TypeVariable<*> -> type.toJavaTypeVariableName(map)
+        is java.lang.reflect.TypeVariable<*> -> type.toTypeVariableName(map)
 
-        is GenericArrayType -> type.toJavaArrayTypeName(map) {}
+        is GenericArrayType -> type.toArrayTypeName(map)
 
         else -> throw IllegalArgumentException("Unexpected type $type")
     }
@@ -116,11 +114,12 @@ internal fun Type.toTypeName(map: MutableMap<Type, TypeVariableName>): TypeName 
 
 // javax.model.element
 
-public fun TypeMirror.toTypeName(): JavaTypeName = toTypeName(linkedMapOf())
+public fun TypeMirror.toTypeName(): TypeName = toTypeName(linkedMapOf())
 
-internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElement, JavaTypeVariableName>): JavaTypeName {
-    val visitor = object : SimpleTypeVisitor8<JavaTypeName, Void?>() {
-        override fun visitPrimitive(t: PrimitiveType, p: Void?): JavaTypeName {
+@PublishedApi
+internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElement, TypeVariableName>): TypeName {
+    val visitor = object : SimpleTypeVisitor8<TypeName, Void?>() {
+        override fun visitPrimitive(t: PrimitiveType, p: Void?): TypeName {
             return when (t.kind) {
                 TypeKind.BOOLEAN -> JavaPrimitiveTypeNames.BOOLEAN
                 TypeKind.BYTE -> JavaPrimitiveTypeNames.BYTE
@@ -134,9 +133,9 @@ internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElemen
             }
         }
 
-        override fun visitDeclared(t: DeclaredType, p: Void?): JavaTypeName {
+        override fun visitDeclared(t: DeclaredType, p: Void?): TypeName {
             val asElement = t.asElement()
-            val rawType = (asElement as TypeElement).toJavaClassName()
+            val rawType = (asElement as TypeElement).toClassName()
             val enclosingType = t.enclosingType
             val enclosing = if (enclosingType.kind != TypeKind.NONE
                 && !asElement.modifiers.contains(Modifier.STATIC)
@@ -145,47 +144,47 @@ internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElemen
             } else {
                 null
             }
-            if (t.typeArguments.isEmpty() && enclosing !is JavaParameterizedTypeName) {
+            if (t.typeArguments.isEmpty() && enclosing !is ParameterizedTypeName) {
                 return rawType
             }
 
-            val typeArgumentNameRefs = mutableListOf<JavaTypeRef<*>>()
+            val typeArgumentNameRefs = mutableListOf<TypeRef<*>>()
             for (mirror in t.typeArguments) {
                 mirror.toTypeName(typeVariables)
                 typeArgumentNameRefs.add(mirror.toTypeName(typeVariables).javaRef())
             }
 
-            return if (enclosing is JavaParameterizedTypeName) {
+            return if (enclosing is ParameterizedTypeName) {
                 enclosing.nestedClass(rawType.simpleName, typeArgumentNameRefs)
             } else {
-                JavaParameterizedTypeName(rawType, typeArgumentNameRefs)
+                ParameterizedTypeName(rawType, typeArgumentNameRefs)
             }
         }
 
-        override fun visitError(t: ErrorType, p: Void?): JavaTypeName {
+        override fun visitError(t: ErrorType, p: Void?): TypeName {
             return visitDeclared(t, p)
         }
 
-        override fun visitArray(t: ArrayType, p: Void?): JavaTypeName {
-            TODO("return t.toArrayTypeName(typeVariables)")
+        override fun visitArray(t: ArrayType, p: Void?): TypeName {
+            return t.toArrayTypeName(typeVariables)
         }
 
-        override fun visitTypeVariable(t: TypeVariable, p: Void?): JavaTypeName {
-            TODO("return t.toTypeVariableName(typeVariables)")
+        override fun visitTypeVariable(t: TypeVariable, p: Void?): TypeName {
+            return t.toTypeVariableName(typeVariables)
         }
 
-        override fun visitWildcard(t: WildcardType, p: Void?): JavaTypeName {
+        override fun visitWildcard(t: WildcardType, p: Void?): TypeName {
             TODO("return t.toWildcardTypeName(typeVariables)")
         }
 
-        override fun visitNoType(t: NoType, p: Void?): JavaTypeName {
+        override fun visitNoType(t: NoType, p: Void?): TypeName {
             return when (t.kind) {
                 TypeKind.VOID -> JavaPrimitiveTypeNames.VOID
                 else -> super.visitUnknown(t, p)
             }
         }
 
-        override fun defaultAction(e: TypeMirror?, p: Void?): JavaTypeName {
+        override fun defaultAction(e: TypeMirror?, p: Void?): TypeName {
             throw IllegalArgumentException("Unexpected type mirror: $e")
         }
     }

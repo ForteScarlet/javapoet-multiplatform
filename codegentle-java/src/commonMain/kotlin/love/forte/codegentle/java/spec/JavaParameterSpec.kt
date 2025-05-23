@@ -20,11 +20,15 @@
 package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.code.CodeArgumentPart
+import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.AnnotationRefCollectable
+import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.spec.NamedSpec
-import love.forte.codegentle.java.*
-import love.forte.codegentle.java.ref.JavaAnnotationRef
-import love.forte.codegentle.java.ref.JavaAnnotationRefCollectable
-import love.forte.codegentle.java.ref.JavaTypeRef
+import love.forte.codegentle.java.JavaModifier
+import love.forte.codegentle.java.JavaModifierBuilderContainer
+import love.forte.codegentle.java.JavaModifierSet
 import love.forte.codegentle.java.spec.internal.JavaParameterSpecImpl
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import kotlin.jvm.JvmMultifileClass
@@ -34,17 +38,18 @@ import kotlin.jvm.JvmStatic
 /**
  * A generated parameter declaration.
  */
+@SubclassOptInRequired(CodeGentleJavaSpecImplementation::class)
 public interface JavaParameterSpec : JavaSpec, NamedSpec {
     override val name: String
-    public val type: JavaTypeRef<*>
+    public val type: TypeRef<*>
 
-    public val annotations: List<JavaAnnotationRef>
+    public val annotations: List<AnnotationRef>
 
     public val modifiers: Set<JavaModifier>
 
     public fun hasModifier(modifier: JavaModifier): Boolean = modifier in modifiers
 
-    public val javadoc: JavaCodeValue
+    public val javadoc: CodeValue
 
     override fun emit(codeWriter: JavaCodeWriter) {
         emit(codeWriter, false)
@@ -55,33 +60,33 @@ public interface JavaParameterSpec : JavaSpec, NamedSpec {
 
     public companion object {
         @JvmStatic
-        public fun builder(type: JavaTypeRef<*>, name: String, vararg modifiers: JavaModifier): JavaParameterSpecBuilder {
+        public fun builder(type: TypeRef<*>, name: String, vararg modifiers: JavaModifier): JavaParameterSpecBuilder {
             return JavaParameterSpecBuilder(type, name).addModifiers(*modifiers)
         }
     }
 }
 
 public class JavaParameterSpecBuilder internal constructor(
-    public val type: JavaTypeRef<*>,
+    public val type: TypeRef<*>,
     public val name: String
-) : JavaModifierBuilderContainer, JavaAnnotationRefCollectable<JavaParameterSpecBuilder> {
-    internal val javadoc = JavaCodeValue.Companion.builder()
-    internal val annotations = mutableListOf<JavaAnnotationRef>()
+) : JavaModifierBuilderContainer, AnnotationRefCollectable<JavaParameterSpecBuilder> {
+    internal val javadoc = CodeValue.builder()
+    internal val annotations = mutableListOf<AnnotationRef>()
     internal val modifiers = JavaModifierSet()
 
     public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): JavaParameterSpecBuilder = apply {
-        addJavadoc(JavaCodeValue(format, *argumentParts))
+        addJavadoc(CodeValue(format, *argumentParts))
     }
 
-    public fun addJavadoc(codeValue: JavaCodeValue): JavaParameterSpecBuilder = apply {
+    public fun addJavadoc(codeValue: CodeValue): JavaParameterSpecBuilder = apply {
         javadoc.add(codeValue)
     }
 
-    override fun addAnnotationRefs(refs: Iterable<JavaAnnotationRef>): JavaParameterSpecBuilder = apply {
+    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): JavaParameterSpecBuilder = apply {
         this.annotations.addAll(refs)
     }
 
-    override fun addAnnotationRef(ref: JavaAnnotationRef): JavaParameterSpecBuilder = apply {
+    override fun addAnnotationRef(ref: AnnotationRef): JavaParameterSpecBuilder = apply {
         annotations.add(ref)
     }
 
@@ -122,7 +127,7 @@ public class JavaParameterSpecBuilder internal constructor(
 
 
 public inline fun JavaParameterSpec(
-    type: JavaTypeRef<*>,
+    type: TypeRef<*>,
     name: String,
     block: JavaParameterSpecBuilder.() -> Unit = {}
 ): JavaParameterSpec = JavaParameterSpec.builder(type, name).apply(block).build()
@@ -131,5 +136,5 @@ public inline fun JavaParameterSpecBuilder.addJavadoc(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
 ): JavaParameterSpecBuilder = apply {
-    addJavadoc(JavaCodeValue(format, block))
+    addJavadoc(CodeValue(format, block))
 }

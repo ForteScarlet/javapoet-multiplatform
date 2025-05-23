@@ -18,19 +18,68 @@
 
 package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.java.naming.internal.JavaSubtypeWildcardTypeNameImpl
-import love.forte.codegentle.java.naming.internal.JavaSupertypeWildcardTypeNameImpl
+import love.forte.codegentle.common.naming.*
+import love.forte.codegentle.java.ref.JavaTypeRefBuilderDsl
 import love.forte.codegentle.java.ref.javaRef
 import java.lang.reflect.Type
+import javax.lang.model.element.TypeParameterElement
+import javax.lang.model.type.WildcardType
 
-public fun Type.toJavaSubtypeWildcardTypeName(): JavaSubtypeWildcardTypeName =
-    listOf(this).toJavaSubtypeWildcardTypeName()
+public fun Type.toUpperWildcardTypeName(): UpperWildcardTypeName =
+    listOf(this).toUpperWildcardTypeName()
 
-public fun Type.toJavaSupertypeWildcardTypeName(): JavaSupertypeWildcardTypeName =
-    listOf(this).toJavaSupertypeWildcardTypeName()
+public fun Type.toLowerWildcardTypeName(): LowerWildcardTypeName =
+    listOf(this).toLowerWildcardTypeName()
 
-public fun Iterable<Type>.toJavaSubtypeWildcardTypeName(): JavaSubtypeWildcardTypeName =
-    JavaSubtypeWildcardTypeNameImpl(this.map { it.toTypeName().javaRef() })
+public fun Iterable<Type>.toUpperWildcardTypeName(): UpperWildcardTypeName =
+    UpperWildcardTypeName(this.map { it.toTypeName().javaRef() })
 
-public fun Iterable<Type>.toJavaSupertypeWildcardTypeName(): JavaSupertypeWildcardTypeName =
-    JavaSupertypeWildcardTypeNameImpl(this.map { it.toTypeName().javaRef() })
+public fun Iterable<Type>.toLowerWildcardTypeName(): LowerWildcardTypeName =
+    LowerWildcardTypeName(this.map { it.toTypeName().javaRef() })
+
+public fun WildcardType.toWildcardTypeName(): WildcardTypeName {
+    return toWildcardTypeName(linkedMapOf())
+}
+
+@PublishedApi
+internal inline fun WildcardType.toWildcardTypeName(
+    typeVariables: MutableMap<TypeParameterElement, TypeVariableName>,
+    refBlock: JavaTypeRefBuilderDsl<TypeName> = {},
+): WildcardTypeName {
+    val extendsBound = this.extendsBound
+    if (extendsBound != null) {
+        // Upper, has lower bounds
+        val lower = extendsBound.toTypeName(typeVariables)
+        return UpperWildcardTypeName(lower.javaRef(refBlock))
+    }
+
+    val superBound = this.superBound
+    if (superBound == null) {
+        return WildcardTypeName()
+        // UpperWildcardTypeName(JavaClassNames.OBJECT.javaRef(refBlock))
+    }
+
+    val upper = superBound.toTypeName(typeVariables)
+    return LowerWildcardTypeName(upper.javaRef(refBlock))
+}
+
+public fun java.lang.reflect.WildcardType.toWildcardTypeName(): WildcardTypeName {
+    return toWildcardTypeName(linkedMapOf())
+}
+
+internal fun java.lang.reflect.WildcardType.toWildcardTypeName(
+    map: MutableMap<Type, TypeVariableName>
+): WildcardTypeName {
+    val upperBounds = upperBounds.map { it.toTypeName(map).javaRef() }
+    if (upperBounds.isNotEmpty()) {
+        return LowerWildcardTypeName(upperBounds)
+    }
+
+    val lowerBounds = lowerBounds.map { it.toTypeName(map).javaRef() }
+    if (upperBounds.isNotEmpty()) {
+        return UpperWildcardTypeName(lowerBounds)
+    }
+
+    return WildcardTypeName()
+    // return UpperWildcardTypeName(JavaClassNames.OBJECT.javaRef())
+}

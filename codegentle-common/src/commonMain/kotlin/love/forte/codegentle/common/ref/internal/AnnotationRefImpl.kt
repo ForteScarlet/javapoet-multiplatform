@@ -9,7 +9,7 @@ import love.forte.codegentle.common.ref.AnnotationRef
  * @author ForteScarlet
  */
 internal data class AnnotationRefImpl(
-    override val className: ClassName,
+    override val typeName: ClassName,
     override val members: Map<String, List<CodeValue>>
 ) : AnnotationRef
 

@@ -3,11 +3,11 @@
 
 package love.forte.codegentle.java.spec
 
+import love.forte.codegentle.common.ref.annotationRef
 import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.naming.JavaAnnotationNames
-import love.forte.codegentle.java.naming.toJavaTypeVariableName
 import love.forte.codegentle.java.naming.toTypeName
-import love.forte.codegentle.java.ref.annotationRef
+import love.forte.codegentle.java.naming.toTypeVariableName
 import love.forte.codegentle.java.ref.javaRef
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
@@ -46,7 +46,7 @@ public inline fun ExecutableElement.toJavaMethodSpecOverring(
 
         for (typeParameterElement in method.typeParameters) {
             val typeParameterElementAsType = typeParameterElement.asType() as TypeVariable
-            addTypeVariable(typeParameterElementAsType.toJavaTypeVariableName())
+            addTypeVariable(typeParameterElementAsType.toTypeVariableName())
         }
 
         returns(method.returnType.toTypeName())

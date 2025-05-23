@@ -36,13 +36,15 @@ public class JavaTypeNameRefStatusBuilder @PublishedApi internal constructor() :
     }
 }
 
+public typealias JavaTypeRefBuilderDsl<T> = TypeRefBuilder<T, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit
+
 /**
  * Create a [TypeRef] with [T] and [JavaTypeNameRefStatus].
  *
  * @see TypeRef
  */
 public inline fun <T : TypeName> T.javaRef(
-    block: TypeRefBuilder<T, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit = {}
+    block: JavaTypeRefBuilderDsl<T> = {}
 ): TypeRef<T> = ref(JavaTypeNameRefStatus, block)
 
 /**

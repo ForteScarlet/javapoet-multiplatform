@@ -15,7 +15,9 @@
  */
 package love.forte.codegentle.java.writer
 
+import love.forte.codegentle.common.code.CodePart.Companion.type
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.common.computeValue
 import love.forte.codegentle.common.naming.ArrayTypeName
@@ -27,14 +29,15 @@ import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.writer.*
 import love.forte.codegentle.common.writer.CodeWriter.Companion.DEFAULT_COLUMN_LIMIT
 import love.forte.codegentle.common.writer.CodeWriter.Companion.DEFAULT_INDENT
-import love.forte.codegentle.java.*
-import love.forte.codegentle.java.internal.emit0
+import love.forte.codegentle.java.InternalJavaCodeGentleApi
+import love.forte.codegentle.java.JavaModifier
+import love.forte.codegentle.java.emitTo
 import love.forte.codegentle.java.internal.isSourceIdentifier
+import love.forte.codegentle.java.isJavaIdentifierStart
 import love.forte.codegentle.java.naming.JavaPrimitiveTypeName
 import love.forte.codegentle.java.naming.emitTo
 import love.forte.codegentle.java.ref.emitTo
 import love.forte.codegentle.java.ref.javaOrNull
-import love.forte.codegentle.java.spec.JavaAnnotationSpec
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.strategy.DefaultJavaWriteStrategy
 import love.forte.codegentle.java.strategy.JavaWriteStrategy
@@ -118,7 +121,7 @@ public class JavaCodeWriter private constructor(
         commentType = CommentType.COMMENT
         // comment = true
         try {
-            comment.emit0(this)
+            comment.emitTo(this)
             // codeBlock.emit(this)
             emit("\n")
         } finally {
@@ -135,7 +138,7 @@ public class JavaCodeWriter private constructor(
         this.commentType = CommentType.JAVADOC
         // this.javadoc = true
         try {
-            doc.emit0(this, true)
+            doc.emitTo(this, true)
         } finally {
             this.commentType = null
             // this.javadoc = false
@@ -144,16 +147,9 @@ public class JavaCodeWriter private constructor(
         emit(" */\n")
     }
 
-    internal fun emitAnnotations(annotations: Iterable<JavaAnnotationSpec>, inline: Boolean) {
-        for (annotation in annotations) {
-            annotation.emit(this, inline)
-            emit(if (inline) " " else "\n")
-        }
-    }
-
     internal fun emitAnnotationRefs(annotations: Iterable<AnnotationRef>, inline: Boolean) {
         for (annotation in annotations) {
-            annotation.emitTo(this, inline)
+            annotation.emitTo(this)
             emit(if (inline) " " else "\n")
         }
     }
@@ -168,30 +164,6 @@ public class JavaCodeWriter private constructor(
         }
     }
 
-    internal fun emitTypeVariables(typeVariables: List<TypeVariableName>) {
-        if (typeVariables.isEmpty()) return
-
-        typeVariables.forEach { typeVariable -> currentTypeVariables.add(typeVariable.name) }
-
-        emit("<")
-        var firstTypeVariable = true
-        for (typeVariable in typeVariables) {
-            if (!firstTypeVariable) emit(", ")
-            // TODO typeVariableRef
-            // emitAnnotations(typeVariable.annotations, true)
-            emit("%V") { literal(typeVariable.name) }
-            var firstBound = true
-            for (bound in typeVariable.bounds) {
-                emit(if (firstBound) " extends %V" else " & %V") {
-                    type(bound)
-                }
-                firstBound = false
-            }
-            firstTypeVariable = false
-        }
-        emit(">")
-    }
-
     internal fun emitTypeVariableRefs(typeVariables: List<TypeRef<TypeVariableName>>) {
         if (typeVariables.isEmpty()) return
 
@@ -201,11 +173,7 @@ public class JavaCodeWriter private constructor(
         var firstTypeVariable = true
         for (typeVariable in typeVariables) {
             if (!firstTypeVariable) emit(", ")
-            // TODO typeVariableRef
-            typeVariable.status.javaOrNull?.annotations?.also { annotations ->
-                emitAnnotationRefs(annotations, true)
-            }
-            emit("%V") { literal(typeVariable.typeName.name) }
+            emit(typeVariable)
             var firstBound = true
             for (bound in typeVariable.typeName.bounds) {
                 emit(if (firstBound) " extends %V" else " & %V") {
@@ -256,8 +224,8 @@ public class JavaCodeWriter private constructor(
 
     internal fun emitLiteral(value: Any?) {
         when (value) {
-            is JavaAnnotationSpec -> {
-                value.emit(this, inline = true)
+            is AnnotationRef -> {
+                emit(value, StandardAnnotationRefEmitOption.Inline)
             }
 
             is JavaCodeEmitter -> {
@@ -273,7 +241,7 @@ public class JavaCodeWriter private constructor(
     }
 
     override fun emit(code: CodeValue, vararg options: CodeValueEmitOption) {
-        code.emit0(this)
+        code.emitTo(this)
     }
 
     override fun emit(typeName: TypeName, vararg options: TypeNameEmitOption) {
@@ -301,13 +269,18 @@ public class JavaCodeWriter private constructor(
 
     override fun emit(annotationRef: AnnotationRef, vararg options: AnnotationRefEmitOption) {
         val inline = options.contains(StandardAnnotationRefEmitOption.Inline)
-        annotationRef.emitTo(this, inline)
+        annotationRef.emitTo(this)
     }
 
     override fun emit(typeRef: TypeRef<*>, vararg options: TypeRefEmitOption) {
+        if (typeRef is AnnotationRef) {
+            emit(annotationRef = typeRef)
+            return
+        }
+
         // typeRef.emitAnnotations(this)
         typeRef.status.javaOrNull?.annotations?.forEach { annotation ->
-            emit(annotation)
+            emit(annotation, StandardAnnotationRefEmitOption.Inline)
             emit(" ")
         }
         emit(typeRef.typeName)
@@ -474,11 +447,12 @@ internal inline fun JavaCodeWriter.emit(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
 ) {
-    JavaCodeValue(format, block).emit(this, ensureTrailingNewline)
+    // TODO CodeValueEmitOption: ensureTrailingNewline
+    CodeValue(format, block).emitTo(this, ensureTrailingNewline)
 }
 
 internal inline fun JavaCodeWriter.emit(format: String, block: CodeValueSingleFormatBuilderDsl = {}) {
-    JavaCodeValue(format, block).emit(this)
+    emit(CodeValue(format, block))
 }
 
 internal fun JavaCodeEmitter.emitToString(): String =

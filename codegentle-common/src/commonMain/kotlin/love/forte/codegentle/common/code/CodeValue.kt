@@ -5,7 +5,6 @@ import love.forte.codegentle.common.code.internal.CodeValueImpl
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.writer.CodeEmitter
-import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
 /**
@@ -83,11 +82,18 @@ public fun CodeValueSingleFormatBuilder.zeroWidthSpace(): CodeValueSingleFormatB
 public fun CodeValueSingleFormatBuilder.otherCodeValue(value: CodeValue): CodeValueSingleFormatBuilder =
     value(CodePart.otherCodeValue(value))
 
-internal fun CodeValue(parts: List<CodePart>): CodeValue {
-    return CodeValueImpl(parts)
+/**
+ * Creates and returns an empty instance of [CodeValue].
+ *
+ * @return An empty [CodeValue] instance.
+ */
+public fun CodeValue(): CodeValue = CodeValue.EMPTY
+
+public fun CodeValue(parts: List<CodePart>): CodeValue {
+    return CodeValueImpl(parts.toList())
 }
 
-internal fun CodeValue(part: CodePart): CodeValue {
+public fun CodeValue(part: CodePart): CodeValue {
     return CodeValueImpl(listOf(part))
 }
 
@@ -95,21 +101,18 @@ public inline fun CodeValue(format: String, block: CodeValueSingleFormatBuilderD
     return CodeValue.builder(format).also(block).build()
 }
 
-@JvmName("of")
 public fun CodeValue(format: String, argumentPart: CodeArgumentPart): CodeValue {
     return CodeValue(format) {
         value(argumentPart)
     }
 }
 
-@JvmName("of")
 public fun CodeValue(format: String, vararg argumentParts: CodeArgumentPart): CodeValue {
     return CodeValue(format) {
         values(*argumentParts)
     }
 }
 
-@JvmName("of")
 public fun CodeValue(format: String, argumentParts: Iterable<CodeArgumentPart>): CodeValue {
     return CodeValue(format) {
         values(argumentParts)

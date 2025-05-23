@@ -1,8 +1,8 @@
 package love.forte.codegentle.java.spec
 
+import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.spec.NamedSpec
-import love.forte.codegentle.java.JavaCodeValue
-import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.spec.internal.JavaEnumTypeSpecImpl
 
 /**
@@ -14,10 +14,11 @@ import love.forte.codegentle.java.spec.internal.JavaEnumTypeSpecImpl
  * ```
  *
  */
+@SubclassOptInRequired(CodeGentleJavaSpecImplementation::class)
 public interface JavaEnumTypeSpec : NamedSpec, JavaTypeSpec {
     override val name: String
 
-    override val superclass: JavaTypeName?
+    override val superclass: TypeName?
         get() = null
 
     public val enumConstants: Map<String, JavaTypeSpec>
@@ -70,7 +71,7 @@ public inline fun JavaEnumTypeSpec(
 
 public inline fun JavaEnumTypeSpecBuilder.addEnumConstant(
     name: String,
-    anonymousTypeArguments: JavaCodeValue,
+    anonymousTypeArguments: CodeValue,
     block: JavaAnonymousClassTypeSpecBuilder.() -> Unit = {}
 ) {
     addEnumConstant(

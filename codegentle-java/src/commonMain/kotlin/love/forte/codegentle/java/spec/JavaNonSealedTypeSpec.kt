@@ -16,6 +16,7 @@ import love.forte.codegentle.java.spec.internal.JavaNonSealedTypeSpecImpl
  * }
  * ```
  */
+@SubclassOptInRequired(CodeGentleJavaSpecImplementation::class)
 public interface JavaNonSealedTypeSpec : NamedSpec, JavaTypeSpec {
     override val name: String
 }

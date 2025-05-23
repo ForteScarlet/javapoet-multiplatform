@@ -19,30 +19,37 @@
 
 package love.forte.codegentle.java.spec
 
+import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.ref.AnnotationRefBuilder
+import love.forte.codegentle.common.ref.annotationRef
 import love.forte.codegentle.java.naming.toJavaClassName
 import love.forte.codegentle.java.naming.toTypeName
-import love.forte.codegentle.java.ref.JavaAnnotationRefBuilder
-import love.forte.codegentle.java.ref.annotationRef
+import love.forte.codegentle.java.ref.JavaTypeRefBuilderDsl
+import love.forte.codegentle.java.ref.javaRef
 import java.lang.reflect.Type
 import kotlin.reflect.KClass
 
 /**
- * Create a [love.forte.codepoet.java.spec.FieldSpec] from [Type] with [Builder][block].
+ * Create a [love.forte.codegentle.java.spec.JavaFieldSpec] from [Type] with [Builder][block].
  */
-public inline fun Type.toFieldSpec(name: String, block: JavaFieldSpecBuilder.() -> Unit = {}): JavaFieldSpec {
-    return JavaFieldSpec(this.toTypeName(), name, block)
+public inline fun Type.toJavaFieldSpec(
+    name: String,
+    refBlock: JavaTypeRefBuilderDsl<TypeName> = {},
+    block: JavaFieldSpecBuilder.() -> Unit = {}
+): JavaFieldSpec {
+    return JavaFieldSpec(this.toTypeName().javaRef(refBlock), name, block)
 }
 
 public inline fun JavaFieldSpecBuilder.addAnnotationRef(
     cls: Class<*>,
-    block: JavaAnnotationRefBuilder.() -> Unit = {}
+    block: AnnotationRefBuilder.() -> Unit = {}
 ): JavaFieldSpecBuilder = apply {
     addAnnotationRef(cls.toJavaClassName().annotationRef(block))
 }
 
 public inline fun JavaFieldSpecBuilder.addAnnotationRef(
     cls: KClass<*>,
-    block: JavaAnnotationRefBuilder.() -> Unit = {}
+    block: AnnotationRefBuilder.() -> Unit = {}
 ): JavaFieldSpecBuilder = apply {
     addAnnotationRef(cls.toJavaClassName().annotationRef(block))
 }

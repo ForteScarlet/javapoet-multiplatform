@@ -17,14 +17,12 @@
 package love.forte.codegentle.java.naming
 
 import love.forte.codegentle.common.naming.ClassName
-import love.forte.codegentle.common.naming.PlatformTypeName
 import love.forte.codegentle.common.naming.TypeName
-import love.forte.codegentle.java.writer.JavaCodeEmitter
 
 /**
  * A type name represented in Java。
  */
-public interface JavaTypeName : PlatformTypeName, JavaCodeEmitter
+// public interface JavaTypeName : PlatformTypeName, JavaCodeEmitter
 
 
 /**

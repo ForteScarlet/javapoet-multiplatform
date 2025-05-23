@@ -21,17 +21,22 @@ package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.code.CodeArgumentPart
+import love.forte.codegentle.common.code.CodePart.Companion.literal
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueBuilder
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
+import love.forte.codegentle.common.code.beginControlFlow
+import love.forte.codegentle.common.code.nextControlFlow
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.AnnotationRefCollectable
 import love.forte.codegentle.common.ref.TypeRef
-import love.forte.codegentle.common.ref.TypeRefBuilder
 import love.forte.codegentle.common.spec.NamedSpec
-import love.forte.codegentle.java.*
-import love.forte.codegentle.java.ref.JavaTypeNameRefStatus
-import love.forte.codegentle.java.ref.JavaTypeNameRefStatusBuilder
+import love.forte.codegentle.java.JavaModifier
+import love.forte.codegentle.java.JavaModifierBuilderContainer
+import love.forte.codegentle.java.JavaModifierSet
+import love.forte.codegentle.java.ref.JavaTypeRefBuilderDsl
 import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.internal.JavaMethodSpecImpl
 import love.forte.codegentle.java.writer.JavaCodeWriter
@@ -43,6 +48,7 @@ import kotlin.jvm.JvmStatic
 /**
  * A generated constructor or method declaration.
  */
+@SubclassOptInRequired(CodeGentleJavaSpecImplementation::class)
 public interface JavaMethodSpec : JavaSpec, NamedSpec {
     override val name: String
     public val javadoc: CodeValue
@@ -96,12 +102,12 @@ public class JavaMethodSpecBuilder internal constructor(
 ) : BuilderDsl,
     JavaModifierBuilderContainer,
     AnnotationRefCollectable<JavaMethodSpecBuilder> {
-    internal val javadoc = JavaCodeValue.builder()
+    internal val javadoc = CodeValue.builder()
     internal var returnType: TypeRef<*>? = null
 
     @PublishedApi
-    internal val code: JavaCodeValueBuilder = JavaCodeValue.builder()
-    internal var defaultValue: JavaCodeValue? = null
+    internal val code: CodeValueBuilder = CodeValue.builder()
+    internal var defaultValue: CodeValue? = null
     internal val exceptions = linkedSetOf<TypeRef<*>>()
 
     public var isVarargs: Boolean = false
@@ -112,10 +118,10 @@ public class JavaMethodSpecBuilder internal constructor(
     internal val parameters: MutableList<JavaParameterSpec> = mutableListOf()
 
     public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): JavaMethodSpecBuilder = apply {
-        addJavadoc(JavaCodeValue(format, *argumentParts))
+        addJavadoc(CodeValue(format, *argumentParts))
     }
 
-    public fun addJavadoc(codeValue: JavaCodeValue): JavaMethodSpecBuilder = apply {
+    public fun addJavadoc(codeValue: CodeValue): JavaMethodSpecBuilder = apply {
         javadoc.add(codeValue)
     }
 
@@ -191,22 +197,22 @@ public class JavaMethodSpecBuilder internal constructor(
     }
     // TODO exceptions KType? KClass?
 
-    public fun addCode(codeValue: JavaCodeValue): JavaMethodSpecBuilder = apply {
+    public fun addCode(codeValue: CodeValue): JavaMethodSpecBuilder = apply {
         this.code.add(codeValue)
     }
 
     public fun addCode(format: String, vararg argumentParts: CodeArgumentPart): JavaMethodSpecBuilder = apply {
-        addCode(JavaCodeValue(format, *argumentParts))
+        addCode(CodeValue(format, *argumentParts))
     }
 
     public fun addComment(format: String, vararg argumentParts: CodeArgumentPart): JavaMethodSpecBuilder = apply {
-        addCode(JavaCodeValue("// $format\n", *argumentParts))
+        addCode(CodeValue("// $format\n", *argumentParts))
     }
 
     public fun defaultValue(format: String, vararg argumentParts: CodeArgumentPart): JavaMethodSpecBuilder =
-        defaultValue(JavaCodeValue(format, *argumentParts))
+        defaultValue(CodeValue(format, *argumentParts))
 
-    public fun defaultValue(codeBlock: JavaCodeValue): JavaMethodSpecBuilder = apply {
+    public fun defaultValue(codeBlock: CodeValue): JavaMethodSpecBuilder = apply {
         check(defaultValue == null) { "`defaultValue` was already set" }
         this.defaultValue = codeBlock
     }
@@ -225,7 +231,7 @@ public class JavaMethodSpecBuilder internal constructor(
      * @param codeBlock the control flow construct and its code, such as `"if (foo == 5)"`.
      * Shouldn't contain braces or newline characters.
      */
-    public fun beginControlFlow(codeBlock: JavaCodeValue): JavaMethodSpecBuilder = apply {
+    public fun beginControlFlow(codeBlock: CodeValue): JavaMethodSpecBuilder = apply {
         beginControlFlow("%V") { literal(codeBlock) }
     }
 
@@ -242,7 +248,7 @@ public class JavaMethodSpecBuilder internal constructor(
      * @param codeBlock the control flow construct and its code, such as `"else if (foo == 10)"`.
      * Shouldn't contain braces or newline characters.
      */
-    public fun nextControlFlow(codeBlock: JavaCodeValue): JavaMethodSpecBuilder = apply {
+    public fun nextControlFlow(codeBlock: CodeValue): JavaMethodSpecBuilder = apply {
         nextControlFlow("%V") { literal(codeBlock) }
     }
 
@@ -251,10 +257,10 @@ public class JavaMethodSpecBuilder internal constructor(
     }
 
     public fun addStatement(format: String, vararg argumentParts: CodeArgumentPart): JavaMethodSpecBuilder = apply {
-        addStatement(JavaCodeValue(format, *argumentParts))
+        addStatement(CodeValue(format, *argumentParts))
     }
 
-    public fun addStatement(codeValue: JavaCodeValue): JavaMethodSpecBuilder = apply {
+    public fun addStatement(codeValue: CodeValue): JavaMethodSpecBuilder = apply {
         code.addStatement(codeValue)
     }
 
@@ -270,26 +276,26 @@ public class JavaMethodSpecBuilder internal constructor(
             isVarargs = isVarargs,
             exceptions = exceptions.toList(),
             code = code.build(),
-            defaultValue = defaultValue ?: JavaCodeValue.EMPTY
+            defaultValue = defaultValue ?: CodeValue()
         )
     }
 }
 
 public inline fun <T : TypeVariableName> JavaMethodSpecBuilder.addTypeVariable(
     variableName: T,
-    block: TypeRefBuilder<T, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit = {}
+    block: JavaTypeRefBuilderDsl<T> = {}
 ): JavaMethodSpecBuilder =
     addException(variableName.javaRef(block))
 
 public inline fun <T : TypeName> JavaMethodSpecBuilder.addException(
     type: T,
-    block: TypeRefBuilder<T, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit = {}
+    block: JavaTypeRefBuilderDsl<T> = {}
 ): JavaMethodSpecBuilder =
     addException(type.javaRef(block))
 
 public inline fun <T : TypeName> JavaMethodSpecBuilder.returns(
     type: T,
-    block: TypeRefBuilder<T, JavaTypeNameRefStatus, JavaTypeNameRefStatusBuilder>.() -> Unit = {}
+    block: JavaTypeRefBuilderDsl<T> = {}
 ): JavaMethodSpecBuilder =
     returns(type.javaRef(block))
 
@@ -298,28 +304,28 @@ public inline fun JavaMethodSpecBuilder.addJavadoc(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
 ): JavaMethodSpecBuilder = apply {
-    addJavadoc(JavaCodeValue(format, block))
+    addJavadoc(CodeValue(format, block))
 }
 
 public inline fun JavaMethodSpecBuilder.addCode(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
 ): JavaMethodSpecBuilder = apply {
-    addCode(JavaCodeValue(format, block))
+    addCode(CodeValue(format, block))
 }
 
 public inline fun JavaMethodSpecBuilder.addComment(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
 ): JavaMethodSpecBuilder = apply {
-    addCode(JavaCodeValue("// $format\n", block))
+    addCode(CodeValue("// $format\n", block))
 }
 
 public inline fun JavaMethodSpecBuilder.defaultValue(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
 ): JavaMethodSpecBuilder =
-    defaultValue(JavaCodeValue(format, block))
+    defaultValue(CodeValue(format, block))
 
 /**
  * @param controlFlow the control flow construct and its code, such as `"if (foo == 5)"`.
@@ -349,5 +355,5 @@ public inline fun JavaMethodSpecBuilder.addStatement(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
 ): JavaMethodSpecBuilder = apply {
-    addStatement(JavaCodeValue(format, block))
+    addStatement(CodeValue(format, block))
 }

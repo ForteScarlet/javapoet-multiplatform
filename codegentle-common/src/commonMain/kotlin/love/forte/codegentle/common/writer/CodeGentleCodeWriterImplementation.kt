@@ -1,7 +1,7 @@
 package love.forte.codegentle.common.writer
 
 /**
- * A naming type that should only be implemented internally.
+ * A [CodeWriter]-related type that should be implemented internally only.
  * The stability and compatibility of third-party implementations are not guaranteed.
  */
 @RequiresOptIn(

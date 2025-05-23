@@ -20,12 +20,18 @@
 package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.code.CodeArgumentPart
+import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
+import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.AnnotationRefCollectable
+import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.spec.NamedSpec
-import love.forte.codegentle.java.*
-import love.forte.codegentle.java.naming.JavaTypeName
-import love.forte.codegentle.java.ref.JavaAnnotationRef
-import love.forte.codegentle.java.ref.JavaAnnotationRefCollectable
-import love.forte.codegentle.java.ref.JavaTypeRef
+import love.forte.codegentle.java.InternalJavaCodeGentleApi
+import love.forte.codegentle.java.JavaModifier
+import love.forte.codegentle.java.JavaModifierBuilderContainer
+import love.forte.codegentle.java.JavaModifierSet
+import love.forte.codegentle.java.ref.JavaTypeRefBuilderDsl
 import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.internal.JavaFieldSpecImpl
 import love.forte.codegentle.java.writer.JavaCodeWriter
@@ -36,18 +42,19 @@ import kotlin.jvm.JvmName
 /**
  * A generated field declaration.
  */
+@SubclassOptInRequired(CodeGentleJavaSpecImplementation::class)
 public interface JavaFieldSpec : JavaSpec, NamedSpec {
     override val name: String
 
-    public val type: JavaTypeRef<*>
+    public val type: TypeRef<*>
 
-    public val javadoc: JavaCodeValue
+    public val javadoc: CodeValue
 
-    public val annotations: List<JavaAnnotationRef>
+    public val annotations: List<AnnotationRef>
 
     public val modifiers: Set<JavaModifier>
 
-    public val initializer: JavaCodeValue
+    public val initializer: CodeValue
 
     public fun hasModifier(modifier: JavaModifier): Boolean = modifier in modifiers
 
@@ -61,10 +68,10 @@ public interface JavaFieldSpec : JavaSpec, NamedSpec {
 }
 
 /**
- * @see JavaFieldSpec.builder
+ * @see JavaFieldSpecBuilder
  */
 public inline fun JavaFieldSpec(
-    type: JavaTypeRef<*>,
+    type: TypeRef<*>,
     name: String,
     block: JavaFieldSpecBuilder.() -> Unit = {}
 ): JavaFieldSpec =
@@ -72,38 +79,39 @@ public inline fun JavaFieldSpec(
 
 
 /**
- * @see JavaFieldSpec.builder
+ * @see JavaFieldSpecBuilder
  */
 public inline fun JavaFieldSpec(
-    type: JavaTypeName,
+    type: TypeName,
     name: String,
+    refBlock: JavaTypeRefBuilderDsl<TypeName> = {},
     block: JavaFieldSpecBuilder.() -> Unit = {}
 ): JavaFieldSpec =
-    JavaFieldSpec(type.javaRef(), name, block)
+    JavaFieldSpec(type.javaRef(refBlock), name, block)
 
 public class JavaFieldSpecBuilder @PublishedApi internal constructor(
-    public val type: JavaTypeRef<*>,
+    public val type: TypeRef<*>,
     public val name: String,
 ) : JavaModifierBuilderContainer,
-    JavaAnnotationRefCollectable<JavaFieldSpecBuilder> {
-    internal val javadoc = JavaCodeValue.builder()
-    internal val annotations = mutableListOf<JavaAnnotationRef>()
+    AnnotationRefCollectable<JavaFieldSpecBuilder> {
+    internal val javadoc = CodeValue.builder()
+    internal val annotations = mutableListOf<AnnotationRef>()
     internal val modifiers = JavaModifierSet()
-    internal var initializer: JavaCodeValue? = null
+    internal var initializer: CodeValue? = null
 
     public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): JavaFieldSpecBuilder = apply {
-        addJavadoc(JavaCodeValue(format, *argumentParts))
+        addJavadoc(CodeValue(format, *argumentParts))
     }
 
-    public fun addJavadoc(codeValue: JavaCodeValue): JavaFieldSpecBuilder = apply {
+    public fun addJavadoc(codeValue: CodeValue): JavaFieldSpecBuilder = apply {
         javadoc.add(codeValue)
     }
 
-    override fun addAnnotationRefs(refs: Iterable<JavaAnnotationRef>): JavaFieldSpecBuilder = apply {
+    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): JavaFieldSpecBuilder = apply {
         annotations.addAll(refs)
     }
 
-    override fun addAnnotationRef(ref: JavaAnnotationRef): JavaFieldSpecBuilder = apply {
+    override fun addAnnotationRef(ref: AnnotationRef): JavaFieldSpecBuilder = apply {
         annotations.add(ref)
     }
 
@@ -120,10 +128,10 @@ public class JavaFieldSpecBuilder @PublishedApi internal constructor(
     }
 
     public fun initializer(format: String, vararg argumentParts: CodeArgumentPart): JavaFieldSpecBuilder = apply {
-        initializer(JavaCodeValue(format, *argumentParts))
+        initializer(CodeValue(format, *argumentParts))
     }
 
-    public fun initializer(codeBlock: JavaCodeValue): JavaFieldSpecBuilder = apply {
+    public fun initializer(codeBlock: CodeValue): JavaFieldSpecBuilder = apply {
         check(initializer == null) { "initializer was already set" }
         initializer = codeBlock
     }
@@ -135,22 +143,21 @@ public class JavaFieldSpecBuilder @PublishedApi internal constructor(
             javadoc = javadoc.build(),
             annotations = annotations.toList(),
             modifiers = modifiers.toSet(),
-            initializer = initializer ?: JavaCodeValue.EMPTY
+            initializer = initializer ?: CodeValue()
         )
     }
 }
-
 
 public inline fun JavaFieldSpecBuilder.addJavadoc(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
 ): JavaFieldSpecBuilder = apply {
-    addJavadoc(JavaCodeValue(format, block))
+    addJavadoc(CodeValue(format, block))
 }
 
 public inline fun JavaFieldSpecBuilder.initializer(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
 ): JavaFieldSpecBuilder = apply {
-    initializer(JavaCodeValue(format, block))
+    initializer(CodeValue(format, block))
 }

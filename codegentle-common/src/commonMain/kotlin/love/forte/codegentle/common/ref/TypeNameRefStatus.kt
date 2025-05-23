@@ -8,6 +8,7 @@ package love.forte.codegentle.common.ref
 @SubclassOptInRequired(CodeGentleRefImplementation::class)
 public interface TypeNameRefStatus
 
+public object EmptyTypeNameRefStatus : TypeNameRefStatus
 
 //region JavaTypeNameRefStatus
 // @SubclassOptInRequired(CodeGentleRefImplementation::class)

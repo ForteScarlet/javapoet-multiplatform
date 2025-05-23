@@ -1,13 +1,15 @@
 package love.forte.codegentle.test.apt.proc
 
+import love.forte.codegentle.common.code.literal
+import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.ref.annotationRefs
 import love.forte.codegentle.java.JavaFile
-import love.forte.codegentle.java.literal
 import love.forte.codegentle.java.naming.toJavaClassName
-import love.forte.codegentle.java.naming.toJavaTypeVariableName
 import love.forte.codegentle.java.naming.toTypeName
+import love.forte.codegentle.java.naming.toTypeVariableName
+import love.forte.codegentle.java.ref.addGenerated
 import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.*
-import love.forte.codegentle.java.type
 import love.forte.codegentle.java.writeTo
 import java.time.Instant
 import javax.annotation.processing.AbstractProcessor
@@ -103,7 +105,7 @@ class TestProcessor : AbstractProcessor() {
                 JavaMethodSpec(enclosingElement.simpleName.toString() + "_" + method.simpleName.toString()) {
                     addModifiers(Modifier.STATIC, Modifier.PUBLIC)
                     addExceptions(method.thrownTypes.map { it.toTypeName().javaRef() })
-                    addTypeVariables(method.typeParameters.map { it.toJavaTypeVariableName().javaRef() })
+                    addTypeVariables(method.typeParameters.map { it.toTypeVariableName().javaRef() })
                     addParameters(method.javaParameterSpecs)
                     returns(method.returnType.toTypeName().javaRef())
                     val names = method.parameters.map { it.simpleName.toString() }

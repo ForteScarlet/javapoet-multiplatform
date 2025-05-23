@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-@file:JvmName("JavaParameterizedTypeNames")
-@file:JvmMultifileClass
-
 package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.java.naming.internal.JavaParameterizedTypeNameImpl
+import love.forte.codegentle.common.naming.ParameterizedTypeName
+import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.java.ref.javaRef
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-public fun Class<*>.toJavaParameterizedTypeName(vararg typeArguments: Type): JavaParameterizedTypeName {
-    return JavaParameterizedTypeNameImpl(null, this.toJavaClassName(), typeArguments.map { it.toTypeName().javaRef() })
+public fun Class<*>.toParameterizedTypeName(vararg typeArguments: Type): ParameterizedTypeName {
+    return ParameterizedTypeName(this.toJavaClassName(), typeArguments.map { it.toTypeName().javaRef() })
 }
 
-public fun ParameterizedType.toJavaParameterizedTypeName(): JavaParameterizedTypeName =
-    toJavaParameterizedTypeName(linkedMapOf())
+public fun ParameterizedType.toParameterizedTypeName(): ParameterizedTypeName =
+    toParameterizedTypeName(linkedMapOf())
 
-internal fun ParameterizedType.toJavaParameterizedTypeName(map: MutableMap<Type, JavaTypeVariableName>): JavaParameterizedTypeName {
+internal fun ParameterizedType.toParameterizedTypeName(map: MutableMap<Type, TypeVariableName>): ParameterizedTypeName {
     val type = this
 
     val rawType = (type.rawType as Class<*>).toJavaClassName()
@@ -47,6 +45,6 @@ internal fun ParameterizedType.toJavaParameterizedTypeName(map: MutableMap<Type,
 
     val typeArguments = type.actualTypeArguments.map { it.toTypeName(map).javaRef() }
 
-    return ownerType?.toJavaParameterizedTypeName(map)?.nestedClass(rawType.simpleName, typeArguments)
-        ?: JavaParameterizedTypeNameImpl(null, rawType, typeArguments)
+    return ownerType?.toParameterizedTypeName(map)?.nestedClass(rawType.simpleName, typeArguments)
+        ?: ParameterizedTypeName(rawType, typeArguments)
 }

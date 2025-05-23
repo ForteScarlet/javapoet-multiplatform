@@ -1,17 +1,18 @@
 package love.forte.codegentle.java.spec
 
+import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.spec.NamedSpec
-import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.spec.internal.JavaSealedTypeSpecImpl
 
 /**
  * A generated `sealed class/interface`.
  */
+@SubclassOptInRequired(CodeGentleJavaSpecImplementation::class)
 public interface JavaSealedTypeSpec : NamedSpec, JavaTypeSpec {
     override val name: String
 
     // sealed class, sealed interface
-    public val permits: List<JavaTypeName>
+    public val permits: List<TypeName>
 
     public class JavaSealedTypeSpecBuilder @PublishedApi internal constructor(
         kind: JavaTypeSpec.Kind,
@@ -29,17 +30,17 @@ public interface JavaSealedTypeSpec : NamedSpec, JavaTypeSpec {
         override val self: JavaSealedTypeSpecBuilder
             get() = this
 
-        private val permits = mutableListOf<JavaTypeName>()
+        private val permits = mutableListOf<TypeName>()
 
-        public fun addPermits(permits: Iterable<JavaTypeName>): JavaSealedTypeSpecBuilder = apply {
+        public fun addPermits(permits: Iterable<TypeName>): JavaSealedTypeSpecBuilder = apply {
             this.permits.addAll(permits)
         }
 
-        public fun addPermits(vararg permits: JavaTypeName): JavaSealedTypeSpecBuilder = apply {
+        public fun addPermits(vararg permits: TypeName): JavaSealedTypeSpecBuilder = apply {
             this.permits.addAll(permits)
         }
 
-        public fun addPermit(permit: JavaTypeName): JavaSealedTypeSpecBuilder = apply {
+        public fun addPermit(permit: TypeName): JavaSealedTypeSpecBuilder = apply {
             permits.add(permit)
         }
 

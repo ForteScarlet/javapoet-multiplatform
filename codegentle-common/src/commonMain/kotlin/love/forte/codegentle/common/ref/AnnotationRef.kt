@@ -11,9 +11,12 @@ import love.forte.codegentle.common.ref.internal.AnnotationRefImpl
  * @author ForteScarlet
  */
 @SubclassOptInRequired(CodeGentleRefImplementation::class)
-public interface AnnotationRef {
-    public val className: ClassName
+public interface AnnotationRef : TypeRef<ClassName> {
+    override val typeName: ClassName
     public val members: Map<String, List<CodeValue>>
+
+    override val status: TypeNameRefStatus
+        get() = EmptyTypeNameRefStatus
 }
 
 public inline fun ClassName.annotationRef(block: AnnotationRefBuilder.() -> Unit = {}): AnnotationRef {
@@ -36,7 +39,7 @@ public class AnnotationRefBuilder(public val className: ClassName) :
 
     public fun build(): AnnotationRef {
         return AnnotationRefImpl(
-            className = className,
+            typeName = className,
             members = members.mapValues { it.value.toList() }
         )
     }

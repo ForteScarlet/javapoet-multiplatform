@@ -6,6 +6,7 @@ import love.forte.codegentle.java.spec.internal.JavaSimpleTypeSpecImpl
 /**
  * A generated `class` or `interface`.
  */
+@SubclassOptInRequired(CodeGentleJavaSpecImplementation::class)
 public interface JavaSimpleTypeSpec : NamedSpec, JavaTypeSpec {
     override val name: String
 }

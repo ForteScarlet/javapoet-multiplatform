@@ -1,8 +1,7 @@
-
 package love.forte.codegentle.java.spec
 
+import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.spec.NamedSpec
-import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.spec.internal.JavaAnnotationTypeSpecImpl
 
 /**
@@ -12,13 +11,14 @@ import love.forte.codegentle.java.spec.internal.JavaAnnotationTypeSpecImpl
  * }
  * ```
  */
+@SubclassOptInRequired(CodeGentleJavaSpecImplementation::class)
 public interface JavaAnnotationTypeSpec : NamedSpec, JavaTypeSpec {
     override val name: String
 
-    override val superclass: JavaTypeName?
+    override val superclass: TypeName?
         get() = null
 
-    override val superinterfaces: List<JavaTypeName>
+    override val superinterfaces: List<TypeName>
         get() = emptyList()
 
 }
@@ -31,8 +31,8 @@ public class JavaAnnotationTypeSpecBuilder @PublishedApi internal constructor(
         get() = this
 
     override fun build(): JavaAnnotationTypeSpec {
-        // TODO check method must be public abstract
-        // TODO check field must be public static (no private)
+        // TODO check method must be public abstract?
+        // TODO check field must be public static (no private)?
 
         check(superclass == null) {
             "`superclass` must be null for annotation type."

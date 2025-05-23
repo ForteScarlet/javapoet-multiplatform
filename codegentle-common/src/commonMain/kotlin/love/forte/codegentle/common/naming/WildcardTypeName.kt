@@ -19,11 +19,22 @@ public sealed interface WildcardTypeName : TypeName {
     //  outs, ins
 }
 
+/**
+ * No bounds [WildcardTypeName].
+ * - Java `?` or `? extends Object`
+ * - Kotlin `*` or `out Any?`
+ */
+internal data object EmptyWildcardTypeName : WildcardTypeName {
+    override val bounds: List<TypeRef<*>> = emptyList()
+}
+
+public val WildcardTypeName.isEmpty: Boolean
+    get() = bounds.isEmpty()
 
 /**
  * Upper wildcard type name, subtype wildcard type name.
- * Java: `? super T`.
- * Kotlin `in T`.
+ * - Java: `? super T`.
+ * - Kotlin `in T`.
  *
  * The bounds are *lower bounds*.
  *
@@ -34,14 +45,15 @@ public interface UpperWildcardTypeName : WildcardTypeName
 
 /**
  * Lower wildcard type name, supertype wildcard type name.
- * Java: `? extends T`.
- * Kotlin: `T : ?`, `out T`.
+ * - Java: `? extends T`.
+ * - Kotlin: `T : ?`, `out T`.
  *
  * The bounds are *upper bounds*.
  */
 @SubclassOptInRequired(CodeGentleNamingImplementation::class)
 public interface LowerWildcardTypeName : WildcardTypeName
 
+public fun WildcardTypeName(): WildcardTypeName = EmptyWildcardTypeName
 
 public fun LowerWildcardTypeName(upperBound: TypeRef<*>): LowerWildcardTypeName =
     LowerWildcardTypeNameImpl(listOf(upperBound))
@@ -49,8 +61,12 @@ public fun LowerWildcardTypeName(upperBound: TypeRef<*>): LowerWildcardTypeName 
 public fun UpperWildcardTypeName(lowerBound: TypeRef<*>): UpperWildcardTypeName =
     UpperWildcardTypeNameImpl(listOf(lowerBound))
 
-public fun LowerWildcardTypeName(upperBounds: List<TypeRef<*>>): LowerWildcardTypeName =
-    LowerWildcardTypeNameImpl(upperBounds)
+public fun LowerWildcardTypeName(upperBounds: List<TypeRef<*>>): LowerWildcardTypeName {
+    require(upperBounds.isNotEmpty()) { "Upper bounds must not be empty." }
+    return LowerWildcardTypeNameImpl(upperBounds)
+}
 
-public fun UpperWildcardTypeName(lowerBounds: List<TypeRef<*>>): UpperWildcardTypeName =
-    UpperWildcardTypeNameImpl(lowerBounds)
+public fun UpperWildcardTypeName(lowerBounds: List<TypeRef<*>>): UpperWildcardTypeName {
+    require(lowerBounds.isNotEmpty()) { "Lower bounds must not be empty." }
+    return UpperWildcardTypeNameImpl(lowerBounds)
+}

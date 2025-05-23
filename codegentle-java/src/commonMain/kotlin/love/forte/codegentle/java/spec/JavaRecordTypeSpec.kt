@@ -1,8 +1,8 @@
 package love.forte.codegentle.java.spec
 
+import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.spec.NamedSpec
-import love.forte.codegentle.java.naming.JavaTypeName
-import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.spec.internal.JavaRecordTypeSpecImpl
 
 /**
@@ -13,10 +13,11 @@ import love.forte.codegentle.java.spec.internal.JavaRecordTypeSpecImpl
  * }
  * ```
  */
+@SubclassOptInRequired(CodeGentleJavaSpecImplementation::class)
 public interface JavaRecordTypeSpec : NamedSpec, JavaTypeSpec {
     override val name: String
 
-    override val superclass: JavaTypeName?
+    override val superclass: TypeName?
         get() = null
 
     public val mainConstructorParameters: List<JavaParameterSpec>
@@ -96,7 +97,7 @@ public inline fun JavaRecordTypeSpec(
 }
 
 public inline fun JavaRecordTypeSpecBuilder.addMainConstructorParameter(
-    type: JavaTypeRef<*>,
+    type: TypeRef<*>,
     name: String,
     block: JavaParameterSpecBuilder.() -> Unit = {}
 ) {

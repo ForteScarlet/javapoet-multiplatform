@@ -3,8 +3,6 @@ package love.forte.codegentle.java.naming.internal
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.java.naming.JavaClassNames
 import love.forte.codegentle.java.naming.JavaPrimitiveTypeName
-import love.forte.codegentle.java.writer.JavaCodeWriter
-import love.forte.codegentle.java.writer.emitToString
 
 
 internal class JavaPrimitiveTypeNameImpl(
@@ -53,12 +51,8 @@ internal class JavaPrimitiveTypeNameImpl(
         }
     }
 
-    override fun emit(codeWriter: JavaCodeWriter) {
-        codeWriter.emitAndIndent(keyword)
-    }
-
     override fun toString(): String {
-        return emitToString()
+        return keyword
     }
 
     override fun equals(other: Any?): Boolean {

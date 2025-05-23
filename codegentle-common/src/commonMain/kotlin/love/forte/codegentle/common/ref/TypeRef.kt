@@ -5,7 +5,7 @@ import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.ref.internal.TypeRefImpl
 
 /**
- * A reference to a [love.forte.codepoet.common.naming.TypeName].
+ * A reference to a [love.forte.codegentle.common.naming.TypeName].
  *
  * @author ForteScarlet
  */
@@ -14,6 +14,8 @@ public interface TypeRef<out T : TypeName> {
     public val typeName: T
     public val status: TypeNameRefStatus
 }
+
+public typealias TypeRefBuilderDsl<T, S, B> = TypeRefBuilder<T, S, B>.() -> Unit
 
 /**
  * Create a [TypeRef] with [T] status [S].
@@ -26,7 +28,8 @@ public interface TypeRef<out T : TypeName> {
  * @see TypeRef
  */
 public inline fun <T : TypeName, S : TypeNameRefStatus, B : TypeNameRefStatusBuilder<S>> T.ref(
-    statusBuilderFactory: TypeNameRefStatusBuilderFactory<S, B>, block: TypeRefBuilder<T, S, B>.() -> Unit = {}
+    statusBuilderFactory: TypeNameRefStatusBuilderFactory<S, B>,
+    block: TypeRefBuilderDsl<T, S, B> = {}
 ): TypeRef<T> = TypeRefBuilder(this, statusBuilderFactory).also(block).build()
 
 /**

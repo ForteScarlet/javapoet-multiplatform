@@ -1,6 +1,6 @@
 package love.forte.codegentle.java.spec
 
-import love.forte.codegentle.java.JavaCodeValue
+import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.spec.internal.JavaAnonymousClassTypeSpecImpl
 import love.forte.codegentle.java.writer.JavaCodeWriter
@@ -19,21 +19,26 @@ import love.forte.codegentle.java.writer.JavaCodeWriter
  * Also used in enum constants, see [JavaEnumTypeSpec.enumConstants].
  *
  */
+@SubclassOptInRequired(CodeGentleJavaSpecImplementation::class)
 public interface JavaAnonymousClassTypeSpec : JavaTypeSpec {
     override val name: String?
         get() = null
 
-    public val anonymousTypeArguments: JavaCodeValue
+    public val anonymousTypeArguments: CodeValue
 
     override fun emit(codeWriter: JavaCodeWriter, implicitModifiers: Set<JavaModifier>) {
         emit(codeWriter, null, implicitModifiers)
     }
 
-    public fun emit(codeWriter: JavaCodeWriter, enumName: String? = null, implicitModifiers: Set<JavaModifier> = emptySet())
+    public fun emit(
+        codeWriter: JavaCodeWriter,
+        enumName: String? = null,
+        implicitModifiers: Set<JavaModifier> = emptySet()
+    )
 }
 
 public class JavaAnonymousClassTypeSpecBuilder @PublishedApi internal constructor(
-    public val anonymousTypeArguments: JavaCodeValue,
+    public val anonymousTypeArguments: CodeValue,
 ) : JavaTypeSpecBuilder<JavaAnonymousClassTypeSpecBuilder, JavaAnonymousClassTypeSpec>(
     kind = JavaTypeSpec.Kind.CLASS,
     name = null
@@ -62,7 +67,7 @@ public class JavaAnonymousClassTypeSpecBuilder @PublishedApi internal constructo
 
 
 public inline fun JavaAnonymousClassTypeSpec(
-    anonymousTypeArguments: JavaCodeValue,
+    anonymousTypeArguments: CodeValue,
     block: JavaAnonymousClassTypeSpecBuilder.() -> Unit = {},
 ): JavaAnonymousClassTypeSpec {
     return JavaAnonymousClassTypeSpecBuilder(anonymousTypeArguments).also(block).build()

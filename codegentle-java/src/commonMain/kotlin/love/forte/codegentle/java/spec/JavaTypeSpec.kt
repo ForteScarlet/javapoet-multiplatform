@@ -20,14 +20,19 @@
 package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.BuilderDsl
-import love.forte.codegentle.java.*
+import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
+import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.naming.TypeVariableName
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.AnnotationRefCollectable
+import love.forte.codegentle.common.ref.TypeRef
+import love.forte.codegentle.java.JavaModifier
+import love.forte.codegentle.java.JavaModifierBuilderContainer
+import love.forte.codegentle.java.JavaModifierSet
 import love.forte.codegentle.java.internal.isSourceName
-import love.forte.codegentle.java.naming.JavaTypeName
-import love.forte.codegentle.java.naming.JavaTypeVariableName
 import love.forte.codegentle.java.naming.isPrimitive
-import love.forte.codegentle.java.ref.JavaAnnotationRef
-import love.forte.codegentle.java.ref.JavaAnnotationRefCollectable
-import love.forte.codegentle.java.ref.JavaTypeRef
+import love.forte.codegentle.java.ref.JavaTypeRefBuilderDsl
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import kotlin.jvm.JvmInline
 import kotlin.jvm.JvmMultifileClass
@@ -49,32 +54,32 @@ import kotlin.jvm.JvmName
 public sealed interface JavaTypeSpec : JavaSpec {
     public val name: String?
     public val kind: Kind
-    public val javadoc: JavaCodeValue
-    public val annotations: List<JavaAnnotationRef>
+    public val javadoc: CodeValue
+    public val annotations: List<AnnotationRef>
     public val modifiers: Set<JavaModifier>
 
     public fun hasModifier(modifier: JavaModifier): Boolean = modifier in modifiers
 
-    public val typeVariables: List<JavaTypeRef<JavaTypeVariableName>>
+    public val typeVariables: List<TypeRef<TypeVariableName>>
 
     // TODO super class:
     //  `extends` One if is class,
     //  Nothing if is record, enum, annotation, interface.
 
-    public val superclass: JavaTypeName?
+    public val superclass: TypeName?
 
 
     // TODO super interfaces:
     //  `extends` if is interface,
     //  `implements` others.
 
-    public val superinterfaces: List<JavaTypeName>
+    public val superinterfaces: List<TypeName>
 
     public val fields: List<JavaFieldSpec>
 
-    public val staticBlock: JavaCodeValue
+    public val staticBlock: CodeValue
 
-    public val initializerBlock: JavaCodeValue
+    public val initializerBlock: CodeValue
 
     public val methods: List<JavaMethodSpec>
 
@@ -212,50 +217,50 @@ public sealed class JavaTypeSpecBuilder<B : JavaTypeSpecBuilder<B, T>, T : JavaT
     public val kind: JavaTypeSpec.Kind,
     public val name: String?,
 ) : JavaModifierBuilderContainer,
-    JavaAnnotationRefCollectable<B>,
+    AnnotationRefCollectable<B>,
     BuilderDsl {
     init {
         check(name == null || name.isSourceName()) { "Invalid `name`: $name" }
     }
 
-    internal val javadoc = JavaCodeValue.builder()
-    internal var superclass: JavaTypeName? = null
-    internal val staticBlock = JavaCodeValue.builder()
-    internal val initializerBlock = JavaCodeValue.builder()
+    internal val javadoc = CodeValue.builder()
+    internal var superclass: TypeName? = null
+    internal val staticBlock = CodeValue.builder()
+    internal val initializerBlock = CodeValue.builder()
 
-    internal val annotationRefs: MutableList<JavaAnnotationRef> = mutableListOf()
+    internal val annotationRefs: MutableList<AnnotationRef> = mutableListOf()
     internal val modifiers: JavaModifierSet = JavaModifierSet()
-    internal val typeVariableRefs: MutableList<JavaTypeRef<JavaTypeVariableName>> = mutableListOf()
-    internal val superinterfaces: MutableList<JavaTypeName> = mutableListOf()
+    internal val typeVariableRefs: MutableList<TypeRef<TypeVariableName>> = mutableListOf()
+    internal val superinterfaces: MutableList<TypeName> = mutableListOf()
     internal val fields: MutableList<JavaFieldSpec> = mutableListOf()
     internal val methods: MutableList<JavaMethodSpec> = mutableListOf()
     internal val subtypes: MutableList<JavaTypeSpec> = mutableListOf()
 
     protected abstract val self: B
 
-    public fun addJavadoc(codeValue: JavaCodeValue): B = self.apply {
+    public fun addJavadoc(codeValue: CodeValue): B = self.apply {
         javadoc.add(codeValue)
     }
 
-    public fun superclass(superclass: JavaTypeName): B = self.apply {
+    public fun superclass(superclass: TypeName): B = self.apply {
         check(kind.states.superclassSupport) { "`superclass` is not supported for kind $kind" }
         require(!superclass.isPrimitive) { "`superclass` can't be primitive." }
         this.superclass = superclass
     }
 
-    public fun addStaticBlock(codeValue: JavaCodeValue): B = self.apply {
+    public fun addStaticBlock(codeValue: CodeValue): B = self.apply {
         this.staticBlock.add(codeValue)
     }
 
-    public fun addInitializerBlock(codeValue: JavaCodeValue): B = self.apply {
+    public fun addInitializerBlock(codeValue: CodeValue): B = self.apply {
         this.initializerBlock.add(codeValue)
     }
 
-    override fun addAnnotationRef(ref: JavaAnnotationRef): B = self.apply {
+    override fun addAnnotationRef(ref: AnnotationRef): B = self.apply {
         annotationRefs.add(ref)
     }
 
-    override fun addAnnotationRefs(refs: Iterable<JavaAnnotationRef>): B = self.apply {
+    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): B = self.apply {
         annotationRefs.addAll(refs)
     }
 
@@ -271,29 +276,29 @@ public sealed class JavaTypeSpecBuilder<B : JavaTypeSpecBuilder<B, T>, T : JavaT
         this.modifiers.add(modifier)
     }
 
-    public fun addTypeVariableRefs(vararg typeVariables: JavaTypeRef<JavaTypeVariableName>): B = self.apply {
+    public fun addTypeVariableRefs(vararg typeVariables: TypeRef<TypeVariableName>): B = self.apply {
         this.typeVariableRefs.addAll(typeVariables)
     }
 
-    public fun addTypeVariableRefs(typeVariables: Iterable<JavaTypeRef<JavaTypeVariableName>>): B = self.apply {
+    public fun addTypeVariableRefs(typeVariables: Iterable<TypeRef<TypeVariableName>>): B = self.apply {
         this.typeVariableRefs.addAll(typeVariables)
     }
 
-    public fun addTypeVariableRef(typeVariable: JavaTypeRef<JavaTypeVariableName>): B = self.apply {
+    public fun addTypeVariableRef(typeVariable: TypeRef<TypeVariableName>): B = self.apply {
         this.typeVariableRefs.add(typeVariable)
     }
 
-    public fun addSuperinterfaces(vararg superinterfaces: JavaTypeName): B = self.apply {
+    public fun addSuperinterfaces(vararg superinterfaces: TypeName): B = self.apply {
         checkSuperinterfaceSupport()
         this.superinterfaces.addAll(superinterfaces)
     }
 
-    public fun addSuperinterfaces(superinterfaces: Iterable<JavaTypeName>): B = self.apply {
+    public fun addSuperinterfaces(superinterfaces: Iterable<TypeName>): B = self.apply {
         checkSuperinterfaceSupport()
         this.superinterfaces.addAll(superinterfaces)
     }
 
-    public fun addSuperinterface(superinterface: JavaTypeName): B = self.apply {
+    public fun addSuperinterface(superinterface: TypeName): B = self.apply {
         checkSuperinterfaceSupport()
         this.superinterfaces.add(superinterface)
     }
@@ -351,7 +356,7 @@ public inline fun JavaTypeSpecBuilder<*, *>.addJavadoc(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
 ) {
-    addJavadoc(JavaCodeValue(format, block))
+    addJavadoc(CodeValue(format, block))
 }
 
 
@@ -359,26 +364,27 @@ public inline fun JavaTypeSpecBuilder<*, *>.addStaticBlock(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
 ) {
-    addStaticBlock(JavaCodeValue(format, block))
+    addStaticBlock(CodeValue(format, block))
 }
 
 public inline fun JavaTypeSpecBuilder<*, *>.addInitializerBlock(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
 ) {
-    addInitializerBlock(JavaCodeValue(format, block))
+    addInitializerBlock(CodeValue(format, block))
 }
 
 public inline fun JavaTypeSpecBuilder<*, *>.addField(
-    type: JavaTypeName,
+    type: TypeName,
     name: String,
+    refBlock: JavaTypeRefBuilderDsl<TypeName> = {},
     block: JavaFieldSpecBuilder.() -> Unit = {}
 ) {
-    addField(JavaFieldSpec(type, name, block))
+    addField(JavaFieldSpec(type, name, refBlock, block))
 }
 
 public inline fun JavaTypeSpecBuilder<*, *>.addField(
-    type: JavaTypeRef<*>,
+    type: TypeRef<*>,
     name: String,
     block: JavaFieldSpecBuilder.() -> Unit = {}
 ) {
