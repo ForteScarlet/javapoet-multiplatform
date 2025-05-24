@@ -21,9 +21,10 @@ package love.forte.codegentle.java
 
 import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.code.CodeArgumentPart
+import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.canonicalName
-import love.forte.codegentle.java.JavaFile.Builder
 import love.forte.codegentle.java.internal.JavaFileImpl
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.strategy.JavaWriteStrategy
@@ -39,7 +40,7 @@ import kotlin.jvm.JvmStatic
  */
 public interface JavaFile : JavaCodeEmitter {
 
-    public val fileComment: JavaCodeValue
+    public val fileComment: CodeValue
     public val packageName: String
 
     // TODO types?
@@ -63,84 +64,85 @@ public interface JavaFile : JavaCodeEmitter {
 
     public fun writeTo(out: Appendable, strategy: JavaWriteStrategy)
 
-    public class Builder internal constructor(
-        public val packageName: String,
-        public val type: JavaTypeSpec,
-    ) : BuilderDsl {
-        private val fileComment = JavaCodeValue.builder()
-        private var skipJavaLangImports: Boolean = true
-        private var indent: String = "    "
-        private val staticImports = linkedSetOf<String>()
-
-        public fun addFileComment(format: String, vararg argumentParts: CodeArgumentPart): Builder = apply {
-            addFileComment(JavaCodeValue(format, *argumentParts))
-        }
-
-        public fun addFileComment(codeValue: JavaCodeValue): Builder = apply {
-            fileComment.add(codeValue)
-        }
-
-        public fun addStaticImport(import: String): Builder = apply {
-            staticImports.add(import)
-        }
-
-        public fun addStaticImport(className: ClassName, vararg names: String): Builder = apply {
-            require(names.isNotEmpty()) { "`names` is empty" }
-            for (name in names) {
-                staticImports.add(className.canonicalName + "." + name)
-            }
-        }
-
-        public fun addStaticImport(className: ClassName, names: Iterable<String>): Builder = apply {
-            val iter = names.iterator()
-            require(!iter.hasNext()) { "`names` is empty" }
-
-            for (name in iter) {
-                staticImports.add(className.canonicalName + "." + name)
-            }
-        }
-
-        public fun skipJavaLangImports(skipJavaLangImports: Boolean): Builder = apply {
-            this.skipJavaLangImports = skipJavaLangImports
-        }
-
-        public fun indent(indent: String): Builder = apply {
-            this.indent = indent
-        }
-
-        public fun build(): JavaFile {
-            val alwaysQualify = linkedSetOf<String>()
-
-            // TODO alwaysQualify.addAll(type.alwaysQualifiedNames)
-            //  for (nested in spec.typeSpecs) {
-            //    fillAlwaysQualifiedNames(nested, alwaysQualifiedNames)
-            //  }
-
-
-            return JavaFileImpl(
-                fileComment = fileComment.build(),
-                packageName = packageName,
-                type = type,
-                skipJavaLangImports = skipJavaLangImports,
-                staticImports = LinkedHashSet(staticImports),
-                alwaysQualify = alwaysQualify,
-                indent = indent
-            )
-        }
-    }
-
     public companion object {
 
         @JvmStatic
-        public fun builder(packageName: String, type: JavaTypeSpec): Builder =
-            Builder(packageName, type)
+        public fun builder(packageName: String, type: JavaTypeSpec): JavaFileBuilder =
+            JavaFileBuilder(packageName, type)
 
     }
 }
 
-public inline fun Builder.addFileComment(format: String, block: CodeValueSingleFormatBuilderDsl = {}): Builder = apply {
-    addFileComment(JavaCodeValue(format, block))
+public class JavaFileBuilder internal constructor(
+    public val packageName: String,
+    public val type: JavaTypeSpec,
+) : BuilderDsl {
+    private val fileComment = CodeValue.builder()
+    private var skipJavaLangImports: Boolean = true
+    private var indent: String = "    "
+    private val staticImports = linkedSetOf<String>()
+
+    public fun addFileComment(format: String, vararg argumentParts: CodeArgumentPart): JavaFileBuilder = apply {
+        addFileComment(CodeValue(format, *argumentParts))
+    }
+
+    public fun addFileComment(codeValue: CodeValue): JavaFileBuilder = apply {
+        fileComment.add(codeValue)
+    }
+
+    public fun addStaticImport(import: String): JavaFileBuilder = apply {
+        staticImports.add(import)
+    }
+
+    public fun addStaticImport(className: ClassName, vararg names: String): JavaFileBuilder = apply {
+        require(names.isNotEmpty()) { "`names` is empty" }
+        for (name in names) {
+            staticImports.add(className.canonicalName + "." + name)
+        }
+    }
+
+    public fun addStaticImport(className: ClassName, names: Iterable<String>): JavaFileBuilder = apply {
+        val iter = names.iterator()
+        require(!iter.hasNext()) { "`names` is empty" }
+
+        for (name in iter) {
+            staticImports.add(className.canonicalName + "." + name)
+        }
+    }
+
+    public fun skipJavaLangImports(skipJavaLangImports: Boolean): JavaFileBuilder = apply {
+        this.skipJavaLangImports = skipJavaLangImports
+    }
+
+    public fun indent(indent: String): JavaFileBuilder = apply {
+        this.indent = indent
+    }
+
+    public fun build(): JavaFile {
+        val alwaysQualify = linkedSetOf<String>()
+
+        // TODO
+        //  alwaysQualify.addAll(type.alwaysQualifiedName)
+        //  for (nested in spec.typeSpecs) {
+        //    fillAlwaysQualifiedNames(nested, alwaysQualifiedNames)
+        //  }
+
+
+        return JavaFileImpl(
+            fileComment = fileComment.build(),
+            packageName = packageName,
+            type = type,
+            skipJavaLangImports = skipJavaLangImports,
+            staticImports = LinkedHashSet(staticImports),
+            alwaysQualify = alwaysQualify,
+            indent = indent
+        )
+    }
 }
 
-public inline fun JavaFile(packageName: String, type: JavaTypeSpec, block: Builder.() -> Unit = {}): JavaFile =
+public inline fun JavaFileBuilder.addFileComment(format: String, block: CodeValueSingleFormatBuilderDsl = {}): JavaFileBuilder = apply {
+    addFileComment(CodeValue(format, block))
+}
+
+public inline fun JavaFile(packageName: String, type: JavaTypeSpec, block: JavaFileBuilder.() -> Unit = {}): JavaFile =
     JavaFile.builder(packageName, type).also(block).build()

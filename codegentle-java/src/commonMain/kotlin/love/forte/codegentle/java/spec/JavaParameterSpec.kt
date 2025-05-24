@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-@file:JvmName("JavaParameterSpecs")
-@file:JvmMultifileClass
-
 package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.code.CodeArgumentPart
@@ -31,8 +28,6 @@ import love.forte.codegentle.java.JavaModifierBuilderContainer
 import love.forte.codegentle.java.JavaModifierSet
 import love.forte.codegentle.java.spec.internal.JavaParameterSpecImpl
 import love.forte.codegentle.java.writer.JavaCodeWriter
-import kotlin.jvm.JvmMultifileClass
-import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
 /**

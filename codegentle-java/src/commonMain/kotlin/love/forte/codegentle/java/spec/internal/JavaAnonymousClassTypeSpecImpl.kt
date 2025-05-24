@@ -1,19 +1,19 @@
 package love.forte.codegentle.java.spec.internal
 
+import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.isEmpty
-import love.forte.codegentle.java.JavaCodeValue
+import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.naming.TypeVariableName
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.internal.doEmit
 import love.forte.codegentle.java.internal.emitMembers
-import love.forte.codegentle.java.naming.JavaTypeName
-import love.forte.codegentle.java.naming.JavaTypeVariableName
-import love.forte.codegentle.java.ref.JavaAnnotationRef
-import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.spec.JavaAnonymousClassTypeSpec
 import love.forte.codegentle.java.spec.JavaFieldSpec
 import love.forte.codegentle.java.spec.JavaMethodSpec
 import love.forte.codegentle.java.spec.JavaTypeSpec
-import love.forte.codegentle.java.type
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import love.forte.codegentle.java.writer.emit
 import love.forte.codegentle.java.writer.emitToString
@@ -21,16 +21,16 @@ import love.forte.codegentle.java.writer.emitToString
 
 internal class JavaAnonymousClassTypeSpecImpl(
     override val kind: JavaTypeSpec.Kind,
-    override val anonymousTypeArguments: JavaCodeValue,
-    override val javadoc: JavaCodeValue,
-    override val annotations: List<JavaAnnotationRef>,
+    override val anonymousTypeArguments: CodeValue,
+    override val javadoc: CodeValue,
+    override val annotations: List<AnnotationRef>,
     override val modifiers: Set<JavaModifier>,
-    override val typeVariables: List<JavaTypeRef<JavaTypeVariableName>>,
-    override val superclass: JavaTypeName?,
-    override val superinterfaces: List<JavaTypeName>,
+    override val typeVariables: List<TypeRef<TypeVariableName>>,
+    override val superclass: TypeName?,
+    override val superinterfaces: List<TypeName>,
     override val fields: List<JavaFieldSpec>,
-    override val staticBlock: JavaCodeValue,
-    override val initializerBlock: JavaCodeValue,
+    override val staticBlock: CodeValue,
+    override val initializerBlock: CodeValue,
     override val methods: List<JavaMethodSpec>,
     override val subtypes: List<JavaTypeSpec>
 ) : JavaAnonymousClassTypeSpec {
@@ -38,12 +38,15 @@ internal class JavaAnonymousClassTypeSpecImpl(
     override fun emit(codeWriter: JavaCodeWriter, enumName: String?, implicitModifiers: Set<JavaModifier>) {
         doEmit(codeWriter) {
             if (enumName != null) {
-                javadoc.emit(codeWriter)
+                // TODO emit javadoc?
+                codeWriter.emit(javadoc)
+                // javadoc.emit(codeWriter)
                 codeWriter.emitAnnotationRefs(annotations, false)
                 codeWriter.emit(enumName)
                 if (!anonymousTypeArguments.isEmpty) {
                     codeWriter.emit("(")
-                    anonymousTypeArguments.emit(codeWriter)
+                    codeWriter.emit(anonymousTypeArguments)
+                    // anonymousTypeArguments.emit(codeWriter)
                     codeWriter.emit(")")
                 }
                 if (fields.isEmpty() && methods.isEmpty() && subtypes.isEmpty()) {
@@ -55,7 +58,8 @@ internal class JavaAnonymousClassTypeSpecImpl(
                     ?: superclass
 
                 codeWriter.emit("new %V(") { type(supertype!!) }
-                anonymousTypeArguments.emit(codeWriter)
+                codeWriter.emit(anonymousTypeArguments)
+                // anonymousTypeArguments.emit(codeWriter)
                 codeWriter.emit(") {\n")
             }
 

@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-@file:JvmName("JavaFieldSpecs")
-@file:JvmMultifileClass
-
 package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.code.CodeArgumentPart
@@ -35,8 +32,6 @@ import love.forte.codegentle.java.ref.JavaTypeRefBuilderDsl
 import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.internal.JavaFieldSpecImpl
 import love.forte.codegentle.java.writer.JavaCodeWriter
-import kotlin.jvm.JvmMultifileClass
-import kotlin.jvm.JvmName
 
 
 /**

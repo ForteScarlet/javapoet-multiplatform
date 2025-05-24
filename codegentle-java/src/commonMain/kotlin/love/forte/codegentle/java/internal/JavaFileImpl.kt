@@ -1,10 +1,10 @@
 package love.forte.codegentle.java.internal
 
+import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.isEmpty
+import love.forte.codegentle.common.code.type
 import love.forte.codegentle.common.naming.ClassName
-import love.forte.codegentle.java.JavaCodeValue
 import love.forte.codegentle.java.JavaFile
-import love.forte.codegentle.java.literal
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.strategy.JavaWriteStrategy
 import love.forte.codegentle.java.strategy.ToStringJavaWriteStrategy
@@ -19,7 +19,7 @@ private object NullAppendable : Appendable {
 }
 
 internal class JavaFileImpl(
-    override val fileComment: JavaCodeValue,
+    override val fileComment: CodeValue,
     override val packageName: String,
     override val type: JavaTypeSpec,
     override val skipJavaLangImports: Boolean,
@@ -83,7 +83,7 @@ internal class JavaFileImpl(
                     continue
                 }
                 codeWriter.emit("import %V;\n") {
-                    literal(className.toString())
+                    type(className)
                 }
                 importedTypesCount++
             }

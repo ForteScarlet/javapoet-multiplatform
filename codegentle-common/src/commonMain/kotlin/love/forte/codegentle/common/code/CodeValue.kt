@@ -4,14 +4,13 @@ import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.code.internal.CodeValueImpl
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.ref.TypeRef
-import love.forte.codegentle.common.writer.CodeEmitter
 import kotlin.jvm.JvmStatic
 
 /**
  *
  * @author ForteScarlet
  */
-public interface CodeValue : CodeEmitter {
+public interface CodeValue {
     public val parts: List<CodePart>
 
     public companion object {
@@ -52,14 +51,10 @@ public fun CodeValueSingleFormatBuilder.string(value: String?): CodeValueSingleF
     value(CodePart.string(value))
 
 public fun CodeValueSingleFormatBuilder.type(type: TypeName): CodeValueSingleFormatBuilder =
-    // TODO Type -> Ref?
     value(CodePart.type(type))
 
 public fun CodeValueSingleFormatBuilder.type(type: TypeRef<*>): CodeValueSingleFormatBuilder =
-    // TODO Type -> Ref?
     value(CodePart.type(type))
-
-// TODO JVM
 
 public fun CodeValueSingleFormatBuilder.indent(levels: Int = 1): CodeValueSingleFormatBuilder =
     value(CodePart.indent(levels))

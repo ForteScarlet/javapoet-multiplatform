@@ -1,16 +1,16 @@
 package love.forte.codegentle.java.spec.internal
 
-import love.forte.codegentle.java.JavaCodeValue
+import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.literal
+import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.naming.TypeVariableName
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.internal.doEmit
 import love.forte.codegentle.java.internal.emitImplements
 import love.forte.codegentle.java.internal.emitMembers
 import love.forte.codegentle.java.internal.toVirtualTypeSpec
-import love.forte.codegentle.java.literal
-import love.forte.codegentle.java.naming.JavaTypeName
-import love.forte.codegentle.java.naming.JavaTypeVariableName
-import love.forte.codegentle.java.ref.JavaAnnotationRef
-import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.spec.*
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import love.forte.codegentle.java.writer.emit
@@ -21,14 +21,14 @@ internal class JavaEnumTypeSpecImpl(
     override val name: String,
     override val kind: JavaTypeSpec.Kind,
     override val enumConstants: Map<String, JavaAnonymousClassTypeSpec>,
-    override val javadoc: JavaCodeValue,
-    override val annotations: List<JavaAnnotationRef>,
+    override val javadoc: CodeValue,
+    override val annotations: List<AnnotationRef>,
     override val modifiers: Set<JavaModifier>,
-    override val typeVariables: List<JavaTypeRef<JavaTypeVariableName>>,
-    override val superinterfaces: List<JavaTypeName>,
+    override val typeVariables: List<TypeRef<TypeVariableName>>,
+    override val superinterfaces: List<TypeName>,
     override val fields: List<JavaFieldSpec>,
-    override val staticBlock: JavaCodeValue,
-    override val initializerBlock: JavaCodeValue,
+    override val staticBlock: CodeValue,
+    override val initializerBlock: CodeValue,
     override val methods: List<JavaMethodSpec>,
     override val subtypes: List<JavaTypeSpec>
 ) : JavaEnumTypeSpec {
@@ -37,7 +37,9 @@ internal class JavaEnumTypeSpecImpl(
         doEmit(codeWriter) {
             codeWriter.pushType(this.toVirtualTypeSpec(name))
 
-            javadoc.emit(codeWriter)
+            codeWriter.emit(javadoc)
+            // javadoc.emit(codeWriter)
+
             codeWriter.emitAnnotationRefs(annotations, false)
             codeWriter.emitModifiers(modifiers, implicitModifiers + kind.asMemberModifiers)
             codeWriter.emit("enum %V") {

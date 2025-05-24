@@ -23,7 +23,7 @@ kotlin {
             "love.forte.codegentle.common.naming.CodeGentleNamingImplementation",
             "love.forte.codegentle.common.ref.CodeGentleRefImplementation",
             "love.forte.codegentle.common.writer.CodeGentleCodeWriterImplementation",
-            // java
+            // Java
             "love.forte.codegentle.java.InternalJavaCodeGentleApi",
             "love.forte.codegentle.java.spec.CodeGentleJavaSpecImplementation"
         )

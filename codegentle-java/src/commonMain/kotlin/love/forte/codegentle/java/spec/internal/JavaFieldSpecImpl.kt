@@ -1,12 +1,12 @@
 package love.forte.codegentle.java.spec.internal
 
+import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.isEmpty
-import love.forte.codegentle.java.JavaCodeValue
+import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.java.JavaModifier
-import love.forte.codegentle.java.ref.JavaAnnotationRef
-import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.spec.JavaFieldSpec
-import love.forte.codegentle.java.type
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import love.forte.codegentle.java.writer.emit
 import love.forte.codegentle.java.writer.emitToString
@@ -17,12 +17,12 @@ import love.forte.codegentle.java.writer.emitToString
  * @author ForteScarlet
  */
 internal class JavaFieldSpecImpl internal constructor(
-    override val type: JavaTypeRef<*>,
+    override val type: TypeRef<*>,
     override val name: String,
-    override val javadoc: JavaCodeValue,
-    override val annotations: List<JavaAnnotationRef>,
+    override val javadoc: CodeValue,
+    override val annotations: List<AnnotationRef>,
     override val modifiers: Set<JavaModifier>,
-    override val initializer: JavaCodeValue
+    override val initializer: CodeValue
 ) : JavaFieldSpec {
 
     override fun emit(codeWriter: JavaCodeWriter, implicitModifiers: Set<JavaModifier>) {
@@ -34,7 +34,7 @@ internal class JavaFieldSpecImpl internal constructor(
         }
         if (!initializer.isEmpty) {
             codeWriter.emit(" = ")
-            initializer.emit(codeWriter)
+            codeWriter.emit(initializer)
         }
         codeWriter.emit(";\n")
     }

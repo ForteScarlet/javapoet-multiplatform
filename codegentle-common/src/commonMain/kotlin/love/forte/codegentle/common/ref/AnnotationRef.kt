@@ -8,17 +8,24 @@ import love.forte.codegentle.common.ref.internal.AnnotationRefImpl
 /**
  * A reference to an annotation.
  *
+ * Should be emitted as [love.forte.codegentle.common.code.CodeArgumentPart.Literal]
+ *
  * @author ForteScarlet
  */
 @SubclassOptInRequired(CodeGentleRefImplementation::class)
-public interface AnnotationRef : TypeRef<ClassName> {
-    override val typeName: ClassName
+public interface AnnotationRef {
+    public val typeName: ClassName
     public val members: Map<String, List<CodeValue>>
-
-    override val status: TypeNameRefStatus
-        get() = EmptyTypeNameRefStatus
 }
 
+/**
+ * Constructs an [AnnotationRef] instance based on the current [ClassName].
+ *
+ * @param block An optional lambda receiver of type [AnnotationRefBuilder]
+ *              that can be used to configure the [AnnotationRef].
+ *              If no block is provided, a default empty block is used.
+ * @return An instance of [AnnotationRef] constructed using the [AnnotationRefBuilder].
+ */
 public inline fun ClassName.annotationRef(block: AnnotationRefBuilder.() -> Unit = {}): AnnotationRef {
     return AnnotationRefBuilder(this@annotationRef).apply {
         block()

@@ -1,15 +1,19 @@
 package love.forte.codegentle.java.spec.internal
 
+import love.forte.codegentle.common.code.CodePart.Companion.literal
+import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.isEmpty
-import love.forte.codegentle.common.ref.javaRef
-import love.forte.codegentle.java.*
+import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.code.zeroWidthSpace
+import love.forte.codegentle.common.naming.TypeVariableName
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.TypeRef
+import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.naming.JavaPrimitiveTypeNames
-import love.forte.codegentle.java.naming.JavaTypeVariableName
-import love.forte.codegentle.java.ref.JavaAnnotationRef
-import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.JavaMethodSpec
 import love.forte.codegentle.java.spec.JavaParameterSpec
+import love.forte.codegentle.java.writer.JavaCodeValueEmitOption
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import love.forte.codegentle.java.writer.emit
 import love.forte.codegentle.java.writer.emitToString
@@ -17,19 +21,20 @@ import love.forte.codegentle.java.writer.emitToString
 
 internal class JavaMethodSpecImpl(
     override val name: String,
-    override val javadoc: JavaCodeValue,
-    override val annotations: List<JavaAnnotationRef>,
+    override val javadoc: CodeValue,
+    override val annotations: List<AnnotationRef>,
     override val modifiers: Set<JavaModifier>,
-    override val typeVariables: List<JavaTypeRef<JavaTypeVariableName>>,
-    override val returnType: JavaTypeRef<*>?,
+    override val typeVariables: List<TypeRef<TypeVariableName>>,
+    override val returnType: TypeRef<*>?,
     override val parameters: List<JavaParameterSpec>,
     override val isVarargs: Boolean,
-    override val exceptions: List<JavaTypeRef<*>>,
-    override val code: JavaCodeValue,
-    override val defaultValue: JavaCodeValue,
+    override val exceptions: List<TypeRef<*>>,
+    override val code: CodeValue,
+    override val defaultValue: CodeValue,
 ) : JavaMethodSpec {
     override fun emit(codeWriter: JavaCodeWriter, name: String?, implicitModifiers: Set<JavaModifier>) {
-        javadocWithParameters().emit(codeWriter)
+        codeWriter.emit(javadocWithParameters())
+        // javadocWithParameters().emit(codeWriter)
         codeWriter.emitAnnotationRefs(annotations, false)
         codeWriter.emitModifiers(modifiers, implicitModifiers)
 
@@ -66,7 +71,8 @@ internal class JavaMethodSpecImpl(
 
         if (!defaultValue.isEmpty) {
             codeWriter.emit(" default ")
-            defaultValue.emit(codeWriter)
+            codeWriter.emit(defaultValue)
+            // defaultValue.emit(codeWriter)
         }
 
         if (exceptions.isNotEmpty()) {
@@ -91,7 +97,8 @@ internal class JavaMethodSpecImpl(
 
             hasModifier(JavaModifier.NATIVE) -> {
                 // Code is allowed to support stuff like GWT JSNI.
-                code.emit(codeWriter)
+                codeWriter.emit(code)
+                // code.emit(codeWriter)
                 codeWriter.emit(";\n")
             }
 
@@ -99,7 +106,8 @@ internal class JavaMethodSpecImpl(
                 codeWriter.emit(" {\n")
 
                 codeWriter.indent()
-                code.emit(codeWriter, true)
+                codeWriter.emit(code, JavaCodeValueEmitOption.EnsureTrailingNewline)
+                // code.emitTo(codeWriter, true)
                 codeWriter.unindent()
 
                 codeWriter.emit("}\n")
@@ -108,10 +116,10 @@ internal class JavaMethodSpecImpl(
         codeWriter.popTypeVariableRefs(typeVariables)
     }
 
-    private fun javadocWithParameters(): JavaCodeValue {
+    private fun javadocWithParameters(): CodeValue {
         if (parameters.isEmpty()) return javadoc
 
-        val builder = JavaCodeValue.builder().add(javadoc)
+        val builder = CodeValue.builder().add(javadoc)
         var emitTagNewline = true
         for (parameter in parameters) {
             val parameterDoc = parameter.javadoc

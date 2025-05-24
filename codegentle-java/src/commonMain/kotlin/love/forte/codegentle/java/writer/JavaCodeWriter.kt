@@ -42,6 +42,8 @@ import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.strategy.DefaultJavaWriteStrategy
 import love.forte.codegentle.java.strategy.JavaWriteStrategy
 import love.forte.codegentle.java.strategy.ToStringJavaWriteStrategy
+import love.forte.codegentle.java.writer.JavaTypeRefEmitOption.AnnotationOptions
+import love.forte.codegentle.java.writer.JavaTypeRefEmitOption.TypeNameOptions
 
 
 @OptIn(InternalWriterApi::class)
@@ -225,7 +227,7 @@ public class JavaCodeWriter private constructor(
     internal fun emitLiteral(value: Any?) {
         when (value) {
             is AnnotationRef -> {
-                emit(value, StandardAnnotationRefEmitOption.Inline)
+                emit(value, CommonAnnotationRefEmitOption.Inline)
             }
 
             is JavaCodeEmitter -> {
@@ -241,7 +243,8 @@ public class JavaCodeWriter private constructor(
     }
 
     override fun emit(code: CodeValue, vararg options: CodeValueEmitOption) {
-        code.emitTo(this)
+        val ensureTrailingNewline = options.contains(JavaCodeValueEmitOption.EnsureTrailingNewline)
+        code.emitTo(this, ensureTrailingNewline)
     }
 
     override fun emit(typeName: TypeName, vararg options: TypeNameEmitOption) {
@@ -268,28 +271,35 @@ public class JavaCodeWriter private constructor(
     }
 
     override fun emit(annotationRef: AnnotationRef, vararg options: AnnotationRefEmitOption) {
-        val inline = options.contains(StandardAnnotationRefEmitOption.Inline)
+        val inline = options.contains(CommonAnnotationRefEmitOption.Inline)
+        // TODO inline?
         annotationRef.emitTo(this)
     }
 
     override fun emit(typeRef: TypeRef<*>, vararg options: TypeRefEmitOption) {
-        if (typeRef is AnnotationRef) {
-            emit(annotationRef = typeRef)
-            return
+        val typeNameOptions = mutableListOf<TypeNameEmitOption>()
+        val annotationOptions = mutableListOf<AnnotationRefEmitOption>()
+
+        for (option in options) {
+            when (option) {
+                is TypeNameOptions -> typeNameOptions.addAll(option.options)
+                is AnnotationOptions -> annotationOptions.addAll(option.options)
+            }
         }
 
+        val isVararg = options.contains(TypeNameOptions(JavaTypeNameEmitOption.Vararg))
         // typeRef.emitAnnotations(this)
         typeRef.status.javaOrNull?.annotations?.forEach { annotation ->
-            emit(annotation, StandardAnnotationRefEmitOption.Inline)
+            // emit(annotation, CommonAnnotationRefEmitOption.Inline)
+            emit(annotation, *annotationOptions.toTypedArray())
             emit(" ")
         }
-        emit(typeRef.typeName)
+        emit(typeRef.typeName, *typeNameOptions.toTypedArray())
     }
 
     override fun emitAndIndent(s: String) {
         var first = true
-        val lines = s.lines()
-        for (line in lines) {
+        for (line in s.lineSequence()) {
             // Emit a newline character. Make sure blank lines in Javadoc & comments look good.
             if (!first) {
                 // if ((javadoc || comment) && trailingNewline) {

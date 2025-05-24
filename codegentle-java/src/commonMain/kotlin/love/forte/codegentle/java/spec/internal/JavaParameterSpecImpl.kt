@@ -1,30 +1,33 @@
 package love.forte.codegentle.java.spec.internal
 
-import love.forte.codegentle.java.JavaCodeValue
+import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.java.JavaModifier
-import love.forte.codegentle.java.naming.JavaArrayTypeName
-import love.forte.codegentle.java.ref.JavaAnnotationRef
-import love.forte.codegentle.java.ref.JavaTypeRef
 import love.forte.codegentle.java.spec.JavaParameterSpec
 import love.forte.codegentle.java.writer.JavaCodeWriter
+import love.forte.codegentle.java.writer.JavaTypeNameEmitOption.Vararg
+import love.forte.codegentle.java.writer.JavaTypeRefEmitOption.TypeNameOptions
 import love.forte.codegentle.java.writer.emitToString
 
 
 internal class JavaParameterSpecImpl internal constructor(
-    override val type: JavaTypeRef<*>,
+    override val type: TypeRef<*>,
     override val name: String,
-    override val annotations: List<JavaAnnotationRef>,
+    override val annotations: List<AnnotationRef>,
     override val modifiers: Set<JavaModifier>,
-    override val javadoc: JavaCodeValue,
+    override val javadoc: CodeValue,
 ) : JavaParameterSpec {
     override fun emit(codeWriter: JavaCodeWriter, vararg: Boolean) {
         codeWriter.emitAnnotationRefs(annotations, true)
         codeWriter.emitModifiers(modifiers)
 
         if (vararg) {
-            (type as JavaArrayTypeName).emit(codeWriter, true)
+            codeWriter.emit(type, TypeNameOptions(Vararg))
+            // (type as ArrayTypeName).emitTo(codeWriter, true)
         } else {
-            type.emit(codeWriter)
+            codeWriter.emit(type)
+            // type.emit(codeWriter)
         }
 
         codeWriter.emit(" $name")

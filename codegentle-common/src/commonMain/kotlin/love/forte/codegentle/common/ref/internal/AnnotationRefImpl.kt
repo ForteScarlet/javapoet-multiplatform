@@ -13,4 +13,3 @@ internal data class AnnotationRefImpl(
     override val members: Map<String, List<CodeValue>>
 ) : AnnotationRef
 
-// TODO emit to string

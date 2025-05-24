@@ -11,7 +11,7 @@ import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
  */
 @SubclassOptInRequired(CodeGentleRefImplementation::class)
 public interface AnnotationRefBuildable<B : AnnotationRefBuildable<B>> : BuilderDsl {
-    // members: MutableMap<String, MutableList<JavaCodeValue>>
+    // expect: members: MutableMap<String, MutableList<JavaCodeValue>>
 
     public fun addMember(name: String, codeValue: CodeValue): B
 

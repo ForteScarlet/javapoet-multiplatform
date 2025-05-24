@@ -15,56 +15,20 @@
  */
 package love.forte.codegentle.java.naming
 
+import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.naming.EmptyWildcardTypeName
 import love.forte.codegentle.common.naming.LowerWildcardTypeName
 import love.forte.codegentle.common.naming.UpperWildcardTypeName
 import love.forte.codegentle.common.naming.WildcardTypeName
-import love.forte.codegentle.java.type
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import love.forte.codegentle.java.writer.emit
-
-
-//
-//
-// public sealed interface JavaWildcardTypeName : JavaTypeName {
-//     public val bounds: List<TypeRef<*>>
-//     // public val upperBounds: List<JavaTypeName> // ? extends T1 & T2
-//     // public val lowerBounds: List<JavaTypeName> // ? super T1 & T2
-// }
-//
-// public interface JavaSubtypeWildcardTypeName : JavaWildcardTypeName, UpperWildcardTypeName {
-//     // lowerBounds, ? super A
-//     public val lowerBounds: List<TypeRef<*>>
-//         get() = bounds
-// }
-//
-// public interface JavaSupertypeWildcardTypeName : JavaWildcardTypeName, LowerWildcardTypeName {
-//     // upperBounds, ? extends A & B,
-//     // 接口在后，类在前
-//     public val upperBounds: List<TypeRef<*>>
-//         get() = bounds
-// }
-//
-// @JvmName("of")
-// public fun JavaSubtypeWildcardTypeName(upperBound: TypeRef<*>): JavaSubtypeWildcardTypeName =
-//     JavaSubtypeWildcardTypeName(listOf(upperBound))
-//
-// @JvmName("of")
-// public fun JavaSupertypeWildcardTypeName(lowerBound: TypeRef<*>): JavaSupertypeWildcardTypeName =
-//     JavaSupertypeWildcardTypeName(listOf(lowerBound))
-//
-// @JvmName("of")
-// public fun JavaSubtypeWildcardTypeName(upperBounds: List<TypeRef<*>>): JavaSubtypeWildcardTypeName =
-//     JavaSubtypeWildcardTypeNameImpl(upperBounds)
-//
-// @JvmName("of")
-// public fun JavaSupertypeWildcardTypeName(lowerBounds: List<TypeRef<*>>): JavaSupertypeWildcardTypeName =
-//     JavaSupertypeWildcardTypeNameImpl(lowerBounds)
 
 
 internal fun WildcardTypeName.emitTo(codeWriter: JavaCodeWriter) {
     when (this) {
         is LowerWildcardTypeName -> emitTo(codeWriter)
         is UpperWildcardTypeName -> emitTo(codeWriter)
+        EmptyWildcardTypeName -> TODO()
     }
 }
 

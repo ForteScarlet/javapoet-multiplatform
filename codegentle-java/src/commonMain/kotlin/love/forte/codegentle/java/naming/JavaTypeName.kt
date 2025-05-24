@@ -20,12 +20,6 @@ import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.TypeName
 
 /**
- * A type name represented in Java。
- */
-// public interface JavaTypeName : PlatformTypeName, JavaCodeEmitter
-
-
-/**
  * Indicates whether this `TypeName` represents a primitive type in Java,
  * excluding the `void` type.
  *

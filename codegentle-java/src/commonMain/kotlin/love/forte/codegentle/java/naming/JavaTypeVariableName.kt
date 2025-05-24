@@ -20,39 +20,6 @@ import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.java.writer.JavaCodeWriter
 
 
-// public interface JavaTypeVariableName : JavaTypeName, TypeVariableName {
-//     override val name: String
-//     override val bounds: List<TypeRef<*>>
-//
-//     public fun withBounds(bounds: List<TypeRef<*>>): JavaTypeVariableName
-//
-//     public fun withBounds(vararg bounds: TypeRef<*>): JavaTypeVariableName {
-//         return withBounds(bounds.asList())
-//     }
-// }
-//
-// /**
-//  * Returns type variable named `name` without bounds.
-//  */
-// @JvmName("of")
-// public fun JavaTypeVariableName(name: String): JavaTypeVariableName =
-//     JavaTypeVariableNameImpl(name)
-//
-// /**
-//  * Returns type variable named `name` with `bounds`.
-//  */
-// @JvmName("of")
-// public fun JavaTypeVariableName(name: String, vararg bounds: TypeRef<*>): JavaTypeVariableName =
-//     JavaTypeVariableNameImpl(name, bounds.asList())
-//
-// /**
-//  * Returns type variable named `name` with `bounds`.
-//  */
-// @JvmName("of")
-// public fun JavaTypeVariableName(name: String, bounds: Iterable<TypeRef<*>>): JavaTypeVariableName =
-//     JavaTypeVariableNameImpl(name, bounds.toList())
-
-
 internal fun TypeVariableName.emitTo(codeWriter: JavaCodeWriter) {
     codeWriter.emitAndIndent(name)
 }

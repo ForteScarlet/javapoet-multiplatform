@@ -69,7 +69,7 @@ public inline fun <C : CodeWriter> C.withIndent(
 }
 
 
-public interface Import : CodeEmitter {
+public interface Import {
     // import a.b.c.d.$name1.$name2;
     // import static a.b.c.d.$name1.$name2;
     public val packageName: String?

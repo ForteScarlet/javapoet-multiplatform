@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-@file:JvmName("JavaMethodSpecs")
-@file:JvmMultifileClass
-
 package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.BuilderDsl
@@ -40,8 +37,6 @@ import love.forte.codegentle.java.ref.JavaTypeRefBuilderDsl
 import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.internal.JavaMethodSpecImpl
 import love.forte.codegentle.java.writer.JavaCodeWriter
-import kotlin.jvm.JvmMultifileClass
-import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
 

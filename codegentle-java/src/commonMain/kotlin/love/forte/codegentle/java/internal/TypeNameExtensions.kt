@@ -1,16 +1,16 @@
 package love.forte.codegentle.java.internal
 
 import love.forte.codegentle.common.code.isEmpty
+import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.naming.JavaClassNames
-import love.forte.codegentle.java.naming.JavaTypeName
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.spec.internal.JavaSimpleTypeSpecImpl
-import love.forte.codegentle.java.type
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import love.forte.codegentle.java.writer.emit
 
-internal inline fun JavaTypeSpec.doEmit(
+internal inline fun doEmit(
     codeWriter: JavaCodeWriter,
     block: () -> Unit
 ) {
@@ -33,8 +33,8 @@ private fun JavaCodeWriter.newLineIfNot(condition: Boolean) {
 }
 
 internal fun JavaTypeSpec.emitSupers(codeWriter: JavaCodeWriter) {
-    val extendsTypes: List<JavaTypeName>
-    val implementsTypes: List<JavaTypeName>
+    val extendsTypes: List<TypeName>
+    val implementsTypes: List<TypeName>
 
     if (kind == JavaTypeSpec.Kind.INTERFACE) {
         extendsTypes = superinterfaces
@@ -53,7 +53,7 @@ internal fun JavaTypeSpec.emitSupers(codeWriter: JavaCodeWriter) {
     codeWriter.emitImplements(implementsTypes)
 }
 
-internal fun JavaCodeWriter.emitExtends(extendsTypes: List<JavaTypeName>) {
+internal fun JavaCodeWriter.emitExtends(extendsTypes: List<TypeName>) {
     if (extendsTypes.isNotEmpty()) {
         emit(" extends")
         var firstType = true
@@ -67,7 +67,7 @@ internal fun JavaCodeWriter.emitExtends(extendsTypes: List<JavaTypeName>) {
     }
 }
 
-internal fun JavaCodeWriter.emitImplements(implementsTypes: List<JavaTypeName>) {
+internal fun JavaCodeWriter.emitImplements(implementsTypes: List<TypeName>) {
     if (implementsTypes.isNotEmpty()) {
         emit(" implements")
         var firstType = true
@@ -103,7 +103,8 @@ internal inline fun JavaTypeSpec.emitMembers(
     // Static block
     if (!staticBlock.isEmpty) {
         codeWriter.newLineIfNot(firstMember)
-        staticBlock.emit(codeWriter)
+        codeWriter.emit(staticBlock)
+        // staticBlock.emit(codeWriter)
         firstMember = false
     }
 
@@ -119,10 +120,10 @@ internal inline fun JavaTypeSpec.emitMembers(
     if (!initializerBlock.isEmpty) {
         if (!isRecord) {
             codeWriter.newLineIfNot(firstMember)
-            initializerBlock.emit(codeWriter)
+            codeWriter.emit(initializerBlock)
+            // initializerBlock.emit(codeWriter)
         } else {
-            //
-
+            // TODO record?
 
         }
         firstMember = false

@@ -40,7 +40,7 @@ private class AnnotationMirrorVisitor(
 
     override fun visitAnnotation(annotationMirror: AnnotationMirror, name: String): AnnotationRefBuilder {
         return builder.addMember(name, "%V") {
-            type(annotationMirror.toAnnotationRef())
+            literal(annotationMirror.toAnnotationRef())
         }
     }
 

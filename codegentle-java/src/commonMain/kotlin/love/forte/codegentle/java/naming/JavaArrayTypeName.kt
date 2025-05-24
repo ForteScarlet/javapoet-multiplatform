@@ -14,42 +14,10 @@
  * limitations under the License.
  */
 
-@file:JvmName("JavaArrayTypeNames")
-@file:JvmMultifileClass
-
 package love.forte.codegentle.java.naming
 
 import love.forte.codegentle.common.naming.ArrayTypeName
 import love.forte.codegentle.java.writer.JavaCodeWriter
-import kotlin.jvm.JvmMultifileClass
-import kotlin.jvm.JvmName
-
-//
-// /**
-//  *
-//  *
-//  */
-// public interface JavaArrayTypeName : JavaTypeName, ArrayTypeName {
-//     override val componentType: JavaTypeRef<*>
-//
-//     override fun emit(codeWriter: JavaCodeWriter) {
-//         emit(codeWriter, false)
-//     }
-//
-//     @InternalJavaCodeGentleApi
-//     public fun emit(codeWriter: JavaCodeWriter, varargs: Boolean)
-// }
-//
-// @JvmName("of")
-// public fun JavaArrayTypeName(componentType: JavaTypeRef<*>): JavaArrayTypeName =
-//     JavaArrayTypeNameImpl(componentType)
-
-
-// public inline fun <T : JavaTypeName> JavaArrayTypeName(
-//     componentType: T,
-//     block: JavaTypeRefBuilder<T>.() -> Unit = {}
-// ): JavaArrayTypeName =
-//     JavaArrayTypeName(componentType.javaRef(block))
 
 public fun ArrayTypeName.emitTo(codeWriter: JavaCodeWriter, varargs: Boolean) {
     emitLeafType(codeWriter)

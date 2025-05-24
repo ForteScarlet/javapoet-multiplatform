@@ -19,5 +19,3 @@ import kotlin.jvm.JvmName
  */
 @SubclassOptInRequired(CodeGentleNamingImplementation::class)
 public interface TypeName : Naming
-
-public interface PlatformTypeName : TypeName

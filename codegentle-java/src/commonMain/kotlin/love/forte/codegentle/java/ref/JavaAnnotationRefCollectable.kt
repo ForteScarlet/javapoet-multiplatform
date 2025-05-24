@@ -10,35 +10,6 @@ import love.forte.codegentle.common.ref.addAnnotationRef
 import love.forte.codegentle.common.ref.addMember
 import love.forte.codegentle.java.naming.JavaAnnotationNames
 
-//
-// /**
-//  *
-//  *
-//  * ```Kotlin
-//  * builder {
-//  *    addAnnotationRef(...)
-//  * }
-//  * ```
-//  *
-//  *
-//  * @author ForteScarlet
-//  */
-// public interface JavaAnnotationRefCollectable<B : JavaAnnotationRefCollectable<B>> : BuilderDsl {
-//     // private val annotations: MutableList<JavaAnnotationRef> = mutableListOf()
-//
-//     public fun addAnnotationRef(ref: JavaAnnotationRef): B
-//
-//     public fun addAnnotationRefs(refs: Iterable<JavaAnnotationRef>): B
-//
-//     public fun addAnnotationRefs(vararg refs: JavaAnnotationRef): B =
-//         addAnnotationRefs(refs.asList())
-// }
-//
-// public inline fun <B : JavaAnnotationRefCollectable<B>> B.addAnnotationRef(
-//     className: ClassName,
-//     block: JavaAnnotationRefBuilder.() -> Unit = {}
-// ): B = addAnnotationRef(JavaAnnotationRefBuilder(className).apply(block).build())
-
 
 /**
  * Add annotation ref: [JavaAnnotationNames.Override]

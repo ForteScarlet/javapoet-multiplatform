@@ -22,8 +22,8 @@ internal expect fun Char.isJavaIdentifierPart(): Boolean
 internal fun Char.isJavaIdentifierStartCommon(): Boolean {
     return isLetter() ||
         this in CharCategory.LETTER_NUMBER ||
-        this == '$' ||
-        this == '_'
+        this in CharCategory.CONNECTOR_PUNCTUATION ||
+        this == '$'
 }
 
 internal fun Char.isJavaIdentifierPartCommon(): Boolean {
@@ -36,13 +36,12 @@ internal fun Char.isJavaIdentifierPartCommon(): Boolean {
     //   - it is a combining mark
     //   - it is a non-spacing mark
     //   isIdentifierIgnorable returns true for the character.
-    //   TODO Also missing here:
-    //    - a combining mark
     return isLetter() ||
         isDigit() ||
         this in CharCategory.LETTER_NUMBER ||
         this in CharCategory.NON_SPACING_MARK ||
-        this == '_' ||
+        this in CharCategory.COMBINING_SPACING_MARK ||  // 添加对间距组合标记的支持
+        this in CharCategory.CONNECTOR_PUNCTUATION ||   // 使用字符类别而不是硬编码的'_'
         this == '$' ||
         isIdentifierIgnorable()
     //

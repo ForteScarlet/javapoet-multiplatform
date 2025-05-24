@@ -13,18 +13,19 @@ public sealed interface WildcardTypeName : TypeName {
     public val bounds: List<TypeRef<*>>
 
     // Java:
-    //  uppers: ? extends T1 & T2; Kotlin: out A, out B
-    //  lowers: ? super T1 & T2; Kotlin: in A, in B
+    //  uppers: `? extends T1 & T2`; Kotlin: `out A`, `out B`
+    //  lowers: `? super T1 & T2`; Kotlin: `in A`, `in B`
     // Kotlin:
-    //  outs, ins
+    //  `outs`, `ins`
 }
+
 
 /**
  * No bounds [WildcardTypeName].
  * - Java `?` or `? extends Object`
  * - Kotlin `*` or `out Any?`
  */
-internal data object EmptyWildcardTypeName : WildcardTypeName {
+public data object EmptyWildcardTypeName : WildcardTypeName {
     override val bounds: List<TypeRef<*>> = emptyList()
 }
 
