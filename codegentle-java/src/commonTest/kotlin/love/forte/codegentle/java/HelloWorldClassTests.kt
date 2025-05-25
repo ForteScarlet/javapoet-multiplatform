@@ -1,10 +1,11 @@
 package love.forte.codegentle.java
 
+import love.forte.codegentle.common.code.string
 import love.forte.codegentle.java.spec.JavaSimpleTypeSpec
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.spec.addMethod
 import love.forte.codegentle.java.spec.addStatement
-import love.forte.codegentle.java.writer.emitToString
+import love.forte.codegentle.java.writer.writeToJavaString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -37,7 +38,7 @@ class HelloWorldClassTests {
                 }
                 
             """.trimIndent(),
-            spec.emitToString()
+            spec.writeToJavaString()
         )
     }
 

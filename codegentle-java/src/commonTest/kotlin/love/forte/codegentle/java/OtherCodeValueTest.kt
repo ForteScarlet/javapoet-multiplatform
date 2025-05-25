@@ -1,7 +1,8 @@
 package love.forte.codegentle.java
 
-import love.forte.codegentle.common.code.CodePart
+import love.forte.codegentle.common.code.*
 import love.forte.codegentle.common.naming.ClassName
+import love.forte.codegentle.java.writer.writeToJavaString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -11,7 +12,7 @@ class OtherCodeValueTest {
     @Test
     fun testCodeValueFormat() {
         with(
-            JavaCodeValue("%V%V = %V%V;") {
+            CodeValue("%V%V = %V%V;") {
                 type(ClassName("java.lang", "String"))
                 literal(" name")
                 literal("")
@@ -26,11 +27,11 @@ class OtherCodeValueTest {
             assertEquals(CodePart.literal(""), parts[3])
             assertEquals(CodePart.string("Hello World"), parts[4])
             assertEquals(CodePart.simple(";"), parts[5])
-            assertEquals("java.lang.String name = \"Hello World\";", toString())
+            assertEquals("java.lang.String name = \"Hello World\";", writeToJavaString())
         }
 
         with(
-            JavaCodeValue("%V%V = %V%V") {
+            CodeValue("%V%V = %V%V") {
                 type(ClassName("java.lang", "String"))
                 literal(" name")
                 literal("")
@@ -44,11 +45,11 @@ class OtherCodeValueTest {
             assertEquals(CodePart.simple(" = "), parts[2])
             assertEquals(CodePart.literal(""), parts[3])
             assertEquals(CodePart.string("Hello World"), parts[4])
-            assertEquals("java.lang.String name = \"Hello World\"", toString())
+            assertEquals("java.lang.String name = \"Hello World\"", writeToJavaString())
         }
 
         with(
-            JavaCodeValue("%V %V = %V;") {
+            CodeValue("%V %V = %V;") {
                 type(ClassName("java.lang", "String"))
                 literal("name")
                 string("Hello World")
@@ -62,11 +63,11 @@ class OtherCodeValueTest {
             assertEquals(CodePart.simple(" = "), parts[3])
             assertEquals(CodePart.string("Hello World"), parts[4])
             assertEquals(CodePart.simple(";"), parts[5])
-            assertEquals("java.lang.String name = \"Hello World\";", toString())
+            assertEquals("java.lang.String name = \"Hello World\";", writeToJavaString())
         }
 
         with(
-            JavaCodeValue("%V %V = %V") {
+            CodeValue("%V %V = %V") {
                 type(ClassName("java.lang", "String"))
                 literal("name")
                 string("Hello World")
@@ -79,11 +80,11 @@ class OtherCodeValueTest {
             assertEquals(CodePart.literal("name"), parts[2])
             assertEquals(CodePart.simple(" = "), parts[3])
             assertEquals(CodePart.string("Hello World"), parts[4])
-            assertEquals("java.lang.String name = \"Hello World\"", toString())
+            assertEquals("java.lang.String name = \"Hello World\"", writeToJavaString())
         }
 
         with(
-            JavaCodeValue("String %V = %V;") {
+            CodeValue("String %V = %V;") {
                 literal("name")
                 string("Hello World")
             }
@@ -95,11 +96,11 @@ class OtherCodeValueTest {
             assertEquals(CodePart.simple(" = "), parts[2])
             assertEquals(CodePart.string("Hello World"), parts[3])
             assertEquals(CodePart.simple(";"), parts[4])
-            assertEquals("String name = \"Hello World\";", toString())
+            assertEquals("String name = \"Hello World\";", writeToJavaString())
         }
 
         with(
-            JavaCodeValue("String %V = %V") {
+            CodeValue("String %V = %V") {
                 literal("name")
                 string("Hello World")
             }
@@ -110,7 +111,7 @@ class OtherCodeValueTest {
             assertEquals(CodePart.literal("name"), parts[1])
             assertEquals(CodePart.simple(" = "), parts[2])
             assertEquals(CodePart.string("Hello World"), parts[3])
-            assertEquals("String name = \"Hello World\"", toString())
+            assertEquals("String name = \"Hello World\"", writeToJavaString())
         }
 
 

@@ -250,7 +250,7 @@ public class JavaCodeWriter private constructor(
     override fun emit(typeName: TypeName, vararg options: TypeNameEmitOption) {
         when (typeName) {
             is JavaPrimitiveTypeName -> {
-                typeName
+                typeName.emitTo(this)
             }
 
             is ClassName -> {
@@ -473,4 +473,31 @@ internal fun JavaCodeEmitter.emitToString(): String =
                 dialect = ToStringJavaWriteStrategy
             )
         )
+    }
+
+
+public fun TypeRef<*>.writeToJavaString(): String =
+    buildString {
+        JavaCodeWriter.create(this).emit(this@writeToJavaString)
+    }
+
+public fun TypeName.writeToJavaString(): String =
+    buildString {
+        JavaCodeWriter.create(this).emit(this@writeToJavaString)
+    }
+
+public fun AnnotationRef.writeToJavaString(): String =
+    buildString {
+        JavaCodeWriter.create(this).emit(this@writeToJavaString)
+    }
+
+public fun CodeValue.writeToJavaString(): String =
+    buildString {
+        JavaCodeWriter.create(this).emit(this@writeToJavaString)
+    }
+
+public fun JavaCodeEmitter.writeToJavaString(): String =
+    buildString {
+        val writer = JavaCodeWriter.create(this)
+        this@writeToJavaString.emit(writer)
     }

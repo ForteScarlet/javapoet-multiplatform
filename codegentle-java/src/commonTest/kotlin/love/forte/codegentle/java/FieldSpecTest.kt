@@ -17,6 +17,7 @@ package love.forte.codegentle.java
 
 import love.forte.codegentle.java.naming.JavaPrimitiveTypeNames
 import love.forte.codegentle.java.spec.JavaFieldSpec
+import love.forte.codegentle.java.writer.writeToJavaString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -28,7 +29,7 @@ class FieldSpecTest {
         var b = JavaFieldSpec(JavaPrimitiveTypeNames.INT, "foo")
         assertEquals(a, b)
         assertEquals(a.hashCode(), b.hashCode())
-        assertEquals(a.toString(), b.toString())
+        assertEquals(a.writeToJavaString(), b.writeToJavaString())
         a = JavaFieldSpec(
             JavaPrimitiveTypeNames.INT,
             "FOO",
@@ -45,6 +46,6 @@ class FieldSpecTest {
 
         assertEquals(a, b)
         assertEquals(a.hashCode(), b.hashCode())
-        assertEquals(a.toString(), b.toString())
+        assertEquals(a.writeToJavaString(), b.writeToJavaString())
     }
 }
