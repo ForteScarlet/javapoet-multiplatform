@@ -4,7 +4,6 @@ import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.string
 import love.forte.codegentle.common.code.type
 import love.forte.codegentle.common.naming.ClassName
-import love.forte.codegentle.common.naming.PackageName
 import love.forte.codegentle.common.naming.parseToPackageName
 import love.forte.codegentle.common.ref.annotationRef
 import love.forte.codegentle.java.JavaModifier
@@ -193,7 +192,7 @@ class JavaCodeWriterTests {
     fun testEmitWithDiffPackage() {
         val out = StringBuilder()
         val writer = JavaCodeWriter.create(out, ToStringJavaWriteStrategy)
-        val packageName = PackageName("love.forte")
+        val packageName = "love.forte".parseToPackageName()
 
         writer.pushPackage(packageName)
         writer.emit(ClassName("love.forte", "Example"))
@@ -206,7 +205,7 @@ class JavaCodeWriterTests {
     fun testEmitWithSamePackage() {
         val out = StringBuilder()
         val writer = JavaCodeWriter.create(out, ToStringJavaWriteStrategy)
-        val packageName = PackageName("love.example")
+        val packageName = "love.example".parseToPackageName()
 
         writer.pushPackage(packageName)
         writer.emit(ClassName("love.forte", "Example"))

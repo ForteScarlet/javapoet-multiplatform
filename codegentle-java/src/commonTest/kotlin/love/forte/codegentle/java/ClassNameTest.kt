@@ -4,6 +4,8 @@ import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.literal
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.java.naming.JavaClassNames
+import love.forte.codegentle.java.strategy.ToStringJavaWriteStrategy
+import love.forte.codegentle.java.strategy.WrapperJavaWriteStrategy
 import love.forte.codegentle.java.writer.writeToJavaString
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -17,10 +19,25 @@ class ClassNameTest {
     @Test
     fun classNameToString() {
         assertEquals(
-            "java.lang.String",
+            "String",
             ClassName(packageName = "java.lang", simpleName = "String").writeToJavaString()
         )
-        assertEquals("java.lang.String", JavaClassNames.STRING.writeToJavaString())
+        assertEquals("String", JavaClassNames.STRING.writeToJavaString())
+
+        val toStringWithJavaLang =
+            object : WrapperJavaWriteStrategy(ToStringJavaWriteStrategy) {
+                override fun omitJavaLangPackage(): Boolean = false
+            }
+
+        assertEquals(
+            "java.lang.String",
+            ClassName(packageName = "java.lang", simpleName = "String")
+                .writeToJavaString(toStringWithJavaLang)
+        )
+        assertEquals(
+            "java.lang.String",
+            JavaClassNames.STRING.writeToJavaString(toStringWithJavaLang)
+        )
 
         assertEquals(
             "import java.lang.String;",

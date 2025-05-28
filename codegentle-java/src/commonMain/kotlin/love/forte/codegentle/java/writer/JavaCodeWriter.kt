@@ -251,7 +251,9 @@ public class JavaCodeWriter private constructor(
             }
 
             is ArrayTypeName -> {
-                typeName.emitTo(this, false)
+                val isVararg = options.contains(JavaTypeNameEmitOption.Vararg)
+
+                typeName.emitTo(this, isVararg)
             }
 
             is TypeVariableName -> {
@@ -280,7 +282,6 @@ public class JavaCodeWriter private constructor(
             }
         }
 
-        val isVararg = options.contains(TypeNameOptions(JavaTypeNameEmitOption.Vararg))
         // typeRef.emitAnnotations(this)
         typeRef.status.javaOrNull?.annotations?.forEach { annotation ->
             // emit(annotation, CommonAnnotationRefEmitOption.Inline)
@@ -341,19 +342,19 @@ public class JavaCodeWriter private constructor(
         }
     }
 
-    internal fun suggestedImports(): Map<String, ClassName> {
-        val result = LinkedHashMap(importableTypes)
-        result.keys.removeAll(referencedNames)
-        return result
-    }
+    // internal fun suggestedImports(): Map<String, ClassName> {
+    //     val result = LinkedHashMap(importableTypes)
+    //     result.keys.removeAll(referencedNames)
+    //     return result
+    // }
 
     public companion object {
         internal fun create(
             out: Appendable,
-            dialect: JavaWriteStrategy = DefaultJavaWriteStrategy()
+            strategy: JavaWriteStrategy = DefaultJavaWriteStrategy()
         ): JavaCodeWriter {
             return create(
-                dialect = dialect,
+                strategy = strategy,
                 out = out,
                 indent = DEFAULT_INDENT,
                 staticImports = emptySet(),
@@ -362,14 +363,14 @@ public class JavaCodeWriter private constructor(
         }
 
         internal fun create(
-            dialect: JavaWriteStrategy,
+            strategy: JavaWriteStrategy,
             out: Appendable,
             indent: String,
             staticImports: Set<String>,
             alwaysQualify: Set<String>,
         ): JavaCodeWriter {
             return create(
-                dialect = dialect,
+                strategy = strategy,
                 out = out,
                 indent = indent,
                 importedTypes = emptyMap(),
@@ -379,7 +380,7 @@ public class JavaCodeWriter private constructor(
         }
 
         internal fun create(
-            dialect: JavaWriteStrategy,
+            strategy: JavaWriteStrategy,
             out: Appendable,
             indent: String,
             importedTypes: Map<String, ClassName>,
@@ -388,18 +389,12 @@ public class JavaCodeWriter private constructor(
             alwaysQualify: Set<String>
         ): JavaCodeWriter {
             return JavaCodeWriter(
-                strategy = dialect,
+                strategy = strategy,
                 indentValue = indent,
                 out = LineWrapper.create(out, indent, DEFAULT_COLUMN_LIMIT),
                 importedTypes = importedTypes,
                 staticImports = staticImports,
                 alwaysQualify = alwaysQualify,
-                // staticImportClassNames = staticImports.mapTo(linkedSetOf()) {
-                //     // static import 不止可以import class，还有字段、方法啥的
-                //     ClassName(it)
-                //     // TODO("")
-                //     // it.substringBeforeLast('.')
-                // },
             )
         }
     }
@@ -462,38 +457,38 @@ internal fun JavaCodeEmitter.emitToString(): String =
         emit(
             JavaCodeWriter.create(
                 out = this,
-                dialect = ToStringJavaWriteStrategy
+                strategy = ToStringJavaWriteStrategy
             )
         )
     }
 
 
-public fun TypeRef<*>.writeToJavaString(): String =
+public fun TypeRef<*>.writeToJavaString(strategy: JavaWriteStrategy = ToStringJavaWriteStrategy): String =
     buildString {
-        JavaCodeWriter.create(out = this, dialect = ToStringJavaWriteStrategy)
+        JavaCodeWriter.create(out = this, strategy = strategy)
             .emit(this@writeToJavaString)
     }
 
-public fun TypeName.writeToJavaString(): String =
+public fun TypeName.writeToJavaString(strategy: JavaWriteStrategy = ToStringJavaWriteStrategy): String =
     buildString {
-        JavaCodeWriter.create(out = this, dialect = ToStringJavaWriteStrategy)
+        JavaCodeWriter.create(out = this, strategy = strategy)
             .emit(this@writeToJavaString)
     }
 
-public fun AnnotationRef.writeToJavaString(): String =
+public fun AnnotationRef.writeToJavaString(strategy: JavaWriteStrategy = ToStringJavaWriteStrategy): String =
     buildString {
-        JavaCodeWriter.create(out = this, dialect = ToStringJavaWriteStrategy)
+        JavaCodeWriter.create(out = this, strategy = strategy)
             .emit(this@writeToJavaString)
     }
 
-public fun CodeValue.writeToJavaString(): String =
+public fun CodeValue.writeToJavaString(strategy: JavaWriteStrategy = ToStringJavaWriteStrategy): String =
     buildString {
-        JavaCodeWriter.create(out = this, dialect = ToStringJavaWriteStrategy)
+        JavaCodeWriter.create(out = this, strategy = strategy)
             .emit(this@writeToJavaString)
     }
 
-public fun JavaCodeEmitter.writeToJavaString(): String =
+public fun JavaCodeEmitter.writeToJavaString(strategy: JavaWriteStrategy = ToStringJavaWriteStrategy): String =
     buildString {
-        val writer = JavaCodeWriter.create(out = this, dialect = ToStringJavaWriteStrategy)
+        val writer = JavaCodeWriter.create(out = this, strategy = strategy)
         this@writeToJavaString.emit(writer)
     }

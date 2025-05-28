@@ -5,9 +5,9 @@ import love.forte.codegentle.common.naming.appendTo
 import love.forte.codegentle.common.writer.InternalWriterApi
 import love.forte.codegentle.java.writer.JavaCodeWriter
 
-internal val JavaLangPackage: PackageName = PackageName(listOf("java", "lang"))
+internal val JavaLangPackageName: PackageName = PackageName(listOf("java", "lang"))
 
-internal val PackageName.isJavaLang: Boolean get() = this == JavaLangPackage
+internal val PackageName.isJavaLang: Boolean get() = this == JavaLangPackageName
 
 
 @OptIn(InternalWriterApi::class)

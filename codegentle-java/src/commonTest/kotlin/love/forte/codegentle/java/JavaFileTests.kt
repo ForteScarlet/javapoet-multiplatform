@@ -1,7 +1,7 @@
 package love.forte.codegentle.java
 
 import love.forte.codegentle.common.naming.ClassName
-import love.forte.codegentle.common.naming.PackageName
+import love.forte.codegentle.common.naming.parseToPackageName
 import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.JavaFieldSpec
 import love.forte.codegentle.java.spec.JavaSimpleTypeSpec
@@ -20,7 +20,7 @@ class JavaFileTests {
     @Test
     fun testBasicJavaFile() {
         val typeSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "MyClass")
-        val packageName = PackageName("com.example")
+        val packageName = "com.example".parseToPackageName()
 
         val javaFile = JavaFile(packageName, typeSpec)
 
@@ -34,7 +34,7 @@ class JavaFileTests {
     @Test
     fun testJavaFileWithComment() {
         val typeSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "MyClass")
-        val packageName = PackageName("com.example")
+        val packageName = "com.example".parseToPackageName()
 
         val javaFile = JavaFile(packageName, typeSpec) {
             addFileComment("This is a test file.")
@@ -48,7 +48,7 @@ class JavaFileTests {
     @Test
     fun testJavaFileWithStaticImports() {
         val typeSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "MyClass")
-        val packageName = PackageName("com.example")
+        val packageName = "com.example".parseToPackageName()
 
         val javaFile = JavaFile(packageName, typeSpec) {
             addStaticImport(ClassName("java.util", "Collections"), "emptyList")
@@ -67,7 +67,7 @@ class JavaFileTests {
         val typeSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "MyClass") {
             addField(field)
         }
-        val packageName = PackageName("com.example")
+        val packageName = "com.example".parseToPackageName()
 
         val javaFile = JavaFile(packageName, typeSpec) {
             skipJavaLangImports(true)
@@ -82,7 +82,7 @@ class JavaFileTests {
     @Test
     fun testJavaFileWithCustomIndent() {
         val typeSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "MyClass")
-        val packageName = PackageName("com.example")
+        val packageName = "com.example".parseToPackageName()
 
         val javaFile = JavaFile(packageName, typeSpec) {
             indent("\t") // Use tab for indentation

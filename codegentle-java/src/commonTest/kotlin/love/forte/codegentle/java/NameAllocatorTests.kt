@@ -17,6 +17,8 @@ class NameAllocatorTests {
         val allocator = NameAllocator()
         val name = allocator.newName("test")
 
+        println(name)
+
         // The name should start with "test"
         assertTrue(name.startsWith("test"))
     }
@@ -35,6 +37,8 @@ class NameAllocatorTests {
         val allocator = NameAllocator()
         val name = allocator.newName("123test")
 
+        println(name)
+
         // The name should be a valid Java identifier (shouldn't start with a number)
         assertTrue(!name.startsWith("123"))
         assertTrue(name.contains("test"))
@@ -44,6 +48,8 @@ class NameAllocatorTests {
     fun testNewNameWithJavaKeyword() {
         val allocator = NameAllocator()
         val name = allocator.newName("class")
+
+        println(name)
 
         // The name should not be a Java keyword
         assertTrue(name != "class")

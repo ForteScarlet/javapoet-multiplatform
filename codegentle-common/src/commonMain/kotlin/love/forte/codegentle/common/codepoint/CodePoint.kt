@@ -16,7 +16,11 @@ import kotlin.jvm.JvmInline
  */
 @JvmInline
 @InternalCodePointApi
-public value class CodePoint internal constructor(public val code: UInt)
+public value class CodePoint internal constructor(public val code: UInt) {
+    override fun toString(): String = stringValue()
+}
+
+internal expect fun CodePoint.stringValue(): String
 
 @InternalCodePointApi
 public expect fun String.codePointAt(index: Int): CodePoint

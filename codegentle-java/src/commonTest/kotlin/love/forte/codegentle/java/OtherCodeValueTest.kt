@@ -2,12 +2,20 @@ package love.forte.codegentle.java
 
 import love.forte.codegentle.common.code.*
 import love.forte.codegentle.common.naming.ClassName
+import love.forte.codegentle.java.strategy.ToStringJavaWriteStrategy
+import love.forte.codegentle.java.strategy.WrapperJavaWriteStrategy
 import love.forte.codegentle.java.writer.writeToJavaString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
 class OtherCodeValueTest {
+
+    private val javaLongToStringStrategy = object : WrapperJavaWriteStrategy(
+        ToStringJavaWriteStrategy
+    ) {
+        override fun omitJavaLangPackage(): Boolean = false
+    }
 
     @Test
     fun testCodeValueFormat() {
@@ -27,7 +35,12 @@ class OtherCodeValueTest {
             assertEquals(CodePart.literal(""), parts[3])
             assertEquals(CodePart.string("Hello World"), parts[4])
             assertEquals(CodePart.simple(";"), parts[5])
-            assertEquals("java.lang.String name = \"Hello World\";", writeToJavaString())
+            assertEquals("String name = \"Hello World\";", writeToJavaString())
+            assertEquals(
+                "java.lang.String name = \"Hello World\";", writeToJavaString(
+                    javaLongToStringStrategy
+                )
+            )
         }
 
         with(
@@ -45,7 +58,8 @@ class OtherCodeValueTest {
             assertEquals(CodePart.simple(" = "), parts[2])
             assertEquals(CodePart.literal(""), parts[3])
             assertEquals(CodePart.string("Hello World"), parts[4])
-            assertEquals("java.lang.String name = \"Hello World\"", writeToJavaString())
+            assertEquals("String name = \"Hello World\"", writeToJavaString())
+            assertEquals("java.lang.String name = \"Hello World\"", writeToJavaString(javaLongToStringStrategy))
         }
 
         with(
@@ -63,7 +77,11 @@ class OtherCodeValueTest {
             assertEquals(CodePart.simple(" = "), parts[3])
             assertEquals(CodePart.string("Hello World"), parts[4])
             assertEquals(CodePart.simple(";"), parts[5])
-            assertEquals("java.lang.String name = \"Hello World\";", writeToJavaString())
+            assertEquals("String name = \"Hello World\";", writeToJavaString())
+            assertEquals(
+                "java.lang.String name = \"Hello World\";",
+                writeToJavaString(javaLongToStringStrategy)
+            )
         }
 
         with(
@@ -80,7 +98,11 @@ class OtherCodeValueTest {
             assertEquals(CodePart.literal("name"), parts[2])
             assertEquals(CodePart.simple(" = "), parts[3])
             assertEquals(CodePart.string("Hello World"), parts[4])
-            assertEquals("java.lang.String name = \"Hello World\"", writeToJavaString())
+            assertEquals("String name = \"Hello World\"", writeToJavaString())
+            assertEquals(
+                "java.lang.String name = \"Hello World\"",
+                writeToJavaString(javaLongToStringStrategy)
+            )
         }
 
         with(

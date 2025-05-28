@@ -8,6 +8,7 @@ import love.forte.codegentle.common.naming.*
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.java.JavaFile
+import love.forte.codegentle.java.naming.JavaLangPackageName
 import love.forte.codegentle.java.ref.JavaTypeNameRefStatus
 import love.forte.codegentle.java.spec.JavaFieldSpec
 import love.forte.codegentle.java.spec.JavaMethodSpec
@@ -17,14 +18,6 @@ import love.forte.codegentle.java.strategy.JavaWriteStrategy
 import love.forte.codegentle.java.strategy.ToStringJavaWriteStrategy
 import love.forte.codegentle.java.writer.JavaCodeWriter
 import love.forte.codegentle.java.writer.inPackage
-
-private object NullAppendable : Appendable {
-    override fun append(value: Char): Appendable = this
-    override fun append(value: CharSequence?): Appendable = this
-    override fun append(value: CharSequence?, startIndex: Int, endIndex: Int): Appendable = this
-}
-
-private val JavaLangPackageName = PackageName(listOf("java", "lang"))
 
 internal class JavaFileImpl(
     override val fileComment: CodeValue,
@@ -53,7 +46,7 @@ internal class JavaFileImpl(
         // val suggestedImports: Map<String, ClassName> = importsCollector.suggestedImports()
 
         val codeWriter = JavaCodeWriter.create(
-            dialect = strategy,
+            strategy = strategy,
             out = out,
             indent = indent,
             importedTypes = suggestedImports,

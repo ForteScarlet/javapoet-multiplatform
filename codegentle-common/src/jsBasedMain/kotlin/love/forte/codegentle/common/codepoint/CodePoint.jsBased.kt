@@ -54,3 +54,6 @@ public actual fun CodePoint.charCount(): Int = charCountCommon()
 @InternalCodePointApi
 public actual fun StringBuilder.appendCodePoint(codePoint: CodePoint): StringBuilder =
     appendCodePointCommon(codePoint)
+
+internal actual fun CodePoint.stringValue(): String =
+    jsFromCodePoint(code.toInt())

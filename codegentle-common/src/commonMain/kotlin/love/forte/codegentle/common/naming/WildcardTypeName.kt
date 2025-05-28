@@ -3,6 +3,7 @@ package love.forte.codegentle.common.naming
 import love.forte.codegentle.common.naming.internal.LowerWildcardTypeNameImpl
 import love.forte.codegentle.common.naming.internal.UpperWildcardTypeNameImpl
 import love.forte.codegentle.common.ref.TypeRef
+import kotlin.js.JsName
 
 /**
  * A Wildcard type name.
@@ -54,6 +55,7 @@ public interface UpperWildcardTypeName : WildcardTypeName
 @SubclassOptInRequired(CodeGentleNamingImplementation::class)
 public interface LowerWildcardTypeName : WildcardTypeName
 
+@JsName("emptyWildcardTypeName")
 public fun WildcardTypeName(): WildcardTypeName = EmptyWildcardTypeName
 
 public fun LowerWildcardTypeName(upperBound: TypeRef<*>): LowerWildcardTypeName =

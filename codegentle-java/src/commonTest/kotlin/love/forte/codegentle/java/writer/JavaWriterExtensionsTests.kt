@@ -1,13 +1,17 @@
 package love.forte.codegentle.java.writer
 
-import love.forte.codegentle.common.code.CodePart.Companion.literal
 import love.forte.codegentle.common.code.CodePart.Companion.string
 import love.forte.codegentle.common.code.CodePart.Companion.type
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.literal
+import love.forte.codegentle.common.code.string
+import love.forte.codegentle.common.code.type
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.ref.annotationRef
 import love.forte.codegentle.common.ref.status
 import love.forte.codegentle.java.ref.javaRef
+import love.forte.codegentle.java.strategy.ToStringJavaWriteStrategy
+import love.forte.codegentle.java.strategy.WrapperJavaWriteStrategy
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -35,18 +39,31 @@ class JavaWriterExtensionsTests {
         assertEquals("java.util.List", className.writeToJavaString())
     }
 
+    private val javaLangToStringStrategy = object : WrapperJavaWriteStrategy(
+        ToStringJavaWriteStrategy
+    ) {
+        override fun omitJavaLangPackage(): Boolean = false
+    }
+
     @Test
     fun testAnnotationRefWriteToJavaString() {
         val annotationRef = ClassName("java.lang", "Override").annotationRef()
 
-        assertEquals("@java.lang.Override", annotationRef.writeToJavaString())
+        assertEquals("@Override", annotationRef.writeToJavaString())
+        assertEquals(
+            "@java.lang.Override", annotationRef.writeToJavaString(javaLangToStringStrategy)
+        )
     }
 
     @Test
     fun testTypeRefWriteToJavaString() {
         val typeRef = ClassName("java.lang", "String").javaRef()
 
-        assertEquals("java.lang.String", typeRef.writeToJavaString())
+        assertEquals("String", typeRef.writeToJavaString())
+        assertEquals(
+            "java.lang.String",
+            typeRef.writeToJavaString(javaLangToStringStrategy)
+        )
     }
 
     @Test
@@ -57,7 +74,11 @@ class JavaWriterExtensionsTests {
             string("Hello World")
         }
 
-        assertEquals("java.lang.String name = \"Hello World\";", codeValue.writeToJavaString())
+        assertEquals("String name = \"Hello World\";", codeValue.writeToJavaString())
+        assertEquals(
+            "java.lang.String name = \"Hello World\";",
+            codeValue.writeToJavaString(javaLangToStringStrategy)
+        )
     }
 
     @Test
@@ -72,19 +93,27 @@ class JavaWriterExtensionsTests {
         }
 
         val expected = "for (java.lang.String item : items) {\n  System.out.println(item);\n}"
-        assertEquals(expected, codeValue.writeToJavaString())
+        assertEquals(expected, codeValue.writeToJavaString(javaLangToStringStrategy))
     }
 
     @Test
     fun testAnnotationRefWithMembersWriteToJavaString() {
         val annotationRef = ClassName("javax.annotation", "Resource").annotationRef {
             addMember("name", "%V", string("myResource"))
-            addMember("type", "%V", type(ClassName("java.lang", "String")))
+            addMember(
+                "type", "%V.class",
+                type(ClassName("java.lang", "String"))
+            )
         }
 
         assertEquals(
-            "@javax.annotation.Resource(name = \"myResource\", type = java.lang.String)",
+            "@javax.annotation.Resource(name = \"myResource\", type = String.class)",
             annotationRef.writeToJavaString()
+        )
+
+        assertEquals(
+            "@javax.annotation.Resource(name = \"myResource\", type = java.lang.String.class)",
+            annotationRef.writeToJavaString(javaLangToStringStrategy)
         )
     }
 
@@ -97,6 +126,10 @@ class JavaWriterExtensionsTests {
             }
         }
 
-        assertEquals("@javax.annotation.Nonnull java.lang.String", typeRef.writeToJavaString())
+        assertEquals("@javax.annotation.Nonnull String", typeRef.writeToJavaString())
+        assertEquals(
+            "@javax.annotation.Nonnull java.lang.String",
+            typeRef.writeToJavaString(javaLangToStringStrategy)
+        )
     }
 }

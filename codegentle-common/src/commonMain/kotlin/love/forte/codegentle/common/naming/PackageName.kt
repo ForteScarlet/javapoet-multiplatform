@@ -2,6 +2,7 @@ package love.forte.codegentle.common.naming
 
 import love.forte.codegentle.common.naming.PackageName.Companion.EMPTY
 import love.forte.codegentle.common.naming.internal.PackageNameImpl
+import kotlin.js.JsName
 
 /**
  * A package name.
@@ -86,6 +87,7 @@ private suspend fun SequenceScope<String>.emit(packageName: PackageName) {
 /**
  * An empty package.
  */
+@JsName("emptyPackageName")
 public fun PackageName(): PackageName = EMPTY
 
 /**

@@ -299,7 +299,7 @@ private fun JavaCodeWriter.resolve(simpleName: String): ClassName? {
 
     // Match java.lang types implicitly if strategy allows omitting java.lang
     if (strategy.omitJavaLangPackage() && isCommonJavaLangType(simpleName)) {
-        return ClassName(JavaLangPackage, simpleName)
+        return ClassName(JavaLangPackageName, simpleName)
     }
 
     // No match.
