@@ -1,16 +1,13 @@
 package love.forte.codegentle.common.naming.internal
 
-import love.forte.codegentle.common.naming.ClassName
-import love.forte.codegentle.common.naming.canonicalName
-import love.forte.codegentle.common.naming.contentEquals
-import love.forte.codegentle.common.naming.contentHashCode
+import love.forte.codegentle.common.naming.*
 
 /**
  *
  * @author ForteScarlet
  */
 internal data class ClassNameImpl(
-    override val packageName: String?,
+    override val packageName: PackageName?,
     override val enclosingClassName: ClassName?,
     override val simpleName: String,
 ) : ClassName {

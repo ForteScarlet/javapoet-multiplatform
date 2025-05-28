@@ -36,7 +36,7 @@ internal class JavaFieldSpecImpl internal constructor(
             codeWriter.emit(" = ")
             codeWriter.emit(initializer)
         }
-        codeWriter.emit(";\n")
+        codeWriter.emitNewLine(";")
     }
 
     override fun equals(other: Any?): Boolean {

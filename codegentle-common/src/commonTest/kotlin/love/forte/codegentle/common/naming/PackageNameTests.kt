@@ -1,9 +1,6 @@
 package love.forte.codegentle.common.naming
 
-import kotlin.test.Test
-import kotlin.test.assertContentEquals
-import kotlin.test.assertEquals
-import kotlin.test.assertSame
+import kotlin.test.*
 
 /**
  *
@@ -132,4 +129,26 @@ class PackageNameTests {
 
         assertContentEquals(emptyList(), PackageName.EMPTY.names().map { it.name }.toList())
     }
+
+    @Test
+    fun testPackageParts() {
+        with("love.forte.codegentle".parseToPackageName().parts) {
+            assertEquals(3, size)
+            assertContentEquals(listOf("love", "forte", "codegentle"), this)
+        }
+
+        with("love".parseToPackageName().parts) {
+            assertEquals(1, size)
+            assertContentEquals(listOf("love"), this)
+        }
+
+        with("".parseToPackageName().parts) {
+            assertTrue(isEmpty())
+        }
+
+        with(PackageName().parts) {
+            assertTrue(isEmpty())
+        }
+    }
+
 }

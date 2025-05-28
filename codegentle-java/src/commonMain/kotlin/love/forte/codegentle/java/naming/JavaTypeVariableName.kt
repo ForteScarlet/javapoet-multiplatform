@@ -21,5 +21,5 @@ import love.forte.codegentle.java.writer.JavaCodeWriter
 
 
 internal fun TypeVariableName.emitTo(codeWriter: JavaCodeWriter) {
-    codeWriter.emitAndIndent(name)
+    codeWriter.emit(name)
 }

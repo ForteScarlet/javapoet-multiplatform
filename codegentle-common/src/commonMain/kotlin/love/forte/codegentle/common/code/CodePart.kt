@@ -34,9 +34,10 @@ public sealed class CodePart {
         /**
          * Emits a `literal` value with no escaping.
          * Arguments for literals may be
-         * strings, primitives, [type declarations][TypeSpec],
-         * [annotations][AnnotationSpec] and even other [code values][CodeValue]
-         * or [code emitters][JavaCodeEmitter].
+         * strings, primitives, type declarations (`TypeSpec`),
+         * [annotation references][love.forte.codegentle.common.ref.AnnotationRef]
+         * and even other [code values][CodeValue]
+         * or code emitters (`JavaCodeEmitter`, etc.).
          */
         @CodePartFactory
         public fun literal(value: Any?): CodeArgumentPart = CodeArgumentPart.Literal(value)
@@ -73,11 +74,6 @@ public sealed class CodePart {
          */
         @CodePartFactory
         public fun type(type: TypeName): CodeArgumentPart = CodeArgumentPart.Type(type)
-
-        // TODO type(Class)
-        //  type(TypeMirror)
-        //  type(Element)
-        //  type(Any)
 
         /**
          * Emits a `type` reference. Types will be imported if possible. Arguments
@@ -146,11 +142,7 @@ public sealed class CodeArgumentPart : CodePart() {
     public data object Skip : CodeArgumentPart()
 
     /**
-     * `%L` emits a `literal` value with no escaping.
-     * Arguments for literals may be
-     * strings, primitives, [type declarations][TypeSpec],
-     * [annotations][AnnotationSpec] and even other [code values][CodeValue]
-     * or [code emitters][JavaCodeEmitter].
+     * Emits a `literal` value with no escaping.
      */
     public class Literal internal constructor(public val value: Any?) : CodeArgumentPart() {
         override fun equals(other: Any?): Boolean {
@@ -172,10 +164,7 @@ public sealed class CodeArgumentPart : CodePart() {
     }
 
     /**
-     * `%N` emits a `name`, using name collision avoidance where necessary.
-     * Arguments for names may be strings (actually any [character sequence][CharSequence]),
-     * [parameters][ParameterSpec], [fields][FieldSpec],
-     * [methods][MethodSpec], and [types][TypeSpec].
+     * Emits a `name`, using name collision avoidance where necessary.
      */
     public class Name internal constructor(public val name: String?) : CodeArgumentPart() {
 
@@ -240,14 +229,6 @@ public sealed class CodeArgumentPart : CodePart() {
     public class Type internal constructor(public val type: TypeName) : CodeArgumentPart() {
 
         public companion object {
-            // internal fun argToType(o: Any?): TypeName {
-            //     if (o is TypeName) return o
-            //     // TODO
-            //     // if (o is TypeMirror) return com.squareup.javapoet.TypeName.get(o as TypeMirror)
-            //     // if (o is javax.lang.model.element.Element) return com.squareup.javapoet.TypeName.get((o as javax.lang.model.element.Element).asType())
-            //     // if (o is java.lang.reflect.Type) return com.squareup.javapoet.TypeName.get(o as java.lang.reflect.Type)
-            //     throw IllegalArgumentException("expected type but was $o")
-            // }
         }
 
         override fun equals(other: Any?): Boolean {

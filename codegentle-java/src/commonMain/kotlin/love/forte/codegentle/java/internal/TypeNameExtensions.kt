@@ -28,7 +28,7 @@ internal inline fun doEmit(
 
 private fun JavaCodeWriter.newLineIfNot(condition: Boolean) {
     if (!condition) {
-        emit("\n")
+        emitNewLine()
     }
 }
 

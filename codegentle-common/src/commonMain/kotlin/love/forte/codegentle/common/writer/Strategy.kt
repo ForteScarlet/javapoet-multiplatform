@@ -8,14 +8,15 @@ import love.forte.codegentle.common.naming.TypeName
  * @author ForteScarlet
  */
 public interface Strategy {
-    // TODO
-    //  判断名称是否合法
-    //  ?
+    /**
+     * Checks if a [TypeName] is a valid source name.
+     */
+    public fun isValidSourceName(name: TypeName): Boolean
 
     /**
-     * Checks if a [TypeName] is a valid name.
+     * Checks if a [String] is a valid source name.
      */
-    public fun isValidName(name: TypeName): Boolean
+    public fun isValidSourceName(name: String): Boolean
 
     /**
      * The new line string.

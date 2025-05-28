@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
 /**
  * Create a [love.forte.codegentle.common.naming.ClassName] from [KClass].
  *
- * @see Class.toJavaClassName
+ * @see Class.toClassName
  */
 public fun KClass<*>.toClassName(): ClassName {
     return java.toClassName()
@@ -36,7 +36,11 @@ public fun Class<*>.toClassName(): ClassName {
     if (java.getEnclosingClass() == null) {
         // Avoid unreliable Class.getPackage(). https://github.com/square/javapoet/issues/295
         val lastDot: Int = java.getName().lastIndexOf('.')
-        val packageName: String? = if (lastDot != -1) java.getName().substring(0, lastDot) else null
+        val packageName: PackageName? = if (lastDot != -1) {
+            java.getName().substring(0, lastDot).parseToPackageName()
+        } else {
+            null
+        }
 
         return ClassName(packageName, name)
     }
@@ -48,7 +52,7 @@ public fun TypeElement.toClassName(): ClassName {
     val simpleName = simpleName.toString()
     val visitor = object : SimpleElementVisitor8<ClassName, Void?>() {
         override fun visitPackage(packageElement: PackageElement, p: Void?): ClassName {
-            return ClassName(packageElement.qualifiedName.toString(), simpleName)
+            return ClassName(packageElement.qualifiedName.parseToPackageName(), simpleName)
         }
 
         override fun visitType(typeElement: TypeElement, p: Void?): ClassName {
@@ -56,7 +60,7 @@ public fun TypeElement.toClassName(): ClassName {
         }
 
         override fun visitUnknown(unknown: Element?, p: Void?): ClassName? {
-            return ClassName("", simpleName)
+            return ClassName(PackageName(), simpleName)
         }
 
         override fun defaultAction(element: Element?, p: Void?): ClassName? {

@@ -52,7 +52,7 @@ internal class JavaAnonymousClassTypeSpecImpl(
                 if (fields.isEmpty() && methods.isEmpty() && subtypes.isEmpty()) {
                     return
                 }
-                codeWriter.emit(" {\n")
+                codeWriter.emitNewLine(" {")
             } else {
                 val supertype = superinterfaces.firstOrNull()
                     ?: superclass
@@ -60,7 +60,7 @@ internal class JavaAnonymousClassTypeSpecImpl(
                 codeWriter.emit("new %V(") { type(supertype!!) }
                 codeWriter.emit(anonymousTypeArguments)
                 // anonymousTypeArguments.emit(codeWriter)
-                codeWriter.emit(") {\n")
+                codeWriter.emitNewLine(") {")
             }
 
             emitMembers(codeWriter)

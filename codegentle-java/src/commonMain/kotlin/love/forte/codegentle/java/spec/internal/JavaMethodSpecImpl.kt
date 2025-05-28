@@ -92,25 +92,25 @@ internal class JavaMethodSpecImpl(
 
         when {
             hasModifier(JavaModifier.ABSTRACT) -> {
-                codeWriter.emit(";\n")
+                codeWriter.emitNewLine(";")
             }
 
             hasModifier(JavaModifier.NATIVE) -> {
                 // Code is allowed to support stuff like GWT JSNI.
                 codeWriter.emit(code)
                 // code.emit(codeWriter)
-                codeWriter.emit(";\n")
+                codeWriter.emitNewLine(";")
             }
 
             else -> {
-                codeWriter.emit(" {\n")
+                codeWriter.emitNewLine(" {")
 
                 codeWriter.indent()
                 codeWriter.emit(code, JavaCodeValueEmitOption.EnsureTrailingNewline)
                 // code.emitTo(codeWriter, true)
                 codeWriter.unindent()
 
-                codeWriter.emit("}\n")
+                codeWriter.emitNewLine("}")
             }
         }
         codeWriter.popTypeVariableRefs(typeVariables)

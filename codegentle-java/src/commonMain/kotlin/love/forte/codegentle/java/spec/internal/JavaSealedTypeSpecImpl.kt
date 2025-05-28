@@ -71,13 +71,13 @@ internal class JavaSealedTypeSpecImpl(
             }
 
             codeWriter.popType()
-            codeWriter.emit(" {\n")
+            codeWriter.emitNewLine(" {")
 
             emitMembers(codeWriter)
 
             codeWriter.popTypeVariableRefs(typeVariables)
 
-            codeWriter.emit("}\n")
+            codeWriter.emitNewLine("}")
         }
     }
 

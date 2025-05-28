@@ -46,13 +46,13 @@ internal class JavaSimpleTypeSpecImpl(
             emitSupers(codeWriter)
 
             codeWriter.popType()
-            codeWriter.emit(" {\n")
+            codeWriter.emitNewLine(" {")
 
             emitMembers(codeWriter)
 
             codeWriter.popTypeVariableRefs(typeVariables)
 
-            codeWriter.emit("}\n")
+            codeWriter.emitNewLine("}")
         }
     }
 

@@ -150,7 +150,6 @@ internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElemen
 
             val typeArgumentNameRefs = mutableListOf<TypeRef<*>>()
             for (mirror in t.typeArguments) {
-                mirror.toTypeName(typeVariables)
                 typeArgumentNameRefs.add(mirror.toTypeName(typeVariables).javaRef())
             }
 
@@ -174,7 +173,7 @@ internal fun TypeMirror.toTypeName(typeVariables: MutableMap<TypeParameterElemen
         }
 
         override fun visitWildcard(t: WildcardType, p: Void?): TypeName {
-            TODO("return t.toWildcardTypeName(typeVariables)")
+            return t.toWildcardTypeName(typeVariables)
         }
 
         override fun visitNoType(t: NoType, p: Void?): TypeName {

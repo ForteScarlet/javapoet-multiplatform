@@ -51,7 +51,7 @@ internal class JavaEnumTypeSpecImpl(
             codeWriter.emitImplements(superinterfaces)
 
             codeWriter.popType()
-            codeWriter.emit(" {\n")
+            codeWriter.emitNewLine(" {")
 
             emitMembers(codeWriter) { firstMember, notFirst ->
                 val needsSeparator = fields.isNotEmpty() || methods.isNotEmpty() || subtypes.isNotEmpty()
@@ -59,25 +59,25 @@ internal class JavaEnumTypeSpecImpl(
                 while (i.hasNext()) {
                     val enumConstant = i.next()
                     if (!firstMember) {
-                        codeWriter.emit("\n")
+                        codeWriter.emitNewLine()
                     }
 
                     enumConstant.value.emit(codeWriter, enumConstant.key)
                     notFirst()
                     if (i.hasNext()) {
-                        codeWriter.emit(",\n")
+                        codeWriter.emitNewLine(",")
                     } else if (!needsSeparator) {
-                        codeWriter.emit("\n")
+                        codeWriter.emitNewLine("")
                     }
                 }
 
                 if (needsSeparator) {
-                    codeWriter.emit(";\n")
+                    codeWriter.emitNewLine(";")
                 }
             }
 
             codeWriter.popTypeVariableRefs(typeVariables)
-            codeWriter.emit("}\n")
+            codeWriter.emitNewLine("}")
         }
     }
 

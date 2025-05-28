@@ -30,15 +30,15 @@ internal fun ParameterizedTypeName.emitTo(codeWriter: JavaCodeWriter) {
     }
 
     if (typeArguments.isNotEmpty()) {
-        codeWriter.emitAndIndent("<")
+        codeWriter.emit("<")
         var firstParameter = true
         for (parameter in typeArguments) {
             if (!firstParameter) {
-                codeWriter.emitAndIndent(", ")
+                codeWriter.emit(", ")
             }
             codeWriter.emit(parameter)
             firstParameter = false
         }
-        codeWriter.emitAndIndent(">")
+        codeWriter.emit(">")
     }
 }

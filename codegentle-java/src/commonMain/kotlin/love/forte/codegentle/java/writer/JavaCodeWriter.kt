@@ -20,10 +20,7 @@ import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.common.computeValue
-import love.forte.codegentle.common.naming.ArrayTypeName
-import love.forte.codegentle.common.naming.ClassName
-import love.forte.codegentle.common.naming.TypeName
-import love.forte.codegentle.common.naming.TypeVariableName
+import love.forte.codegentle.common.naming.*
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.writer.*
@@ -72,7 +69,7 @@ public class JavaCodeWriter private constructor(
 
     // internal var javadoc = false
     // private var comment = false
-    internal var packageName: String? = null
+    internal var packageName: PackageName? = null
 
     // simple name -> class name
     internal val importableTypes: MutableMap<String, ClassName> = linkedMapOf()
@@ -100,7 +97,7 @@ public class JavaCodeWriter private constructor(
         indentLevel -= levels
     }
 
-    internal fun pushPackage(packageName: String) {
+    internal fun pushPackage(packageName: PackageName) {
         check(this.packageName == null) { "package already set: ${this.packageName}" }
         this.packageName = packageName
     }
@@ -125,7 +122,7 @@ public class JavaCodeWriter private constructor(
         try {
             comment.emitTo(this)
             // codeBlock.emit(this)
-            emit("\n")
+            emit(strategy.newline())
         } finally {
             commentType = null
             // comment = false
@@ -136,7 +133,7 @@ public class JavaCodeWriter private constructor(
     override fun emitDoc(doc: CodeValue, vararg options: CodeValueEmitOption) {
         if (doc.isEmpty) return
 
-        emit("/**\n")
+        emit("/**${strategy.newline()}")
         this.commentType = CommentType.JAVADOC
         // this.javadoc = true
         try {
@@ -146,13 +143,13 @@ public class JavaCodeWriter private constructor(
             // this.javadoc = false
         }
 
-        emit(" */\n")
+        emit(" */${strategy.newline()}")
     }
 
     internal fun emitAnnotationRefs(annotations: Iterable<AnnotationRef>, inline: Boolean) {
         for (annotation in annotations) {
             annotation.emitTo(this)
-            emit(if (inline) " " else "\n")
+            emit(if (inline) " " else strategy.newline())
         }
     }
 
@@ -186,10 +183,6 @@ public class JavaCodeWriter private constructor(
             firstTypeVariable = false
         }
         emit(">")
-    }
-
-    internal fun popTypeVariables(typeVariables: List<TypeVariableName>) {
-        typeVariables.forEach { typeVariable -> currentTypeVariables.remove(typeVariable.name) }
     }
 
     internal fun popTypeVariableRefs(typeVariableRefs: List<TypeRef<TypeVariableName>>) {
@@ -297,7 +290,7 @@ public class JavaCodeWriter private constructor(
         emit(typeRef.typeName, *typeNameOptions.toTypedArray())
     }
 
-    override fun emitAndIndent(s: String) {
+    internal fun emitAndIndent(s: String) {
         var first = true
         for (line in s.lineSequence()) {
             // Emit a newline character. Make sure blank lines in Javadoc & comments look good.
@@ -308,7 +301,7 @@ public class JavaCodeWriter private constructor(
                     out.append(if (commentType?.isJavadoc == true) " *" else "//")
                     // out.append(if (javadoc) " *" else "//")
                 }
-                out.append("\n")
+                out.append(strategy.newline())
                 trailingNewline = true
                 if (statementLine != -1) {
                     if (statementLine == 0) {
@@ -390,7 +383,7 @@ public class JavaCodeWriter private constructor(
             out: Appendable,
             indent: String,
             importedTypes: Map<String, ClassName>,
-            // TODO sealed class StaticImports { className, propertyName, functionName }
+            // TODO sealed class StaticImports { ClassName, MemberName }
             staticImports: Set<String>,
             alwaysQualify: Set<String>
         ): JavaCodeWriter {
@@ -446,19 +439,18 @@ internal class Multiset<T> {
 }
 
 
-internal inline fun JavaCodeWriter.inPackage(packageName: String, block: () -> Unit) {
+internal inline fun JavaCodeWriter.inPackage(packageName: PackageName, block: () -> Unit) {
     pushPackage(packageName)
     block()
     popPackage()
 }
 
 internal inline fun JavaCodeWriter.emit(
-    ensureTrailingNewline: Boolean,
     format: String,
+    vararg options: CodeValueEmitOption,
     block: CodeValueSingleFormatBuilderDsl = {}
 ) {
-    // TODO CodeValueEmitOption: ensureTrailingNewline
-    CodeValue(format, block).emitTo(this, ensureTrailingNewline)
+    emit(CodeValue(format, block), *options)
 }
 
 internal inline fun JavaCodeWriter.emit(format: String, block: CodeValueSingleFormatBuilderDsl = {}) {
@@ -478,26 +470,30 @@ internal fun JavaCodeEmitter.emitToString(): String =
 
 public fun TypeRef<*>.writeToJavaString(): String =
     buildString {
-        JavaCodeWriter.create(this).emit(this@writeToJavaString)
+        JavaCodeWriter.create(out = this, dialect = ToStringJavaWriteStrategy)
+            .emit(this@writeToJavaString)
     }
 
 public fun TypeName.writeToJavaString(): String =
     buildString {
-        JavaCodeWriter.create(this).emit(this@writeToJavaString)
+        JavaCodeWriter.create(out = this, dialect = ToStringJavaWriteStrategy)
+            .emit(this@writeToJavaString)
     }
 
 public fun AnnotationRef.writeToJavaString(): String =
     buildString {
-        JavaCodeWriter.create(this).emit(this@writeToJavaString)
+        JavaCodeWriter.create(out = this, dialect = ToStringJavaWriteStrategy)
+            .emit(this@writeToJavaString)
     }
 
 public fun CodeValue.writeToJavaString(): String =
     buildString {
-        JavaCodeWriter.create(this).emit(this@writeToJavaString)
+        JavaCodeWriter.create(out = this, dialect = ToStringJavaWriteStrategy)
+            .emit(this@writeToJavaString)
     }
 
 public fun JavaCodeEmitter.writeToJavaString(): String =
     buildString {
-        val writer = JavaCodeWriter.create(this)
+        val writer = JavaCodeWriter.create(out = this, dialect = ToStringJavaWriteStrategy)
         this@writeToJavaString.emit(writer)
     }

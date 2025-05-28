@@ -68,6 +68,21 @@ public val PackageName.isEmpty: Boolean
 public val PackageName.isNotEmpty: Boolean
     get() = !isEmpty
 
+public val PackageName.parts: List<String>
+    get() = partSequence.toList()
+
+public val PackageName.partSequence: Sequence<String>
+    get() = sequence {
+        emit(this@partSequence)
+    }
+
+private suspend fun SequenceScope<String>.emit(packageName: PackageName) {
+    if (packageName.isNotEmpty) {
+        packageName.previous?.also { emit(it) }
+        yield(packageName.name)
+    }
+}
+
 /**
  * An empty package.
  */
@@ -99,6 +114,10 @@ public fun PackageName(previous: PackageName?, name: String): PackageName {
     return PackageNameImpl(previous, name)
 }
 
+public fun PackageName(vararg paths: String): PackageName {
+    return PackageName(paths.asList())
+}
+
 public fun PackageName(paths: List<String>): PackageName {
     if (paths.isEmpty()) {
         return EMPTY
@@ -117,7 +136,7 @@ public fun PackageName(paths: List<String>): PackageName {
     return current
 }
 
-public fun String.parseToPackageName(): PackageName {
+public fun CharSequence.parseToPackageName(): PackageName {
     if (isEmpty()) {
         return EMPTY
     }

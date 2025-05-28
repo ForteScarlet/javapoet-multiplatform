@@ -4,22 +4,22 @@ import kotlin.text.codePointAt as codePointAtKt
 
 @InternalCodePointApi
 public actual fun String.codePointAt(index: Int): CodePoint =
-    CodePoint(codePointAtKt(index))
+    CodePoint(codePointAtKt(index).toUInt())
 
 @InternalCodePointApi
 public actual fun CodePoint.isLowerCase(): Boolean =
-    Character.isLowerCase(code)
+    Character.isLowerCase(code.toInt())
 
 @InternalCodePointApi
 public actual fun CodePoint.isUpperCase(): Boolean =
-    Character.isUpperCase(code)
+    Character.isUpperCase(code.toInt())
 
 @InternalCodePointApi
 public actual fun CodePoint.charCount(): Int {
-    return Character.charCount(code)
+    return Character.charCount(code.toInt())
 }
 
 @InternalCodePointApi
 public actual fun StringBuilder.appendCodePoint(codePoint: CodePoint): StringBuilder {
-    return appendCodePoint(codePoint.code)
+    return appendCodePoint(codePoint.code.toInt())
 }

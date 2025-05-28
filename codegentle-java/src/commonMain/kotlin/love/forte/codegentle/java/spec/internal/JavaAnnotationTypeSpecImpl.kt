@@ -51,13 +51,13 @@ internal class JavaAnnotationTypeSpecImpl(
             codeWriter.emitTypeVariableRefs(typeVariables)
 
             codeWriter.popType()
-            codeWriter.emit(" {\n")
+            codeWriter.emitNewLine(" {")
 
             emitMembers(codeWriter)
 
             codeWriter.popTypeVariableRefs(typeVariables)
 
-            codeWriter.emit("}\n")
+            codeWriter.emitNewLine("}")
         }
     }
 

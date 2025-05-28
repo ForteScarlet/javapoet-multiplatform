@@ -64,13 +64,13 @@ internal class JavaRecordTypeSpecImpl(
 
             codeWriter.emit(")")
 
-            codeWriter.emit(" {\n")
+            codeWriter.emitNewLine(" {")
 
             emitMembers(codeWriter)
 
             codeWriter.popTypeVariableRefs(typeVariables)
 
-            codeWriter.emit("}\n")
+            codeWriter.emitNewLine("}")
         }
     }
 

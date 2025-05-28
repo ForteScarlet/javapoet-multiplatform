@@ -25,5 +25,5 @@ public interface JavaPrimitiveTypeName : TypeName {
 }
 
 internal fun JavaPrimitiveTypeName.emitTo(codeWriter: JavaCodeWriter) {
-    codeWriter.emitAndIndent(keyword)
+    codeWriter.emit(keyword)
 }

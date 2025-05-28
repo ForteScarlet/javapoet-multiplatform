@@ -19,6 +19,10 @@
 
 package love.forte.codegentle.java
 
+import love.forte.codegentle.common.naming.appendTo
+import love.forte.codegentle.common.naming.isEmpty
+import love.forte.codegentle.common.naming.isNotEmpty
+import love.forte.codegentle.common.naming.partSequence
 import love.forte.codegentle.java.strategy.JavaWriteStrategy
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -50,8 +54,8 @@ public fun JavaFile.writeTo(
 
     var outputDir = directory
 
-    if (packageName.isNotEmpty()) {
-        for (packagePart in packageName.split('.')) {
+    if (packageName.isNotEmpty) {
+        for (packagePart in packageName.partSequence) {
             outputDir = outputDir.resolve(packagePart)
         }
         outputDir.createDirectories()
@@ -79,10 +83,15 @@ public fun JavaFile.writeTo(
  * Create a [JavaFileObject] from a [JavaFile].
  */
 public fun JavaFile.toJavaFileObject(): JavaFileObject {
-    val name = if (packageName.isEmpty()) {
+    val name = if (packageName.isEmpty) {
         type.name
     } else {
-        packageName.replace('.', '/') + '/' + type.name
+        buildString {
+            packageName.appendTo(this, "/")
+            append('/')
+            append(type.name)
+        }
+        // packageName.replace('.', '/') + '/' + type.name
     }
 
     val uri = URI.create(name + JavaFileObject.Kind.SOURCE.extension)
@@ -123,10 +132,14 @@ public fun JavaFile.writeTo(
     strategy: JavaWriteStrategy = JavaWriteStrategy,
     vararg originatingElements: Element
 ) {
-    val fileName = if (packageName.isEmpty()) {
+    val fileName = if (packageName.isEmpty) {
         type.name
     } else {
-        packageName + "." + type.name
+        buildString {
+            packageName.appendTo(this)
+            append('.')
+            append(type.name)
+        }
     }
 
     val filerSourceFile = filer.createSourceFile(fileName, *originatingElements)

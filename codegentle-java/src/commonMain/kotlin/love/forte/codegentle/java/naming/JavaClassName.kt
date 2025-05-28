@@ -2,6 +2,7 @@ package love.forte.codegentle.java.naming
 
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.canonicalName
+import love.forte.codegentle.common.naming.isEmpty
 import love.forte.codegentle.common.naming.simpleNames
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.spec.nestedTypesSimpleNames
@@ -33,7 +34,7 @@ internal fun ClassName.emitTo(codeWriter: JavaCodeWriter) {
             val qualifiedName: String = codeWriter.lookupName(className)
             val dot = qualifiedName.lastIndexOf('.')
             if (dot != -1) {
-                codeWriter.emitAndIndent(qualifiedName.substring(0, dot + 1))
+                codeWriter.emit(qualifiedName.substring(0, dot + 1))
                 simpleName = qualifiedName.substring(dot + 1)
                 charsEmitted = true
             } else {
@@ -136,7 +137,7 @@ private fun JavaCodeWriter.importableType(className: ClassName) {
      */
 
     val packageName = className.packageName
-    if (packageName == null || packageName.isEmpty()) {
+    if (packageName == null || packageName.isEmpty) {
         // null, or is empty.
         return
     } else if (alwaysQualify.contains(className.simpleName)) {

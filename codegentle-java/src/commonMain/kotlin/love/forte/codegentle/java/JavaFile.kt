@@ -24,6 +24,7 @@ import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.naming.ClassName
+import love.forte.codegentle.common.naming.PackageName
 import love.forte.codegentle.common.naming.canonicalName
 import love.forte.codegentle.java.internal.JavaFileImpl
 import love.forte.codegentle.java.spec.JavaTypeSpec
@@ -41,7 +42,7 @@ import kotlin.jvm.JvmStatic
 public interface JavaFile : JavaCodeEmitter {
 
     public val fileComment: CodeValue
-    public val packageName: String
+    public val packageName: PackageName
 
     // TODO types?
 
@@ -67,14 +68,14 @@ public interface JavaFile : JavaCodeEmitter {
     public companion object {
 
         @JvmStatic
-        public fun builder(packageName: String, type: JavaTypeSpec): JavaFileBuilder =
+        public fun builder(packageName: PackageName, type: JavaTypeSpec): JavaFileBuilder =
             JavaFileBuilder(packageName, type)
 
     }
 }
 
 public class JavaFileBuilder internal constructor(
-    public val packageName: String,
+    public val packageName: PackageName,
     public val type: JavaTypeSpec,
 ) : BuilderDsl {
     private val fileComment = CodeValue.builder()
@@ -127,7 +128,6 @@ public class JavaFileBuilder internal constructor(
         //    fillAlwaysQualifiedNames(nested, alwaysQualifiedNames)
         //  }
 
-
         return JavaFileImpl(
             fileComment = fileComment.build(),
             packageName = packageName,
@@ -140,9 +140,16 @@ public class JavaFileBuilder internal constructor(
     }
 }
 
-public inline fun JavaFileBuilder.addFileComment(format: String, block: CodeValueSingleFormatBuilderDsl = {}): JavaFileBuilder = apply {
+public inline fun JavaFileBuilder.addFileComment(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): JavaFileBuilder = apply {
     addFileComment(CodeValue(format, block))
 }
 
-public inline fun JavaFile(packageName: String, type: JavaTypeSpec, block: JavaFileBuilder.() -> Unit = {}): JavaFile =
+public inline fun JavaFile(
+    packageName: PackageName,
+    type: JavaTypeSpec,
+    block: JavaFileBuilder.() -> Unit = {}
+): JavaFile =
     JavaFile.builder(packageName, type).also(block).build()

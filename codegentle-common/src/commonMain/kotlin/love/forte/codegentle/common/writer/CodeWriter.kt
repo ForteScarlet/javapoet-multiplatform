@@ -2,6 +2,7 @@ package love.forte.codegentle.common.writer
 
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.naming.ClassName
+import love.forte.codegentle.common.naming.PackageName
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
@@ -42,9 +43,13 @@ public interface CodeWriter {
 
     public fun emit(s: String)
 
-    public fun emitAndIndent(s: String)
-
-    // TODO public fun emitTypeRef(typeRef: TypeRef<*>)
+    public fun emitNewLine(s: String? = null) {
+        if (s != null) {
+            emit(s + strategy.newline())
+        } else {
+            emit(strategy.newline())
+        }
+    }
 
     // TODO imports
     /**
@@ -70,9 +75,11 @@ public inline fun <C : CodeWriter> C.withIndent(
 
 
 public interface Import {
+    // TODO
+
     // import a.b.c.d.$name1.$name2;
     // import static a.b.c.d.$name1.$name2;
-    public val packageName: String?
+    public val packageName: PackageName?
 
     public val names: List<String>
 

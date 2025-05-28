@@ -12,8 +12,7 @@ import love.forte.codegentle.java.internal.isSourceName
  * @author ForteScarlet
  */
 public open class DefaultJavaWriteStrategy : JavaWriteStrategy {
-    override fun isValidName(name: TypeName): Boolean {
-
+    override fun isValidSourceName(name: TypeName): Boolean {
         return when (name) {
             is ClassName -> {
                 // TODO packageName ?
@@ -27,6 +26,9 @@ public open class DefaultJavaWriteStrategy : JavaWriteStrategy {
             else -> true
         }
     }
+
+    override fun isValidSourceName(name: String): Boolean =
+        name.isSourceName()
 
     override fun isIdentifier(value: String): Boolean {
         return value.isSourceIdentifier()

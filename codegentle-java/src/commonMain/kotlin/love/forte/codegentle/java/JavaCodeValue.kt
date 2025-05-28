@@ -31,7 +31,7 @@ internal fun CodeValue.emitTo(codeWriter: JavaCodeWriter, ensureTrailingNewline:
                     deferredTypeName.emitTo(codeWriter)
                     deferredTypeName = null
                 }
-                codeWriter.emitAndIndent(value)
+                codeWriter.emit(value)
             }
 
             is CodeArgumentPart.Skip -> {
@@ -47,7 +47,7 @@ internal fun CodeValue.emitTo(codeWriter: JavaCodeWriter, ensureTrailingNewline:
             }
 
             is CodeArgumentPart.Str -> {
-                codeWriter.emitAndIndent(
+                codeWriter.emit(
                     part.value?.literalWithDoubleQuotes(codeWriter.indentValue)
                         ?: "null"
                 )
@@ -134,6 +134,6 @@ internal fun CodeValue.emitTo(codeWriter: JavaCodeWriter, ensureTrailingNewline:
     }
 
     if (ensureTrailingNewline && codeWriter.out.lastChar != '\n') {
-        codeWriter.emit("\n")
+        codeWriter.emitNewLine()
     }
 }

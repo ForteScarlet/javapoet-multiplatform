@@ -27,7 +27,7 @@ public interface ClassName : Named, TypeName, Comparable<ClassName> {
      * Returns the package name, like `"java.util"` for [Map.Entry].
      * Returns null for the default package.
      */
-    public val packageName: String?
+    public val packageName: PackageName?
 
     /**
      * Returns the enclosing class, like `Map` for `Map.Entry`.
@@ -94,7 +94,8 @@ public fun <A : Appendable> ClassName.appendCanonicalNameTo(appendable: A): A {
     } else {
         val packageName = packageName
         if (packageName != null) {
-            appendable.append(packageName).append('.')
+            packageName.appendTo(appendable)
+            appendable.append('.')
         }
         appendable.append(simpleName)
     }
@@ -117,7 +118,8 @@ public fun <A : Appendable> ClassName.appendReflectionNameTo(appendable: A): A {
     } else {
         val packageName = packageName
         if (packageName != null) {
-            appendable.append(packageName).append('.')
+            packageName.appendTo(appendable)
+            appendable.append('.')
         }
         appendable.append(simpleName)
     }
@@ -133,7 +135,15 @@ public val ClassName.simpleNames: List<String>
  * Returns a class name created from the given parts. For example, calling this with package name `"java.util"`
  * and simple names `"Map"`, `"Entry"` yields [Map.Entry].
  */
-public fun ClassName(packageName: String?, simpleName: String, vararg simpleNames: String): ClassName {
+public fun ClassName(packageName: String?, simpleName: String, vararg simpleNames: String): ClassName =
+    ClassName(packageName?.parseToPackageName(), simpleName, *simpleNames)
+
+
+/**
+ * Returns a class name created from the given parts. For example, calling this with package name `"java.util"`
+ * and simple names `"Map"`, `"Entry"` yields [Map.Entry].
+ */
+public fun ClassName(packageName: PackageName?, simpleName: String, vararg simpleNames: String): ClassName {
     var className: ClassName = ClassNameImpl(packageName, null, simpleName)
     for (nested in simpleNames) {
         className = className.nestedClass(nested)
@@ -160,8 +170,8 @@ public fun ClassName(bestGuessClassNameString: String): ClassName {
         }
     }
 
-    val packageName: String? =
-        if (p == 0) null else bestGuessClassNameString.substring(0, p - 1)
+    val packageName: PackageName? =
+        if (p == 0) null else bestGuessClassNameString.substring(0, p - 1).parseToPackageName()
 
     // Add class names like "Map" and "Entry".
     var className: ClassName? = null
