@@ -308,6 +308,7 @@ public class CodeValueSingleFormatBuilder internal constructor(public val format
         var last = false
 
         var i = 0
+        var argumentCount = 0
         for (simplePart in format.splitToSequence(CodePart.PLACEHOLDER)) {
             if (simplePart.isNotEmpty()) {
                 parts.add(CodePart.simple(simplePart))
@@ -320,12 +321,15 @@ public class CodeValueSingleFormatBuilder internal constructor(public val format
                 last = true
             } else {
                 parts.add(nextArg)
+                argumentCount++
             }
 
             i++
         }
 
         check(argumentsStack.isEmpty()) { "${argumentsStack.size} redundant argument(s): $argumentsStack" }
+        // 如果根据占位符切割，那么 argument 的数量应该和占位符的数量一致，而 i 的数量应当 = argument + 1
+        check(i == argumentCount + 1) { "redundant argument: ${parts.last { it is CodeArgumentPart }}" }
 
         return parts
     }
