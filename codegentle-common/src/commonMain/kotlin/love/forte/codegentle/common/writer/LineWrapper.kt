@@ -20,7 +20,7 @@ public class LineWrapper private constructor(
     private val out: RecordingAppendable,
     private val indent: String,
     private val columnLimit: Int,
-) : AutoCloseable {
+) : AutoCloseable, Appendable {
     private var closed: Boolean = false
 
     /**
@@ -50,7 +50,26 @@ public class LineWrapper private constructor(
         check(!closed) { "closed" }
     }
 
-    public fun append(value: String) {
+    override fun append(value: Char): Appendable {
+        append0(value.toString())
+        return this
+    }
+
+    override fun append(value: CharSequence?): Appendable {
+        append0(value ?: "null")
+        return this
+    }
+
+    override fun append(
+        value: CharSequence?,
+        startIndex: Int,
+        endIndex: Int
+    ): Appendable {
+        append0((value ?: "").substring(startIndex, endIndex))
+        return this
+    }
+
+    internal fun append0(value: CharSequence) {
         checkClose()
 
         nextFlush?.also { nextFlush ->

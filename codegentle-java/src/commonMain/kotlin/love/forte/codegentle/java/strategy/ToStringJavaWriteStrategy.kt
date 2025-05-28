@@ -8,4 +8,6 @@ internal object ToStringJavaWriteStrategy : JavaWriteStrategy {
     override fun isValidSourceName(name: String): Boolean = true
 
     override fun isIdentifier(value: String): Boolean = true
+
+    override fun omitJavaLangPackage(): Boolean = true
 }

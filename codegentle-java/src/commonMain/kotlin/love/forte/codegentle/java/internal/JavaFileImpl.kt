@@ -3,6 +3,7 @@ package love.forte.codegentle.java.internal
 import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.isEmpty
+import love.forte.codegentle.common.computeValueIfAbsent
 import love.forte.codegentle.common.naming.*
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
@@ -93,7 +94,12 @@ internal class JavaFileImpl(
                 ) {
                     continue
                 }
-                codeWriter.emitNewLine("import ${className.canonicalName};")
+                // check is static import
+                if (className.enclosingClassName != null) {
+                    codeWriter.emitNewLine("import static ${className.canonicalName};")
+                } else {
+                    codeWriter.emitNewLine("import ${className.canonicalName};")
+                }
                 importedTypesCount++
             }
 
@@ -239,6 +245,7 @@ private class ClassImportVisitor(
                         is AnnotationRef -> visitAnnotationRef(value)
                     }
                 }
+
                 else -> {
                     // Do nothing.
                 }
@@ -295,12 +302,14 @@ private class ClassImportVisitor(
             // TODO what about nested types like java.util.Map.Entry?
             return
         }
-        val topLevelClassName: ClassName = className.topLevelClassName
-        val simpleName: String = topLevelClassName.simpleName
-        val replaced: ClassName? = importableTypes.put(simpleName, topLevelClassName)
-        if (replaced != null) {
-            importableTypes[simpleName] = replaced // On collision, prefer the first inserted.
-        }
+        // val topLevelClassName: ClassName = className.topLevelClassName
+        // val simpleName: String = topLevelClassName.simpleName
+        // importableTypes.computeValueIfAbsent(simpleName) { topLevelClassName }
+        importableTypes.computeValueIfAbsent(className.simpleName) { className }
+        // val replaced: ClassName? = importableTypes.put(simpleName, topLevelClassName)
+        // if (replaced != null) {
+        //     importableTypes[simpleName] = replaced // On collision, prefer the first inserted.
+        // }
     }
 }
 

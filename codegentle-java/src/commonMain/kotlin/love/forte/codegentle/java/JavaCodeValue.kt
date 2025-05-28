@@ -61,7 +61,9 @@ internal fun CodeValue.emitTo(codeWriter: JavaCodeWriter, ensureTrailingNewline:
                     // !next.start('$')
                     if (next !is CodeArgumentPart) {
                         val candidate: ClassName = typeName
-                        if (codeWriter.staticImportClassNames.contains(candidate)) {
+                        if (candidate.enclosingClassName != null
+                            && codeWriter.importedTypes[candidate.simpleName] == candidate
+                        ) {
                             check(deferredTypeName == null) { "pending type for static import?!" }
                             deferredTypeName = candidate
                             continue
@@ -81,7 +83,9 @@ internal fun CodeValue.emitTo(codeWriter: JavaCodeWriter, ensureTrailingNewline:
                     // !next.start('$')
                     if (next !is CodeArgumentPart) {
                         val candidate: ClassName = typeName
-                        if (codeWriter.staticImportClassNames.contains(candidate)) {
+                        if (candidate.enclosingClassName != null
+                            && codeWriter.importedTypes[candidate.simpleName] == candidate
+                        ) {
                             check(deferredTypeName == null) { "pending type for static import?!" }
                             deferredTypeName = candidate
                             continue

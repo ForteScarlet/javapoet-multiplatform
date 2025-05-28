@@ -1,7 +1,6 @@
 package love.forte.codegentle.common.writer
 
 import love.forte.codegentle.common.code.CodeValue
-import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.PackageName
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.ref.AnnotationRef
@@ -18,7 +17,7 @@ public interface CodeWriter {
     public val indentValue: String
 
     // out?
-    public val staticImportClassNames: Set<ClassName>
+    // public val staticImportClassNames: Set<ClassName>
     public val staticImports: Set<String> // String? or a MemberName?
     public val alwaysQualify: Set<String>
 

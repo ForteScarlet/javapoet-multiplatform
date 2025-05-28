@@ -10,6 +10,86 @@ import love.forte.codegentle.java.writer.JavaCodeWriter
 
 
 internal fun ClassName.emitTo(codeWriter: JavaCodeWriter) {
+    // 优先查看当前类是否已经被导入,
+    // 如果当前类没有被导入，向上查找，并记录names到缓存列表 [currentName, enclosing1Name, ...]
+    // 列表最后一个元素是最后一个能找到、被导入的类型，或没有任何类型被导入。
+    // 如果没有被导入类型，先emit package，再依次倒序emit names。
+    // 如果有被导入的类型，从它开始 emit names，不需要 emit package。
+
+    var omitPackage = codeWriter.isInSamePackage(this)
+
+    // 如果java.lang需要处理或处于同一个包内
+    if ((codeWriter.strategy.omitJavaLangPackage()
+            && packageName?.isJavaLang == true)
+    ) {
+        omitPackage = true
+    }
+
+    val importSimpleNames = mutableListOf<String>()
+    var className = this
+
+    while (true) {
+        importSimpleNames.add(className.simpleName)
+        val imported = codeWriter.isImported(className)
+        if (imported) {
+            // 检查 typeVariables 名称冲突
+            if (codeWriter.currentTypeVariables.contains(className.simpleName)) {
+                // 如果名称冲突了，仍然使用全限定名（不跳过包的输出）
+                continue
+            }
+
+            // Check for conflicts with nested types in current type stack
+            for (typeSpec in codeWriter.typeSpecStack) {
+                if (typeSpec.nestedTypesSimpleNames.contains(simpleName)) {
+                    continue
+                }
+            }
+
+            omitPackage = true
+            break
+        } else {
+            // check `java.lang`
+            val enclosingClassName = className.enclosingClassName
+            if (enclosingClassName == null) {
+                // stop loop
+                break
+            }
+
+            className = enclosingClassName
+        }
+    }
+
+    if (!omitPackage) {
+        packageName?.also { p ->
+            p.emitTo(codeWriter)
+            codeWriter.emit(".")
+        }
+    }
+
+    importSimpleNames.reverse()
+    importSimpleNames.forEachIndexed { index, name ->
+        codeWriter.emit(name)
+        if (index != importSimpleNames.lastIndex) {
+            // not last
+            codeWriter.emit(".")
+        }
+    }
+}
+
+// 辅助方法
+private fun JavaCodeWriter.isImported(className: ClassName): Boolean {
+    // 看看当前类有没有被导入。可能是普通导入或 static 导入
+    return importedTypes[className.simpleName] == className ||
+        className.canonicalName in staticImports
+}
+
+private fun JavaCodeWriter.isInSamePackage(className: ClassName): Boolean {
+    return packageName == className.packageName
+}
+
+//////////
+
+internal fun ClassName.emitTo1(codeWriter: JavaCodeWriter) {
     fun enclosingClasses(): List<ClassName> {
         val result = mutableListOf<ClassName>()
         var c: ClassName? = this
@@ -36,7 +116,6 @@ internal fun ClassName.emitTo(codeWriter: JavaCodeWriter) {
             if (dot != -1) {
                 codeWriter.emit(qualifiedName.substring(0, dot + 1))
                 simpleName = qualifiedName.substring(dot + 1)
-                charsEmitted = true
             } else {
                 simpleName = qualifiedName
             }
@@ -97,7 +176,6 @@ private fun JavaCodeWriter.lookupName(className: ClassName): String {
         c = c.enclosingClassName
     }
 
-
     // If the name resolved but wasn't a match, we're stuck with the fully qualified name.
     if (nameResolved) {
         return className.canonicalName
@@ -109,14 +187,22 @@ private fun JavaCodeWriter.lookupName(className: ClassName): String {
         return className.simpleNames.joinToString(".")
     }
 
+    // Handle java.lang package based on strategy
+    if (strategy.omitJavaLangPackage()
+        && className.packageName?.isJavaLang == true
+        && !alwaysQualify.contains(className.simpleName)
+    ) {
+        referencedNames.add(topLevelSimpleName)
+        return className.simpleNames.joinToString(".")
+    }
 
     // We'll have to use the fully-qualified name. Mark the type as importable for a future pass.
-    // if (!javadoc) {
     if (commentType?.isJavadoc != true) {
         importableType(className)
     }
 
     return className.canonicalName
+
 }
 
 private fun JavaCodeWriter.importableType(className: ClassName) {
@@ -140,15 +226,35 @@ private fun JavaCodeWriter.importableType(className: ClassName) {
     if (packageName == null || packageName.isEmpty) {
         // null, or is empty.
         return
-    } else if (alwaysQualify.contains(className.simpleName)) {
-        // TODO what about nested types like java.util.Map.Entry?
+    }
+
+    // Skip java.lang imports based on strategy, unless always qualified
+    if (packageName.isJavaLang
+        && strategy.omitJavaLangPackage()
+        && !alwaysQualify.contains(className.simpleName)
+    ) {
         return
     }
+
     val topLevelClassName: ClassName = className.topLevelClassName
     val simpleName: String = topLevelClassName.simpleName
-    val replaced: ClassName? = importableTypes.put(simpleName, topLevelClassName)
-    if (replaced != null) {
-        importableTypes[simpleName] = replaced // On collision, prefer the first inserted.
+
+    // Avoid conflicts with types already in scope
+    if (currentTypeVariables.contains(simpleName)) {
+        return
+    }
+
+    // Check for conflicts with nested types in current type stack
+    for (typeSpec in typeSpecStack) {
+        if (typeSpec.nestedTypesSimpleNames.contains(simpleName)) {
+            return
+        }
+    }
+
+    val existing: ClassName? = importableTypes.put(simpleName, topLevelClassName)
+    if (existing != null) {
+        // On collision, prefer the first inserted to maintain consistency
+        importableTypes[simpleName] = existing
     }
 }
 
@@ -191,8 +297,28 @@ private fun JavaCodeWriter.resolve(simpleName: String): ClassName? {
     val importedType: ClassName? = importedTypes[simpleName]
     if (importedType != null) return importedType
 
+    // Match java.lang types implicitly if strategy allows omitting java.lang
+    if (strategy.omitJavaLangPackage() && isCommonJavaLangType(simpleName)) {
+        return ClassName(JavaLangPackage, simpleName)
+    }
+
     // No match.
     return null
+}
+
+private val commonJavaLangTypeSimpleNames = setOf(
+    "Object", "String", "Class", "Integer", "Long", "Double", "Float",
+    "Boolean", "Character", "Byte", "Short", "Number", "Throwable",
+    "Exception", "RuntimeException", "Error", "Thread", "System",
+    "Math", "StringBuilder", "StringBuffer", "Void"
+)
+
+/**
+ * Check if a simple name refers to a common java.lang type
+ * This is a conservative list of commonly used java.lang classes
+ */
+private fun isCommonJavaLangType(simpleName: String): Boolean {
+    return simpleName in commonJavaLangTypeSimpleNames
 }
 
 /** Returns the class named `simpleName` when nested in the class at `stackDepth`.  */
@@ -216,7 +342,7 @@ private fun JavaCodeWriter.stackClassName(
      * limitations under the License.
      */
 
-    var className = ClassName(packageName, typeSpecStack[0].name!!)
+    var className = ClassName(packageName!!, typeSpecStack[0].name!!)
     for (i in 1..stackDepth) {
         className = className.nestedClass(typeSpecStack[i].name!!)
     }

@@ -91,9 +91,16 @@ public fun PackageName(): PackageName = EMPTY
 /**
  * A top package.
  */
-public fun PackageName(root: String): PackageName {
+public fun PackageName(root: String, strict: Boolean = true): PackageName {
     if (root.isEmpty()) {
         return EMPTY
+    }
+
+    if (strict) {
+        require(root.none { it == '.' }) {
+            "PackageName's path can not contain '.' but name = '$root'." +
+                "Use `CharSequence.parseToPackageName` if you wish to parse the package path string."
+        }
     }
 
     return PackageNameImpl(EMPTY, root)
@@ -102,13 +109,21 @@ public fun PackageName(root: String): PackageName {
 /**
  * A package.
  */
-public fun PackageName(previous: PackageName?, name: String): PackageName {
+public fun PackageName(previous: PackageName?, name: String, strict: Boolean = true): PackageName {
     if (previous == null) {
         return PackageName(name)
     }
 
     if (previous.isEmpty) {
         require(name.isNotEmpty()) { "PackageName's name can not be empty." }
+    }
+
+    if (strict) {
+        // check previous?
+        require(name.none { it == '.' }) {
+            "PackageName's path can not contain '.', but name = '$name'." +
+                "Use `CharSequence.parseToPackageName` if you wish to parse the package path string."
+        }
     }
 
     return PackageNameImpl(previous, name)
@@ -118,19 +133,19 @@ public fun PackageName(vararg paths: String): PackageName {
     return PackageName(paths.asList())
 }
 
-public fun PackageName(paths: List<String>): PackageName {
+public fun PackageName(paths: List<String>, strict: Boolean = true): PackageName {
     if (paths.isEmpty()) {
         return EMPTY
     }
 
     if (paths.size == 1) {
-        return PackageName(paths[0])
+        return PackageName(paths[0], strict)
     }
 
     var current = EMPTY
 
     for (currentPath in paths) {
-        current = PackageName(current, currentPath)
+        current = PackageName(current, currentPath, strict)
     }
 
     return current
@@ -148,7 +163,7 @@ public fun CharSequence.parseToPackageName(): PackageName {
  * `love.forte` + `"codegentle"` -> `love.forte.codegentle`.
  */
 public operator fun PackageName.plus(subPath: String): PackageName =
-    PackageName(this, subPath)
+    PackageName(this, subPath, strict = true)
 
 /**
  * `love.forte` + `codegentle.naming` -> `love.forte.codegentle.naming`.
@@ -158,7 +173,7 @@ public operator fun PackageName.plus(subPaths: PackageName): PackageName {
         subPaths.isEmpty -> this
         this.isEmpty -> subPaths
         subPaths.previous?.isEmpty != false -> PackageName(this, subPaths.name)
-        else -> PackageName((this.names() + subPaths.names()).map { it.name }.toList())
+        else -> PackageName((this.nameSequence() + subPaths.nameSequence()).map { it.name }.toList())
     }
 }
 
@@ -166,7 +181,7 @@ public fun PackageName.top(): PackageName {
     return previous?.takeUnless { it.isEmpty }?.top() ?: this
 }
 
-public fun PackageName.names(): Sequence<PackageName> {
+public fun PackageName.nameSequence(): Sequence<PackageName> {
     if (isEmpty) {
         return emptySequence()
     }
@@ -181,9 +196,12 @@ public fun PackageName.names(): Sequence<PackageName> {
             yield(name)
         }
 
-        yieldNames(this@names)
+        yieldNames(this@nameSequence)
     }
 }
+
+public fun PackageName.names(): List<PackageName> =
+    nameSequence().toList()
 
 public fun PackageName.appendTo(appendable: Appendable, separator: String = ".") {
     previous

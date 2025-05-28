@@ -33,4 +33,6 @@ public open class DefaultJavaWriteStrategy : JavaWriteStrategy {
     override fun isIdentifier(value: String): Boolean {
         return value.isSourceIdentifier()
     }
+
+    override fun omitJavaLangPackage(): Boolean = true
 }

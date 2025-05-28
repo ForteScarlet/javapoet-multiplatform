@@ -116,18 +116,18 @@ class PackageNameTests {
     fun testPackageNameNames() {
         "love.forte.codegentle".parseToPackageName()
             .apply {
-                assertContentEquals(listOf("love", "forte", "codegentle"), names().map { it.name }.toList())
+                assertContentEquals(listOf("love", "forte", "codegentle"), nameSequence().map { it.name }.toList())
             }
         "love".parseToPackageName()
             .apply {
-                assertContentEquals(listOf("love"), names().map { it.name }.toList())
+                assertContentEquals(listOf("love"), nameSequence().map { it.name }.toList())
             }
         "".parseToPackageName()
             .apply {
-                assertContentEquals(emptyList(), names().map { it.name }.toList())
+                assertContentEquals(emptyList(), nameSequence().map { it.name }.toList())
             }
 
-        assertContentEquals(emptyList(), PackageName.EMPTY.names().map { it.name }.toList())
+        assertContentEquals(emptyList(), PackageName.EMPTY.nameSequence().map { it.name }.toList())
     }
 
     @Test

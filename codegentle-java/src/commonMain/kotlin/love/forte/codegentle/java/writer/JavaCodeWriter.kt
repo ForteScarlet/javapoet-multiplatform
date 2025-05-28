@@ -50,7 +50,7 @@ public class JavaCodeWriter private constructor(
     override val indentValue: String,
     internal val out: LineWrapper,
 
-    override val staticImportClassNames: Set<ClassName> = emptySet(),
+    // public val staticImportClassNames: Set<ClassName> = emptySet(),
     override val staticImports: Set<String> = emptySet(),
     override val alwaysQualify: Set<String> = emptySet(),
     internal val importedTypes: Map<String, ClassName> = emptyMap()
@@ -394,12 +394,12 @@ public class JavaCodeWriter private constructor(
                 importedTypes = importedTypes,
                 staticImports = staticImports,
                 alwaysQualify = alwaysQualify,
-                staticImportClassNames = staticImports.mapTo(linkedSetOf()) {
-                    // static import 不止可以import class，还有字段、方法啥的
-                    ClassName(it)
-                    // TODO("")
-                    // it.substringBeforeLast('.')
-                },
+                // staticImportClassNames = staticImports.mapTo(linkedSetOf()) {
+                //     // static import 不止可以import class，还有字段、方法啥的
+                //     ClassName(it)
+                //     // TODO("")
+                //     // it.substringBeforeLast('.')
+                // },
             )
         }
     }
