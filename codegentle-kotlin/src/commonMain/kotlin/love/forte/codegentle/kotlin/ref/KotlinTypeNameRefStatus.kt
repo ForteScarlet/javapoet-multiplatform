@@ -2,6 +2,8 @@ package love.forte.codegentle.kotlin.ref
 
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.ref.*
+import love.forte.codegentle.kotlin.InternalKotlinCodeGentleApi
+import love.forte.codegentle.kotlin.ref.internal.KotlinTypeNameRefStatusImpl
 
 @SubclassOptInRequired(CodeGentleRefImplementation::class)
 public interface KotlinTypeNameRefStatus : TypeNameRefStatus {
@@ -29,11 +31,12 @@ public class KotlinTypeNameRefStatusBuilder @PublishedApi internal constructor()
         annotations.addAll(refs)
     }
 
+    @OptIn(InternalKotlinCodeGentleApi::class)
     override fun build(): KotlinTypeNameRefStatus {
-        TODO("impl")
-        // return JavaTypeNameRefStatusImpl(
-        //     annotations = annotations.toList()
-        // )
+        return KotlinTypeNameRefStatusImpl(
+            annotations = annotations.toList(),
+            nullable = nullable
+        )
     }
 }
 
@@ -55,3 +58,7 @@ public inline fun <T : TypeName> T.kotlinRef(
  */
 public val TypeNameRefStatus.kotlinOrNull: KotlinTypeNameRefStatus?
     get() = this as? KotlinTypeNameRefStatus?
+
+public inline fun KotlinTypeNameRefStatus(block: KotlinTypeNameRefStatusBuilder.() -> Unit): KotlinTypeNameRefStatus {
+    return KotlinTypeNameRefStatusBuilder().also(block).build()
+}
