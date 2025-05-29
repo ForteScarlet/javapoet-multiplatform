@@ -19,7 +19,6 @@ internal class CodeValueExtensionsProcessor(private val environment: SymbolProce
     private val logger = environment.logger
     private val codePartFactoryAnnotationName = "love.forte.codegentle.common.code.CodePartFactory"
     private val codePartClassName = "love.forte.codegentle.common.code.CodePart"
-    private val codeValueSingleFormatBuilderClassName = "love.forte.codegentle.common.code.CodeValueSingleFormatBuilder"
 
     private var codePartFile: KSFile? = null
     private val collectedFactoryFunctions = mutableListOf<KSFunctionDeclaration>()
