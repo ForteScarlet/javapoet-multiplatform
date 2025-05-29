@@ -2,7 +2,8 @@ package love.forte.codegentle.java.ref
 
 import love.forte.codegentle.common.code.CodePart.Companion.literal
 import love.forte.codegentle.common.code.CodePart.Companion.string
-import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.code.emitString
+import love.forte.codegentle.common.code.emitType
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.ref.AnnotationRefCollectable
 import love.forte.codegentle.common.ref.AnnotationRefCollectableOps
@@ -85,7 +86,7 @@ public fun <B : AnnotationRefCollectable<B>> AnnotationRefCollectableOps<B>.addR
 
         javaRetentionName?.also { retentionName ->
             addMember("value", "%V.%V") {
-                type(ClassName("java.lang.annotation", "Retention"))
+                emitType(ClassName("java.lang.annotation", "Retention"))
                 literal(retentionName)
             }
         }
@@ -109,7 +110,7 @@ public fun <B : AnnotationRefCollectable<B>> AnnotationRefCollectableOps<B>.addT
                 val elementName = value.uppercase()
                 require(elementName.all { it in 'A'..'Z' || it == '_' })
                 addMember("value", "%V.%V") {
-                    type(ClassName("java.lang.annotation", "ElementType"))
+                    emitType(ClassName("java.lang.annotation", "ElementType"))
                     literal(elementName)
                 }
             }
@@ -132,7 +133,7 @@ public fun <B : AnnotationRefCollectable<B>> AnnotationRefCollectableOps<B>.addI
 public fun <B : AnnotationRefCollectable<B>> AnnotationRefCollectableOps<B>.addRepeatable(value: ClassName): B {
     return collectable.addAnnotationRef(JavaAnnotationNames.Repeatable) {
         addMember("value", "%V.class") {
-            type(value)
+            emitType(value)
         }
     }
 }
@@ -166,10 +167,10 @@ public fun <B : AnnotationRefCollectable<B>> AnnotationRefCollectableOps<B>.addG
     return collectable.addAnnotationRef(JavaAnnotationNames.Generated) {
         values?.takeIf { it.isNotEmpty() }?.also { values ->
             for (value in values) {
-                addMember("value", "%V") { string(value) }
+                addMember("value", "%V") { emitString(value) }
             }
         }
-        date?.also { d -> addMember("date", "%V") { string(d) } }
-        comments?.also { c -> addMember("comments", "%V") { string(c) } }
+        date?.also { d -> addMember("date", "%V") { emitString(d) } }
+        comments?.also { c -> addMember("comments", "%V") { emitString(c) } }
     }
 }

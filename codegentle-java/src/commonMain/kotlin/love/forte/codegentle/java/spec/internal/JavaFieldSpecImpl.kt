@@ -1,8 +1,8 @@
 package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.emitType
 import love.forte.codegentle.common.code.isEmpty
-import love.forte.codegentle.common.code.type
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.java.JavaModifier
@@ -30,7 +30,7 @@ internal class JavaFieldSpecImpl internal constructor(
         codeWriter.emitAnnotationRefs(annotations, false)
         codeWriter.emitModifiers(modifiers, implicitModifiers)
         codeWriter.emit("%V $name") {
-            type(type)
+            emitType(type)
         }
         if (!initializer.isEmpty) {
             codeWriter.emit(" = ")

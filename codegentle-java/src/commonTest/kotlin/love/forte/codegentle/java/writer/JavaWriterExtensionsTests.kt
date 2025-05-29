@@ -3,9 +3,9 @@ package love.forte.codegentle.java.writer
 import love.forte.codegentle.common.code.CodePart.Companion.string
 import love.forte.codegentle.common.code.CodePart.Companion.type
 import love.forte.codegentle.common.code.CodeValue
-import love.forte.codegentle.common.code.literal
-import love.forte.codegentle.common.code.string
-import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.code.emitLiteral
+import love.forte.codegentle.common.code.emitString
+import love.forte.codegentle.common.code.emitType
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.ref.annotationRef
 import love.forte.codegentle.common.ref.status
@@ -25,8 +25,8 @@ class JavaWriterExtensionsTests {
     @Test
     fun testCodeValueWriteToJavaString() {
         val codeValue = CodeValue("%V.out.println(%V)") {
-            type(ClassName("java.lang", "System"))
-            string("Hello, World!")
+            emitType(ClassName("java.lang", "System"))
+            emitString("Hello, World!")
         }
 
         assertEquals("System.out.println(\"Hello, World!\")", codeValue.writeToJavaString())
@@ -69,9 +69,9 @@ class JavaWriterExtensionsTests {
     @Test
     fun testComplexCodeValueWriteToJavaString() {
         val codeValue = CodeValue("%V %V = %V;") {
-            type(ClassName("java.lang", "String"))
-            literal("name")
-            string("Hello World")
+            emitType(ClassName("java.lang", "String"))
+            emitLiteral("name")
+            emitString("Hello World")
         }
 
         assertEquals("String name = \"Hello World\";", codeValue.writeToJavaString())
@@ -84,12 +84,12 @@ class JavaWriterExtensionsTests {
     @Test
     fun testCodeValueWithMultipleFormatsWriteToJavaString() {
         val codeValue = CodeValue("for (%V %V : %V) {\n  %V.%V(%V);\n}") {
-            type(ClassName("java.lang", "String"))
-            literal("item")
-            literal("items")
-            literal("System")
-            literal("out.println")
-            literal("item")
+            emitType(ClassName("java.lang", "String"))
+            emitLiteral("item")
+            emitLiteral("items")
+            emitLiteral("System")
+            emitLiteral("out.println")
+            emitLiteral("item")
         }
 
         val expected = "for (java.lang.String item : items) {\n  System.out.println(item);\n}"

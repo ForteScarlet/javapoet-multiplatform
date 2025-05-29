@@ -1,6 +1,9 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
+    // Use the Kotlin Multiplatform plugin without specifying version
+    // The version is inherited from the root project
+    // id("org.jetbrains.kotlin.multiplatform")
     alias(libs.plugins.kotlinMultiplatform)
     // alias(libs.plugins.kotlinxBinaryCompatibilityValidator)
 }
@@ -38,7 +41,6 @@ kotlin {
 
     jvmToolchain(11)
     jvm {
-        withJava()
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             javaParameters = true
@@ -90,8 +92,13 @@ tasks.withType<JavaCompile> {
 
     options.compilerArgumentProviders.add(
         CommandLineArgumentProvider {
-            // Provide compiled Kotlin classes to javac – needed for Java/Kotlin mixed sources to work
-            listOf("--patch-module", "$moduleName=${sourceSets["main"].output.asPath}")
+            val sourceSet = sourceSets.findByName("main") ?: sourceSets.findByName("jvmMain")
+            if (sourceSet != null) {
+                // Provide compiled Kotlin classes to javac – needed for Java/Kotlin mixed sources to work
+                listOf("--patch-module", "$moduleName=${sourceSet.output.asPath}")
+            } else {
+                emptyList()
+            }
         }
     )
 }

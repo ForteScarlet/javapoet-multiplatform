@@ -1,7 +1,7 @@
 package love.forte.codegentle.java
 
 import love.forte.codegentle.common.code.CodeValue
-import love.forte.codegentle.common.code.literal
+import love.forte.codegentle.common.code.emitLiteral
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.java.naming.JavaClassNames
 import love.forte.codegentle.java.strategy.ToStringJavaWriteStrategy
@@ -42,14 +42,14 @@ class ClassNameTest {
         assertEquals(
             "import java.lang.String;",
             CodeValue("import %V;") {
-                literal(ClassName("java.lang", "String"))
+                emitLiteral(ClassName("java.lang", "String"))
             }.writeToJavaString()
         )
 
         assertEquals(
             "import java.lang.String;",
             CodeValue("import %V;") {
-                literal(ClassName("java.lang", "String"))
+                emitLiteral(ClassName("java.lang", "String"))
             }.writeToJavaString()
         )
     }

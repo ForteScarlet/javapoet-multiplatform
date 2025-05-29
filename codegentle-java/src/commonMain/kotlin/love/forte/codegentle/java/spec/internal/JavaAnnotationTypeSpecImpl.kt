@@ -1,7 +1,7 @@
 package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.common.code.CodeValue
-import love.forte.codegentle.common.code.literal
+import love.forte.codegentle.common.code.emitLiteral
 import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
@@ -45,7 +45,7 @@ internal class JavaAnnotationTypeSpecImpl(
             codeWriter.emitAnnotationRefs(annotations, false)
             codeWriter.emitModifiers(modifiers, implicitModifiers + kind.asMemberModifiers)
             codeWriter.emit("@interface %V") {
-                literal(name)
+                emitLiteral(name)
             }
 
             codeWriter.emitTypeVariableRefs(typeVariables)

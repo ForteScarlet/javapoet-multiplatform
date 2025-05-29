@@ -2,9 +2,9 @@ package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.common.code.CodePart.Companion.literal
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.emitType
+import love.forte.codegentle.common.code.emitZeroWidthSpace
 import love.forte.codegentle.common.code.isEmpty
-import love.forte.codegentle.common.code.type
-import love.forte.codegentle.common.code.zeroWidthSpace
 import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
@@ -45,12 +45,12 @@ internal class JavaMethodSpecImpl(
 
         if (isConstructor) {
             codeWriter.emit("$name(%V") {
-                zeroWidthSpace()
+                emitZeroWidthSpace()
             }
         } else {
             codeWriter.emit("%V ${this.name}(%V") {
-                type(returnType ?: JavaPrimitiveTypeNames.VOID.javaRef())
-                zeroWidthSpace()
+                emitType(returnType ?: JavaPrimitiveTypeNames.VOID.javaRef())
+                emitZeroWidthSpace()
             }
         }
 
@@ -83,7 +83,7 @@ internal class JavaMethodSpecImpl(
                 if (!firstException) codeWriter.emit(",")
                 codeWriter.emitWrappingSpace()
                 codeWriter.emit("%V") {
-                    type(exception)
+                    emitType(exception)
                 }
 
                 firstException = false

@@ -1,7 +1,8 @@
 package love.forte.codegentle.test.apt.proc
 
-import love.forte.codegentle.common.code.literal
-import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.code.emitLiteral
+import love.forte.codegentle.common.code.emitType
+import love.forte.codegentle.common.naming.parseToPackageName
 import love.forte.codegentle.common.ref.annotationRefs
 import love.forte.codegentle.java.JavaFile
 import love.forte.codegentle.java.naming.toJavaClassName
@@ -69,7 +70,7 @@ class TestProcessor : AbstractProcessor() {
             addMethods(factoryMethods)
         }
 
-        val file = JavaFile("love.forte.codegentle.factories", factoryType)
+        val file = JavaFile("love.forte.codegentle.factories".parseToPackageName(), factoryType)
 
         file.writeTo(
             filer = processingEnv.filer,
@@ -112,8 +113,8 @@ class TestProcessor : AbstractProcessor() {
 
                     // Call this method
                     addStatement("return %V.%V(${names.joinToString(", ")})") {
-                        type(enclosingClassName)
-                        literal(method.simpleName.toString())
+                        emitType(enclosingClassName)
+                        emitLiteral(method.simpleName.toString())
                     }
                 }
 

@@ -21,10 +21,10 @@ class OtherCodeValueTest {
     fun testCodeValueFormat() {
         with(
             CodeValue("%V%V = %V%V;") {
-                type(ClassName("java.lang", "String"))
-                literal(" name")
-                literal("")
-                string("Hello World")
+                emitType(ClassName("java.lang", "String"))
+                emitLiteral(" name")
+                emitLiteral("")
+                emitString("Hello World")
             }
         ) {
             assertEquals(parts.size, 6)
@@ -45,10 +45,10 @@ class OtherCodeValueTest {
 
         with(
             CodeValue("%V%V = %V%V") {
-                type(ClassName("java.lang", "String"))
-                literal(" name")
-                literal("")
-                string("Hello World")
+                emitType(ClassName("java.lang", "String"))
+                emitLiteral(" name")
+                emitLiteral("")
+                emitString("Hello World")
             }
         ) {
             assertEquals(parts.size, 5)
@@ -64,9 +64,9 @@ class OtherCodeValueTest {
 
         with(
             CodeValue("%V %V = %V;") {
-                type(ClassName("java.lang", "String"))
-                literal("name")
-                string("Hello World")
+                emitType(ClassName("java.lang", "String"))
+                emitLiteral("name")
+                emitString("Hello World")
             }
         ) {
             assertEquals(parts.size, 6)
@@ -86,9 +86,9 @@ class OtherCodeValueTest {
 
         with(
             CodeValue("%V %V = %V") {
-                type(ClassName("java.lang", "String"))
-                literal("name")
-                string("Hello World")
+                emitType(ClassName("java.lang", "String"))
+                emitLiteral("name")
+                emitString("Hello World")
             }
         ) {
             assertEquals(parts.size, 5)
@@ -107,8 +107,8 @@ class OtherCodeValueTest {
 
         with(
             CodeValue("String %V = %V;") {
-                literal("name")
-                string("Hello World")
+                emitLiteral("name")
+                emitString("Hello World")
             }
         ) {
             assertEquals(parts.size, 5)
@@ -123,8 +123,8 @@ class OtherCodeValueTest {
 
         with(
             CodeValue("String %V = %V") {
-                literal("name")
-                string("Hello World")
+                emitLiteral("name")
+                emitString("Hello World")
             }
         ) {
             assertEquals(parts.size, 4)

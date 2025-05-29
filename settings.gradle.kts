@@ -38,10 +38,11 @@ rootProject.name = "codegentle"
 include(":codegentle-common")
 include(":codegentle-java")
 include(":codegentle-kotlin")
-// include(":codegentle-java-apt")
 
 include("tests:test-java-apt:proc")
 include("tests:test-java-apt:proj")
 
 include("tests:test-ksp:proc")
 include("tests:test-ksp:proj")
+
+include("internal:code-value-extensions")

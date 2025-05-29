@@ -1,7 +1,7 @@
 package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.common.code.CodeValue
-import love.forte.codegentle.common.code.literal
+import love.forte.codegentle.common.code.emitLiteral
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
@@ -43,7 +43,7 @@ internal class JavaEnumTypeSpecImpl(
             codeWriter.emitAnnotationRefs(annotations, false)
             codeWriter.emitModifiers(modifiers, implicitModifiers + kind.asMemberModifiers)
             codeWriter.emit("enum %V") {
-                literal(name)
+                emitLiteral(name)
             }
             codeWriter.emitTypeVariableRefs(typeVariables)
 

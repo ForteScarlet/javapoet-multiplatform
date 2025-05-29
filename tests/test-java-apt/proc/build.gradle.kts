@@ -2,10 +2,6 @@ plugins {
     alias(libs.plugins.kotlinJvm)
 }
 
-dependencies {
-    api(project(":codegentle-java"))
-}
-
 kotlin {
     jvmToolchain(11)
     compilerOptions {
@@ -15,4 +11,8 @@ kotlin {
             "-Xjsr305=strict",
         )
     }
+}
+
+dependencies {
+    api(project(":codegentle-java"))
 }

@@ -2,9 +2,9 @@ package love.forte.codegentle.java.ref
 
 import love.forte.codegentle.common.code.CodePart.Companion.literal
 import love.forte.codegentle.common.code.CodeValue
-import love.forte.codegentle.common.code.literal
-import love.forte.codegentle.common.code.string
-import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.code.emitLiteral
+import love.forte.codegentle.common.code.emitString
+import love.forte.codegentle.common.code.emitType
 import love.forte.codegentle.common.naming.toClassName
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.AnnotationRefBuilder
@@ -40,14 +40,14 @@ private class AnnotationMirrorVisitor(
 
     override fun visitAnnotation(annotationMirror: AnnotationMirror, name: String): AnnotationRefBuilder {
         return builder.addMember(name, "%V") {
-            literal(annotationMirror.toAnnotationRef())
+            emitLiteral(annotationMirror.toAnnotationRef())
         }
     }
 
     override fun visitEnumConstant(c: VariableElement, name: String): AnnotationRefBuilder {
         return builder.addMember(name, "%V.%V") {
-            type(c.asType().toTypeName())
-            literal(c.simpleName)
+            emitType(c.asType().toTypeName())
+            emitLiteral(c.simpleName)
         }
     }
 }
@@ -61,39 +61,39 @@ internal fun AnnotationRefBuilder.addMemberForValue(memberName: String, value: A
         is Class<*> -> {
             addMember(memberName, "%V.class") {
                 // TODO type(Class)
-                type(value.toJavaClassName())
+                emitType(value.toJavaClassName())
             }
         }
 
         is Enum<*> -> {
             addMember(memberName, "%V.%V") {
                 // TODO type(Class)
-                type(value.javaClass.toJavaClassName())
-                literal(value.name)
+                emitType(value.javaClass.toJavaClassName())
+                emitLiteral(value.name)
             }
         }
 
         is String -> {
             addMember(memberName, "%V") {
-                string(value)
+                emitString(value)
             }
         }
 
         is Float -> {
             addMember(memberName, "%Vf") {
-                literal(value)
+                emitLiteral(value)
             }
         }
 
         is Long -> {
             addMember(memberName, "%VL") {
-                literal(value)
+                emitLiteral(value)
             }
         }
 
         is Char -> {
             addMember(memberName, "'%L'") {
-                literal((value.characterLiteralWithoutSingleQuotes()))
+                emitLiteral(value.characterLiteralWithoutSingleQuotes())
             }
         }
 

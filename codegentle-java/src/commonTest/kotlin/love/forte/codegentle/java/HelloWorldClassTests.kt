@@ -1,6 +1,6 @@
 package love.forte.codegentle.java
 
-import love.forte.codegentle.common.code.string
+import love.forte.codegentle.common.code.emitString
 import love.forte.codegentle.java.spec.JavaSimpleTypeSpec
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.spec.addMethod
@@ -24,7 +24,7 @@ class HelloWorldClassTests {
                 }
 
                 addStatement("System.out.println(%V)") {
-                    string("Hello, World!")
+                    emitString("Hello, World!")
                 }
             }
         }

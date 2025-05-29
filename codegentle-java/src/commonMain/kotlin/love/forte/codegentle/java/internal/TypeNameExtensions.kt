@@ -1,7 +1,7 @@
 package love.forte.codegentle.java.internal
 
+import love.forte.codegentle.common.code.emitType
 import love.forte.codegentle.common.code.isEmpty
-import love.forte.codegentle.common.code.type
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.naming.JavaClassNames
@@ -61,7 +61,7 @@ internal fun JavaCodeWriter.emitExtends(extendsTypes: List<TypeName>) {
             if (!firstType) {
                 emit(",")
             }
-            emit(" %V") { type(extendsType) }
+            emit(" %V") { emitType(extendsType) }
             firstType = false
         }
     }
@@ -75,7 +75,7 @@ internal fun JavaCodeWriter.emitImplements(implementsTypes: List<TypeName>) {
             if (!firstType) {
                 emit(",")
             }
-            emit(" %V") { type(implementsType) }
+            emit(" %V") { emitType(implementsType) }
             firstType = false
         }
     }

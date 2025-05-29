@@ -1,10 +1,17 @@
+import com.google.devtools.ksp.gradle.KspTaskMetadata
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
+    // Use the Kotlin Multiplatform plugin without specifying version
+    // The version is inherited from the root project
     alias(libs.plugins.kotlinMultiplatform)
-    // alias(libs.plugins.kotlinxBinaryCompatibilityValidator)
+    alias(libs.plugins.ksp)
+    // kotlin("multiplatform")
+    // id("com.google.devtools.ksp")
 }
+
+dependencies.kspCommonMainMetadata(project(":internal:code-value-extensions"))
 
 kotlin {
     explicitApi()
@@ -39,8 +46,6 @@ kotlin {
 
     jvmToolchain(11)
     jvm {
-        withJava()
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             javaParameters = true
             freeCompilerArgs.addAll("-Xjvm-default=all", "-Xjsr305=strict")
@@ -64,8 +69,11 @@ kotlin {
 
     sourceSets {
         commonMain {
-            dependencies {
-                // api(project(":codegentle-common"))
+            // kotlin.srcDir(project.layout.buildDirectory.dir("generated/ksp/metadata/commonMain/kotlin"))
+            // see https://github.com/google/ksp/issues/963#issuecomment-1894144639
+            // TODO 这个似乎..不好使了? K2 模式下不好使。
+            tasks.withType<KspTaskMetadata> {
+                kotlin.srcDir(destinationDirectory.file("kotlin"))
             }
         }
 
@@ -96,8 +104,13 @@ tasks.withType<JavaCompile> {
 
     options.compilerArgumentProviders.add(
         CommandLineArgumentProvider {
-            // Provide compiled Kotlin classes to javac – needed for Java/Kotlin mixed sources to work
-            listOf("--patch-module", "$moduleName=${sourceSets["main"].output.asPath}")
+            val sourceSet = sourceSets.findByName("main") ?: sourceSets.findByName("jvmMain")
+            if (sourceSet != null) {
+                // Provide compiled Kotlin classes to javac – needed for Java/Kotlin mixed sources to work
+                listOf("--patch-module", "$moduleName=${sourceSet.output.asPath}")
+            } else {
+                emptyList()
+            }
         }
     )
 }

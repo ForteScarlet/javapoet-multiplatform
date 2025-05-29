@@ -1,8 +1,8 @@
 package love.forte.codegentle.java.writer
 
 import love.forte.codegentle.common.code.CodeValue
-import love.forte.codegentle.common.code.string
-import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.code.emitString
+import love.forte.codegentle.common.code.emitType
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.parseToPackageName
 import love.forte.codegentle.common.ref.annotationRef
@@ -65,8 +65,8 @@ class JavaCodeWriterTests {
         val out = StringBuilder()
         val writer = JavaCodeWriter.create(out, ToStringJavaWriteStrategy)
         val codeValue = CodeValue("%V.out.println(%V)") {
-            type(ClassName("java.lang", "System"))
-            string("Hello, World!")
+            emitType(ClassName("java.lang", "System"))
+            emitString("Hello, World!")
         }
 
         writer.emit(codeValue)

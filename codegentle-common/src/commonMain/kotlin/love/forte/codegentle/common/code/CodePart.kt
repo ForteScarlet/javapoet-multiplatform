@@ -3,7 +3,6 @@ package love.forte.codegentle.common.code
 import love.forte.codegentle.common.naming.Named
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.ref.TypeRef
-import kotlin.jvm.JvmOverloads
 
 /**
  * Mark a CodePart factory function in its companion object
@@ -22,7 +21,9 @@ public sealed class CodePart {
     public companion object {
         public const val PLACEHOLDER: String = "%V"
 
-        @CodePartFactory
+        /**
+         * A simple part, without any process.
+         */
         public fun simple(value: String): CodeSimplePart = CodeSimplePart(value)
 
         /**
@@ -87,14 +88,12 @@ public sealed class CodePart {
         /**
          * Increases the indentation level.
          */
-        @JvmOverloads
         @CodePartFactory
         public fun indent(levels: Int = 1): CodeArgumentPart = CodeArgumentPart.Indent(levels)
 
         /**
          * Decreases the indentation level.
          */
-        @JvmOverloads
         @CodePartFactory
         public fun unindent(levels: Int = 1): CodeArgumentPart = CodeArgumentPart.Unindent(levels)
 
@@ -126,7 +125,7 @@ public sealed class CodePart {
         @CodePartFactory
         public fun zeroWidthSpace(): CodeArgumentPart = CodeArgumentPart.ZeroWidthSpace
 
-        // @CodePartFactory
+        @CodePartFactory
         public fun otherCodeValue(value: CodeValue): CodeArgumentPart =
             CodeArgumentPart.OtherCodeValue(value)
     }

@@ -15,7 +15,7 @@
  */
 package love.forte.codegentle.java.naming
 
-import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.code.emitType
 import love.forte.codegentle.common.naming.EmptyWildcardTypeName
 import love.forte.codegentle.common.naming.LowerWildcardTypeName
 import love.forte.codegentle.common.naming.UpperWildcardTypeName
@@ -47,10 +47,10 @@ internal fun LowerWildcardTypeName.emitTo(codeWriter: JavaCodeWriter) {
             }
 
             if (!extends) {
-                codeWriter.emit(" extends %V") { type(upperBound) }
+                codeWriter.emit(" extends %V") { emitType(upperBound) }
                 extends = true
             } else {
-                codeWriter.emit(" & %V") { type(upperBound) }
+                codeWriter.emit(" & %V") { emitType(upperBound) }
             }
         }
     }
@@ -61,11 +61,11 @@ internal fun UpperWildcardTypeName.emitTo(codeWriter: JavaCodeWriter) {
         if (index == 0) {
             // first
             codeWriter.emit("? super %V") {
-                type(lowerBound)
+                emitType(lowerBound)
             }
         } else {
             codeWriter.emit(" & %V") {
-                type(lowerBound)
+                emitType(lowerBound)
             }
         }
     }

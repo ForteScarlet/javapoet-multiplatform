@@ -1,7 +1,7 @@
 package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.common.code.CodeValue
-import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.code.emitType
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
@@ -65,7 +65,7 @@ internal class JavaSealedTypeSpecImpl(
                     if (!firstType) {
                         codeWriter.emit(",")
                     }
-                    codeWriter.emit(" %V") { type(permit) }
+                    codeWriter.emit(" %V") { emitType(permit) }
                     firstType = false
                 }
             }

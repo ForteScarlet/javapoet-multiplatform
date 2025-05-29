@@ -1,8 +1,8 @@
 package love.forte.codegentle.java.ref
 
 import love.forte.codegentle.common.code.CodeValue
-import love.forte.codegentle.common.code.literal
-import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.code.emitLiteral
+import love.forte.codegentle.common.code.emitType
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.writer.withIndent
@@ -24,21 +24,21 @@ internal fun JavaCodeWriter.emitJavaAnnotation(
 
     if (members.isEmpty()) {
         // @Singleton
-        emit("@%V") { type(type) }
+        emit("@%V") { emitType(type) }
     } else if (members.size == 1 && members.containsKey("value")) {
         // @Named("foo")
-        emit("@%V(") { type(type) }
+        emit("@%V(") { emitType(type) }
         // Always inline between values.
         emitAnnotationValues(memberSeparator, members["value"]!!)
         emit(")")
     } else {
         // @Column(name = "updated_at", nullable = false)
-        emit("@%V(") { type(type) }
+        emit("@%V(") { emitType(type) }
         withIndent(2) {
             val i = members.entries.iterator()
             while (i.hasNext()) {
                 val entry = i.next()
-                emit("%V = ") { literal(entry.key) }
+                emit("%V = ") { this.emitLiteral(entry.key) }
                 emitAnnotationValues(memberSeparator, entry.value)
                 if (i.hasNext()) {
                     emit(memberSeparator)

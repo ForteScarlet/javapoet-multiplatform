@@ -1,8 +1,8 @@
 package love.forte.codegentle.java.spec.internal
 
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.emitType
 import love.forte.codegentle.common.code.isEmpty
-import love.forte.codegentle.common.code.type
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
@@ -57,7 +57,7 @@ internal class JavaAnonymousClassTypeSpecImpl(
                 val supertype = superinterfaces.firstOrNull()
                     ?: superclass
 
-                codeWriter.emit("new %V(") { type(supertype!!) }
+                codeWriter.emit("new %V(") { emitType(supertype!!) }
                 codeWriter.emit(anonymousTypeArguments)
                 // anonymousTypeArguments.emit(codeWriter)
                 codeWriter.emitNewLine(") {")

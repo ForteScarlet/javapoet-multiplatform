@@ -1,12 +1,16 @@
 [versions]
-kotlin = "2.1.0"
+kotlin = "2.1.20"
 dokka = "1.9.20"
 mockk = "1.13.14"
 # https://detekt.dev/docs/intro
 detekt = "1.23.7"
 # https://github.com/Kotlin/kotlinx-io/
 kotlinx-io = "0.6.0"
+ksp = "2.1.20-2.0.1"
+#ksp = "2.1.20-1.0.32"
 [libraries]
+
+ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 
 # gradle-nexus:publish-plugin
 #gradleNexusPublishPlugin = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "gradleNexusPublishPlugin" }
@@ -33,6 +37,7 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 # https://github.com/Kotlin/binary-compatibility-validator
 kotlinxBinaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.17.0" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [bundles]
 dokka = ["dokka-plugin", "dokka-core", "dokka-base"]

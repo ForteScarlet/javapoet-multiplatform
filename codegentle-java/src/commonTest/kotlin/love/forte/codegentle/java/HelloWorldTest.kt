@@ -1,7 +1,7 @@
 package love.forte.codegentle.java
 
-import love.forte.codegentle.common.code.string
-import love.forte.codegentle.common.code.type
+import love.forte.codegentle.common.code.emitString
+import love.forte.codegentle.common.code.emitType
 import love.forte.codegentle.common.naming.ArrayTypeName
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.parseToPackageName
@@ -23,8 +23,8 @@ class HelloWorldTest {
             returns(JavaPrimitiveTypeNames.VOID)
             addParameter(JavaParameterSpec(ArrayTypeName(JavaClassNames.STRING.javaRef()).javaRef(), "args"))
             addStatement("%V.out.println(%V)") {
-                type(ClassName("java.lang".parseToPackageName(), "System"))
-                string("Hello, World!")
+                emitType(ClassName("java.lang".parseToPackageName(), "System"))
+                emitString("Hello, World!")
             }
         }
 
@@ -38,7 +38,7 @@ class HelloWorldTest {
             }
             // Forte.getInstance()
             initializer("%V.getInstance()") {
-                type(forteType)
+                emitType(forteType)
             }
         }
 
@@ -80,8 +80,8 @@ class HelloWorldTest {
             returns(JavaPrimitiveTypeNames.VOID)
             addParameter(JavaParameterSpec(ArrayTypeName(JavaClassNames.STRING.javaRef()).javaRef(), "args"))
             addStatement("%V.out.println(%V)") {
-                type(ClassName("java.lang".parseToPackageName(), "System"))
-                string("Hello, World!")
+                emitType(ClassName("java.lang".parseToPackageName(), "System"))
+                emitString("Hello, World!")
             }
         }
 

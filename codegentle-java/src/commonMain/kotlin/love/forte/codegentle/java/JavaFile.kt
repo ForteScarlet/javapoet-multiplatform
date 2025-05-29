@@ -26,6 +26,7 @@ import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.PackageName
 import love.forte.codegentle.common.naming.canonicalName
+import love.forte.codegentle.common.naming.parseToPackageName
 import love.forte.codegentle.java.internal.JavaFileImpl
 import love.forte.codegentle.java.spec.JavaTypeSpec
 import love.forte.codegentle.java.strategy.JavaWriteStrategy
@@ -153,3 +154,10 @@ public inline fun JavaFile(
     block: JavaFileBuilder.() -> Unit = {}
 ): JavaFile =
     JavaFile.builder(packageName, type).also(block).build()
+
+public inline fun JavaFile(
+    packageNamePaths: String,
+    type: JavaTypeSpec,
+    block: JavaFileBuilder.() -> Unit = {}
+): JavaFile =
+    JavaFile.builder(packageNamePaths.parseToPackageName(), type).also(block).build()
