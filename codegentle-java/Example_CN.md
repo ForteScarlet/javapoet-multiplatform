@@ -60,8 +60,8 @@ CodeGentle Java 是一个 Kotlin Multiplatform 库，用于生成 Java 源代码
 
 ```kotlin
 val spec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "HelloWorld") {
-    modifierOp.public()
-    modifierOp.final()
+    modifiers.public()
+    modifiers.final()
 
     addMethod("main") {
         modifiers {
@@ -126,23 +126,23 @@ class MyClass {
 
 ```kotlin
 val classSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "MyClass") {
-    modifierOp.public()
-    
+    modifiers.public()
+
     addJavadoc("这是一个示例类。")
-    
+
     addField(JavaPrimitiveTypeNames.INT, "count") {
-        modifierOp.private()
+        modifiers.private()
         initializer("0")
     }
-    
+
     addMethod("getCount") {
-        modifierOp.public()
+        modifiers.public()
         returns(JavaPrimitiveTypeNames.INT.javaRef())
         addStatement("return count")
     }
-    
+
     addMethod("setCount") {
-        modifierOp.public()
+        modifiers.public()
         addParameter(JavaParameterSpec(JavaPrimitiveTypeNames.INT.javaRef(), "count"))
         addStatement("this.count = count")
     }
@@ -155,8 +155,8 @@ val classSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "MyClass") {
 
 ```kotlin
 val interfaceSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.INTERFACE, "MyInterface") {
-    modifierOp.public()
-    
+    modifiers.public()
+
     addMethod("doSomething") {
         addParameter(JavaParameterSpec(ClassName("java.lang", "String").javaRef(), "input"))
         returns(JavaPrimitiveTypeNames.BOOLEAN.javaRef())
@@ -170,30 +170,38 @@ val interfaceSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.INTERFACE, "MyInterface
 
 ```kotlin
 val enumSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.ENUM, "Direction") {
-    modifierOp.public()
-    
+    modifiers.public()
+
     addField(JavaFieldSpec(ClassName("java.lang", "String").javaRef(), "NORTH") {
-        modifierOp.public()
-        modifierOp.static()
-        modifierOp.final()
+        modifiers {
+            public()
+            static()
+            final()
+        }
     })
-    
+
     addField(JavaFieldSpec(ClassName("java.lang", "String").javaRef(), "SOUTH") {
-        modifierOp.public()
-        modifierOp.static()
-        modifierOp.final()
+        modifiers {
+            public()
+            static()
+            final()
+        }
     })
-    
+
     addField(JavaFieldSpec(ClassName("java.lang", "String").javaRef(), "EAST") {
-        modifierOp.public()
-        modifierOp.static()
-        modifierOp.final()
+        modifiers {
+            public()
+            static()
+            final()
+        }
     })
-    
+
     addField(JavaFieldSpec(ClassName("java.lang", "String").javaRef(), "WEST") {
-        modifierOp.public()
-        modifierOp.static()
-        modifierOp.final()
+        modifiers {
+            public()
+            static()
+            final()
+        }
     })
 }
 ```
@@ -204,8 +212,8 @@ val enumSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.ENUM, "Direction") {
 
 ```kotlin
 val annotationSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.ANNOTATION, "MyAnnotation") {
-    modifierOp.public()
-    
+    modifiers.public()
+
     addMethod("value") {
         returns(ClassName("java.lang", "String").javaRef())
         defaultValue("\"\"")
@@ -219,13 +227,13 @@ val annotationSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.ANNOTATION, "MyAnnotat
 
 ```kotlin
 val recordSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.RECORD, "Person") {
-    modifierOp.public()
-    
+    modifiers.public()
+
     addParameter(JavaParameterSpec(ClassName("java.lang", "String").javaRef(), "name"))
     addParameter(JavaParameterSpec(JavaPrimitiveTypeNames.INT.javaRef(), "age"))
-    
+
     addMethod("greet") {
-        modifierOp.public()
+        modifiers.public()
         addStatement("return \"Hello, \" + name")
     }
 }
@@ -237,27 +245,33 @@ val recordSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.RECORD, "Person") {
 
 ```kotlin
 val sealedClassSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.SEALED_CLASS, "Shape") {
-    modifierOp.public()
-    
+    modifiers.public()
+
     addMethod("area") {
-        modifierOp.public()
-        modifierOp.abstract()
+        modifiers {
+            public()
+            abstract()
+        }
         returns(JavaPrimitiveTypeNames.DOUBLE.javaRef())
     }
 }
 
 val circleSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.NON_SEALED_CLASS, "Circle") {
-    modifierOp.public()
+    modifiers.public()
     superclass(ClassName("com.example", "Shape").javaRef())
-    
+
     addField(JavaPrimitiveTypeNames.DOUBLE, "radius") {
-        modifierOp.private()
-        modifierOp.final()
+        modifiers {
+            private()
+            final()
+        }
     }
-    
+
     addMethod("area") {
-        modifierOp.public()
-        modifierOp.override()
+        modifiers {
+            public()
+            override()
+        }
         returns(JavaPrimitiveTypeNames.DOUBLE.javaRef())
         addStatement("return Math.PI * radius * radius")
     }
@@ -272,7 +286,7 @@ val circleSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.NON_SEALED_CLASS, "Circle"
 
 ```kotlin
 val methodSpec = JavaMethodSpec("greet") {
-    modifierOp.public()
+    modifiers.public()
     returns(ClassName("java.lang", "String").javaRef())
     addStatement("return \"Hello, World!\"")
 }
@@ -284,7 +298,7 @@ val methodSpec = JavaMethodSpec("greet") {
 
 ```kotlin
 val constructorSpec = JavaMethodSpec {
-    modifierOp.public()
+    modifiers.public()
     addParameter(JavaParameterSpec(ClassName("java.lang", "String").javaRef(), "name"))
     addParameter(JavaParameterSpec(JavaPrimitiveTypeNames.INT.javaRef(), "age"))
     addStatement("this.name = name")
@@ -298,13 +312,15 @@ val constructorSpec = JavaMethodSpec {
 
 ```kotlin
 val methodSpec = JavaMethodSpec("calculate") {
-    modifierOp.public()
-    modifierOp.static()
+    modifiers {
+        public()
+        static()
+    }
     returns(JavaPrimitiveTypeNames.INT.javaRef())
-    
+
     addParameter(JavaParameterSpec(JavaPrimitiveTypeNames.INT.javaRef(), "a"))
     addParameter(JavaParameterSpec(JavaPrimitiveTypeNames.INT.javaRef(), "b"))
-    
+
     addStatement("return a + b")
 }
 ```
@@ -315,15 +331,17 @@ val methodSpec = JavaMethodSpec("calculate") {
 
 ```kotlin
 val methodSpec = JavaMethodSpec("transform") {
-    modifierOp.public()
-    modifierOp.static()
-    
+    modifiers {
+        public()
+        static()
+    }
+
     addTypeVariable(TypeVariableName("T").javaRef())
     addTypeVariable(TypeVariableName("R").javaRef())
-    
+
     addParameter(JavaParameterSpec(TypeVariableName("T").javaRef(), "input"))
     returns(TypeVariableName("R").javaRef())
-    
+
     addStatement("// 将输入转换为输出")
     addStatement("return null")
 }
@@ -335,10 +353,10 @@ val methodSpec = JavaMethodSpec("transform") {
 
 ```kotlin
 val methodSpec = JavaMethodSpec("readFile") {
-    modifierOp.public()
-    
+    modifiers.public()
+
     addException(ClassName("java.io", "IOException").javaRef())
-    
+
     addStatement("// 读取文件实现")
 }
 ```
@@ -351,7 +369,7 @@ val methodSpec = JavaMethodSpec("readFile") {
 
 ```kotlin
 val fieldSpec = JavaFieldSpec(JavaPrimitiveTypeNames.INT, "count") {
-    modifierOp.private()
+    modifiers.private()
 }
 ```
 
@@ -361,12 +379,12 @@ val fieldSpec = JavaFieldSpec(JavaPrimitiveTypeNames.INT, "count") {
 
 ```kotlin
 val fieldSpec = JavaFieldSpec(JavaPrimitiveTypeNames.INT, "count") {
-    modifierOp.private()
+    modifiers.private()
     initializer("0")
 }
 
 val stringFieldSpec = JavaFieldSpec(ClassName("java.lang", "String").javaRef(), "name") {
-    modifierOp.private()
+    modifiers.private()
     initializer("%V", "John Doe")
 }
 ```
@@ -440,9 +458,9 @@ val listOfWildcards = ClassName("java.util", "List").parameterizedBy(wildcardTyp
 
 ```kotlin
 val methodSpec = JavaMethodSpec("checkValue") {
-    modifierOp.public()
+    modifiers.public()
     addParameter(JavaParameterSpec(JavaPrimitiveTypeNames.INT.javaRef(), "value"))
-    
+
     beginControlFlow("if (value > 0)") {
         addStatement("return \"Positive\"")
     }
@@ -462,8 +480,8 @@ val methodSpec = JavaMethodSpec("checkValue") {
 
 ```kotlin
 val methodSpec = JavaMethodSpec("printNumbers") {
-    modifierOp.public()
-    
+    modifiers.public()
+
     beginControlFlow("for (int i = 0; i < 10; i++)") {
         addStatement("System.out.println(i)")
     }
@@ -477,9 +495,9 @@ val methodSpec = JavaMethodSpec("printNumbers") {
 
 ```kotlin
 val methodSpec = JavaMethodSpec("countDown") {
-    modifierOp.public()
+    modifiers.public()
     addParameter(JavaParameterSpec(JavaPrimitiveTypeNames.INT.javaRef(), "start"))
-    
+
     addStatement("int i = start")
     beginControlFlow("while (i > 0)") {
         addStatement("System.out.println(i)")
@@ -497,7 +515,7 @@ val methodSpec = JavaMethodSpec("countDown") {
 val methodSpec = JavaMethodSpec("readFile") {
     modifierOp.public()
     addParameter(JavaParameterSpec(ClassName("java.lang", "String").javaRef(), "filename"))
-    
+
     beginControlFlow("try") {
         addStatement("// 读取文件实现")
     }
@@ -529,12 +547,12 @@ val javaFile = JavaFile(packageName, typeSpec) {
 val classSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "MyClass") {
     addJavadoc("这是一个示例类。\n")
     addJavadoc("@author CodeGentle")
-    
+
     addMethod("doSomething") {
         addJavadoc("此方法执行某些操作。\n")
         addJavadoc("@param input 输入字符串\n")
         addJavadoc("@return 如果成功则为 true，否则为 false")
-        
+
         addParameter(JavaParameterSpec(ClassName("java.lang", "String").javaRef(), "input"))
         returns(JavaPrimitiveTypeNames.BOOLEAN.javaRef())
         addStatement("return true")
@@ -552,14 +570,14 @@ val methodSpec = JavaMethodSpec("processData") {
     addAnnotationRef(ClassName("java.lang", "SuppressWarnings").javaRef().asAnnotation {
         addMember("value", "\"unchecked\"")
     })
-    
+
     modifierOp.public()
     returns(JavaPrimitiveTypeNames.VOID.javaRef())
-    
+
     addParameter(JavaParameterSpec(ClassName("java.util", "List").javaRef(), "data") {
         addAnnotationRef(ClassName("javax.annotation", "Nonnull").javaRef().asAnnotation())
     })
-    
+
     addStatement("// 处理数据")
 }
 ```
@@ -572,14 +590,14 @@ val methodSpec = JavaMethodSpec("processData") {
 val classSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "MyClass") {
     modifierOp.public()
     modifierOp.final()
-    
+
     addField(JavaPrimitiveTypeNames.INT, "count") {
         modifierOp.private()
         modifierOp.static()
         modifierOp.final()
         initializer("0")
     }
-    
+
     addMethod("getCount") {
         modifierOp.public()
         modifierOp.static()

@@ -173,7 +173,7 @@ public interface JavaModifierBuilderContainer : BuilderDsl {
 }
 
 @JvmInline
-public value class JavaModifierOp
+public value class JavaModifiers
 @PublishedApi internal constructor(private val container: JavaModifierBuilderContainer) {
     public fun public() {
         container.addModifier(JavaModifier.PUBLIC)
@@ -224,8 +224,8 @@ public value class JavaModifierOp
     }
 }
 
-public inline val JavaModifierBuilderContainer.modifierOp: JavaModifierOp
-    get() = JavaModifierOp(this)
+public inline val JavaModifierBuilderContainer.modifiers: JavaModifiers
+    get() = JavaModifiers(this)
 
 /**
  * ```kotlin
@@ -238,6 +238,6 @@ public inline val JavaModifierBuilderContainer.modifierOp: JavaModifierOp
  * }
  * ```
  */
-public inline fun JavaModifierBuilderContainer.modifiers(block: JavaModifierOp.() -> Unit) {
-    modifierOp.block()
+public inline fun JavaModifierBuilderContainer.modifiers(block: JavaModifiers.() -> Unit) {
+    modifiers.block()
 }

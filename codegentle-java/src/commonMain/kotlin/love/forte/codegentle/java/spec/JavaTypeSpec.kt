@@ -224,7 +224,7 @@ public sealed class JavaTypeSpecBuilder<B : JavaTypeSpecBuilder<B, T>, T : JavaT
     internal val initializerBlock = CodeValue.builder()
 
     internal val annotationRefs: MutableList<AnnotationRef> = mutableListOf()
-    internal val modifiers: JavaModifierSet = JavaModifierSet()
+    internal val modifierSet: JavaModifierSet = JavaModifierSet()
     internal val typeVariableRefs: MutableList<TypeRef<TypeVariableName>> = mutableListOf()
     internal val superinterfaces: MutableList<TypeName> = mutableListOf()
     internal val fields: MutableList<JavaFieldSpec> = mutableListOf()
@@ -260,15 +260,15 @@ public sealed class JavaTypeSpecBuilder<B : JavaTypeSpecBuilder<B, T>, T : JavaT
     }
 
     override fun addModifiers(vararg modifiers: JavaModifier): B = self.apply {
-        this.modifiers.addAll(*modifiers)
+        this.modifierSet.addAll(*modifiers)
     }
 
     override fun addModifiers(modifiers: Iterable<JavaModifier>): B = self.apply {
-        this.modifiers.addAll(modifiers)
+        this.modifierSet.addAll(modifiers)
     }
 
     override fun addModifier(modifier: JavaModifier): B = self.apply {
-        this.modifiers.add(modifier)
+        this.modifierSet.add(modifier)
     }
 
     public fun addTypeVariableRefs(vararg typeVariables: TypeRef<TypeVariableName>): B = self.apply {

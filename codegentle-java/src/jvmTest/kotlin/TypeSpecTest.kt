@@ -17,7 +17,7 @@ class TypeSpecTest {
     @Test
     fun testPrintTypeSpec() {
         val simpleType = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "MyClass") {
-            modifiers.add(JavaModifier.PUBLIC)
+            modifierSet.add(JavaModifier.PUBLIC)
 
             addMethod("methodPub") {
                 modifiers { public() }

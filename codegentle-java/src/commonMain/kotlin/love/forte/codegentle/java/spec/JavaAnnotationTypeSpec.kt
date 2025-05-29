@@ -47,7 +47,7 @@ public class JavaAnnotationTypeSpecBuilder @PublishedApi internal constructor(
             kind = kind,
             javadoc = javadoc.build(),
             annotations = annotationRefs.toList(),
-            modifiers = modifiers.copy(),
+            modifiers = modifierSet.copy(),
             typeVariables = typeVariableRefs.toList(),
             fields = fields.toList(),
             staticBlock = staticBlock.build(),

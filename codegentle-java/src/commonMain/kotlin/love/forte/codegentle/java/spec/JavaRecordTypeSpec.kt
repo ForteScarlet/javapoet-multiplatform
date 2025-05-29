@@ -77,7 +77,7 @@ public class JavaRecordTypeSpecBuilder @PublishedApi internal constructor(
             mainConstructorParameters = mainConstructorParameters.toList(),
             javadoc = javadoc.build(),
             annotations = annotationRefs.toList(),
-            modifiers = modifiers.copy(),
+            modifiers = modifierSet.copy(),
             typeVariables = typeVariableRefs.toList(),
             superinterfaces = superinterfaces.toList(),
             fields = fields.toList(),

@@ -14,8 +14,8 @@ class HelloWorldClassTests {
     @Test
     fun testHelloWorldClass() {
         val spec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "HelloWorld") {
-            modifierOp.public()
-            modifierOp.final()
+            modifiers.public()
+            modifiers.final()
 
             addMethod("main") {
                 modifiers {

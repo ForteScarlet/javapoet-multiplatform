@@ -49,7 +49,7 @@ public class JavaEnumTypeSpecBuilder @PublishedApi internal constructor(
             enumConstants = enumConstants.toMap(linkedMapOf()),
             javadoc = javadoc.build(),
             annotations = annotationRefs.toList(),
-            modifiers = modifiers.copy(),
+            modifiers = modifierSet.copy(),
             typeVariables = typeVariableRefs.toList(),
             superinterfaces = superinterfaces.toList(),
             fields = fields.toList(),

@@ -60,8 +60,8 @@ Let's start with a simple "Hello World" example:
 
 ```kotlin
 val spec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "HelloWorld") {
-    modifierOp.public()
-    modifierOp.final()
+    modifiers.public()
+    modifiers.final()
 
     addMethod("main") {
         modifiers {
@@ -126,23 +126,23 @@ Create a simple class:
 
 ```kotlin
 val classSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.CLASS, "MyClass") {
-    modifierOp.public()
+    modifiers.public()
 
     addJavadoc("This is a sample class.")
 
     addField(JavaPrimitiveTypeNames.INT, "count") {
-        modifierOp.private()
+        modifiers.private()
         initializer("0")
     }
 
     addMethod("getCount") {
-        modifierOp.public()
+        modifiers.public()
         returns(JavaPrimitiveTypeNames.INT.javaRef())
         addStatement("return count")
     }
 
     addMethod("setCount") {
-        modifierOp.public()
+        modifiers.public()
         addParameter(JavaParameterSpec(JavaPrimitiveTypeNames.INT.javaRef(), "count"))
         addStatement("this.count = count")
     }
@@ -155,7 +155,7 @@ Create an interface:
 
 ```kotlin
 val interfaceSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.INTERFACE, "MyInterface") {
-    modifierOp.public()
+    modifiers.public()
 
     addMethod("doSomething") {
         addParameter(JavaParameterSpec(ClassName("java.lang", "String").javaRef(), "input"))
@@ -170,30 +170,38 @@ Create an enum:
 
 ```kotlin
 val enumSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.ENUM, "Direction") {
-    modifierOp.public()
+    modifiers.public()
 
     addField(JavaFieldSpec(ClassName("java.lang", "String").javaRef(), "NORTH") {
-        modifierOp.public()
-        modifierOp.static()
-        modifierOp.final()
+        modifiers {
+            public()
+            static()
+            final()
+        }
     })
 
     addField(JavaFieldSpec(ClassName("java.lang", "String").javaRef(), "SOUTH") {
-        modifierOp.public()
-        modifierOp.static()
-        modifierOp.final()
+        modifiers {
+            public()
+            static()
+            final()
+        }
     })
 
     addField(JavaFieldSpec(ClassName("java.lang", "String").javaRef(), "EAST") {
-        modifierOp.public()
-        modifierOp.static()
-        modifierOp.final()
+        modifiers {
+            public()
+            static()
+            final()
+        }
     })
 
     addField(JavaFieldSpec(ClassName("java.lang", "String").javaRef(), "WEST") {
-        modifierOp.public()
-        modifierOp.static()
-        modifierOp.final()
+        modifiers {
+            public()
+            static()
+            final()
+        }
     })
 }
 ```
@@ -204,7 +212,7 @@ Create an annotation:
 
 ```kotlin
 val annotationSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.ANNOTATION, "MyAnnotation") {
-    modifierOp.public()
+    modifiers.public()
 
     addMethod("value") {
         returns(ClassName("java.lang", "String").javaRef())
@@ -219,13 +227,13 @@ Create a record (Java 16+):
 
 ```kotlin
 val recordSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.RECORD, "Person") {
-    modifierOp.public()
+    modifiers.public()
 
     addParameter(JavaParameterSpec(ClassName("java.lang", "String").javaRef(), "name"))
     addParameter(JavaParameterSpec(JavaPrimitiveTypeNames.INT.javaRef(), "age"))
 
     addMethod("greet") {
-        modifierOp.public()
+        modifiers.public()
         addStatement("return \"Hello, \" + name")
     }
 }
@@ -237,27 +245,33 @@ Create a sealed class (Java 17+):
 
 ```kotlin
 val sealedClassSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.SEALED_CLASS, "Shape") {
-    modifierOp.public()
+    modifiers.public()
 
     addMethod("area") {
-        modifierOp.public()
-        modifierOp.abstract()
+        modifiers {
+            public()
+            abstract()
+        }
         returns(JavaPrimitiveTypeNames.DOUBLE.javaRef())
     }
 }
 
 val circleSpec = JavaSimpleTypeSpec(JavaTypeSpec.Kind.NON_SEALED_CLASS, "Circle") {
-    modifierOp.public()
+    modifiers.public()
     superclass(ClassName("com.example", "Shape").javaRef())
 
     addField(JavaPrimitiveTypeNames.DOUBLE, "radius") {
-        modifierOp.private()
-        modifierOp.final()
+        modifiers {
+            private()
+            final()
+        }
     }
 
     addMethod("area") {
-        modifierOp.public()
-        modifierOp.override()
+        modifiers {
+            public()
+            override()
+        }
         returns(JavaPrimitiveTypeNames.DOUBLE.javaRef())
         addStatement("return Math.PI * radius * radius")
     }
@@ -272,7 +286,7 @@ Create a simple method:
 
 ```kotlin
 val methodSpec = JavaMethodSpec("greet") {
-    modifierOp.public()
+    modifiers.public()
     returns(ClassName("java.lang", "String").javaRef())
     addStatement("return \"Hello, World!\"")
 }
@@ -284,7 +298,7 @@ Create a constructor:
 
 ```kotlin
 val constructorSpec = JavaMethodSpec {
-    modifierOp.public()
+    modifiers.public()
     addParameter(JavaParameterSpec(ClassName("java.lang", "String").javaRef(), "name"))
     addParameter(JavaParameterSpec(JavaPrimitiveTypeNames.INT.javaRef(), "age"))
     addStatement("this.name = name")
@@ -298,8 +312,10 @@ Add parameters to a method:
 
 ```kotlin
 val methodSpec = JavaMethodSpec("calculate") {
-    modifierOp.public()
-    modifierOp.static()
+    modifiers {
+        public()
+        static()
+    }
     returns(JavaPrimitiveTypeNames.INT.javaRef())
 
     addParameter(JavaParameterSpec(JavaPrimitiveTypeNames.INT.javaRef(), "a"))
@@ -315,8 +331,10 @@ Create a generic method:
 
 ```kotlin
 val methodSpec = JavaMethodSpec("transform") {
-    modifierOp.public()
-    modifierOp.static()
+    modifiers {
+        public()
+        static()
+    }
 
     addTypeVariable(TypeVariableName("T").javaRef())
     addTypeVariable(TypeVariableName("R").javaRef())
@@ -335,7 +353,7 @@ Add exceptions to a method:
 
 ```kotlin
 val methodSpec = JavaMethodSpec("readFile") {
-    modifierOp.public()
+    modifiers.public()
 
     addException(ClassName("java.io", "IOException").javaRef())
 
@@ -351,7 +369,7 @@ Create a simple field:
 
 ```kotlin
 val fieldSpec = JavaFieldSpec(JavaPrimitiveTypeNames.INT, "count") {
-    modifierOp.private()
+    modifiers.private()
 }
 ```
 
@@ -361,12 +379,12 @@ Add an initializer to a field:
 
 ```kotlin
 val fieldSpec = JavaFieldSpec(JavaPrimitiveTypeNames.INT, "count") {
-    modifierOp.private()
+    modifiers.private()
     initializer("0")
 }
 
 val stringFieldSpec = JavaFieldSpec(ClassName("java.lang", "String").javaRef(), "name") {
-    modifierOp.private()
+    modifiers.private()
     initializer("%V", "John Doe")
 }
 ```
@@ -440,7 +458,7 @@ Generate if statements:
 
 ```kotlin
 val methodSpec = JavaMethodSpec("checkValue") {
-    modifierOp.public()
+    modifiers.public()
     addParameter(JavaParameterSpec(JavaPrimitiveTypeNames.INT.javaRef(), "value"))
 
     beginControlFlow("if (value > 0)") {
@@ -462,7 +480,7 @@ Generate for loops:
 
 ```kotlin
 val methodSpec = JavaMethodSpec("printNumbers") {
-    modifierOp.public()
+    modifiers.public()
 
     beginControlFlow("for (int i = 0; i < 10; i++)") {
         addStatement("System.out.println(i)")
@@ -477,7 +495,7 @@ Generate while loops:
 
 ```kotlin
 val methodSpec = JavaMethodSpec("countDown") {
-    modifierOp.public()
+    modifiers.public()
     addParameter(JavaParameterSpec(JavaPrimitiveTypeNames.INT.javaRef(), "start"))
 
     addStatement("int i = start")
