@@ -52,8 +52,6 @@ class HelloWorldTest {
 
         val str = buildString { file.writeTo(this, ToStringJavaWriteStrategy) }
 
-        println(str)
-
         assertEquals(
             """
                 |package com.example.helloworld;

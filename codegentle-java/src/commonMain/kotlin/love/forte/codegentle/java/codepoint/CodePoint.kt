@@ -13,7 +13,6 @@ internal expect fun CodePoint.isJavaIdentifierPart(): Boolean
 
 internal fun CodePoint.isJavaIdentifierStartCommon(): Boolean {
     val codeInt = code.toInt()
-    // TODO How check Java identifier start use code point in K/JS?
     if (charCount() == 1) {
         return Char(codeInt).isJavaIdentifierStart()
     }
@@ -42,7 +41,6 @@ internal fun CodePoint.isJavaIdentifierStartCommon(): Boolean {
 
 internal fun CodePoint.isJavaIdentifierPartCommon(): Boolean {
     val codeInt = code.toInt()
-    // TODO How check Java identifier part use code point in K/JS?
     if (charCount() == 1) {
         return Char(codeInt).isJavaIdentifierPart()
     }

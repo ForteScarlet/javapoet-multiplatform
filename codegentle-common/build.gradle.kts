@@ -67,6 +67,37 @@ kotlin {
         binaries.library()
     }
 
+    // Native targets
+    // https://kotlinlang.org/docs/native-target-support.html
+    // Tair1
+    //// Apple macOS hosts only:
+    macosX64()
+    macosArm64()
+    iosSimulatorArm64()
+    iosX64()
+    iosArm64()
+
+    // Tair2
+    linuxX64()
+    linuxArm64()
+    //// Apple macOS hosts only:
+    watchosSimulatorArm64()
+    watchosX64()
+    watchosArm32()
+    watchosArm64()
+    tvosSimulatorArm64()
+    tvosX64()
+    tvosArm64()
+
+    // Tair3
+    androidNativeArm32()
+    androidNativeArm64()
+    androidNativeX86()
+    androidNativeX64()
+    mingwX64()
+    //// Apple macOS hosts only:
+    watchosDeviceArm64()
+
     sourceSets {
         commonMain {
             // kotlin.srcDir(project.layout.buildDirectory.dir("generated/ksp/metadata/commonMain/kotlin"))

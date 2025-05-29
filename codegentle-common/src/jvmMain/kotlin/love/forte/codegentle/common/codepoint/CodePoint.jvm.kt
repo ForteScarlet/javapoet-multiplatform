@@ -3,7 +3,16 @@ package love.forte.codegentle.common.codepoint
 import kotlin.text.codePointAt as codePointAtKt
 
 internal actual fun CodePoint.stringValue(): String {
-    return code.toInt().toChar().toString()
+    return (Character.toChars(code.toInt())).concatToString()
+    // val codeInt = code.toInt()
+    // return if (codeInt <= Char.MAX_VALUE.code) {
+    //     Char(codeInt).toString()
+    // } else {
+    //     // For supplementary code points, we need to use surrogate pairs
+    //     val highSurrogate = Char.MIN_HIGH_SURROGATE + ((codeInt - 0x10000) shr 10)
+    //     val lowSurrogate = Char.MIN_LOW_SURROGATE + (codeInt and 0x3ff)
+    //     highSurrogate.toString() + lowSurrogate.toString()
+    // }
 }
 
 @InternalCodePointApi

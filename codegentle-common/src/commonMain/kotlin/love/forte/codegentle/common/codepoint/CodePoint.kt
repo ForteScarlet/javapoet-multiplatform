@@ -104,8 +104,8 @@ private fun getCategoryForSupplementaryCodePoint(codePoint: Int): CharCategory {
         (codePoint in 0x10330..0x1034A) -> CharCategory.OTHER_LETTER // 哥特文字
 
         // 数学字母数字符号 (Lu - UPPERCASE_LETTER, Ll - LOWERCASE_LETTER, Sm - MATH_SYMBOL)
-        (codePoint in 0x1D400..0x1D433) -> CharCategory.UPPERCASE_LETTER // 数学粗体大写字母
-        (codePoint in 0x1D434..0x1D467) -> CharCategory.LOWERCASE_LETTER // 数学粗体小写字母
+        (codePoint in 0x1D400..0x1D434) -> CharCategory.UPPERCASE_LETTER // 数学粗体大写字母
+        (codePoint in 0x1D435..0x1D467) -> CharCategory.LOWERCASE_LETTER // 数学粗体小写字母
 
         // 表情符号和图像符号 (So - OTHER_SYMBOL)
         (codePoint in 0x1F000..0x1FFFD) -> CharCategory.OTHER_SYMBOL
@@ -114,4 +114,3 @@ private fun getCategoryForSupplementaryCodePoint(codePoint: Int): CharCategory {
         else -> CharCategory.UNASSIGNED
     }
 }
-

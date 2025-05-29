@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     // Use the Kotlin Multiplatform plugin without specifying version
@@ -61,11 +62,17 @@ kotlin {
         }
     }
 
-    js(IR) {
-        browser()
+
+    js {
+        nodejs()
         binaries.library()
     }
 
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        nodejs()
+        binaries.library()
+    }
 
     sourceSets {
         commonMain {
