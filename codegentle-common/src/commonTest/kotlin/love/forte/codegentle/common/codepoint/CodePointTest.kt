@@ -162,6 +162,18 @@ class CodePointTest {
     }
 
     @Test
+    fun testAppend() {
+        assertEquals(
+            "A",
+            buildString { append(CodePoint(65)) }
+        )
+        assertEquals(
+            "\uD83D\uDE00", // 😀
+            buildString { append(CodePoint(0x1F600)) }
+        )
+    }
+
+    @Test
     fun testInvalidIndex() {
         // Test negative index - this might not throw on all platforms
         try {

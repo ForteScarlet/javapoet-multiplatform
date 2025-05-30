@@ -41,8 +41,7 @@ public expect fun StringBuilder.appendCodePoint(codePoint: CodePoint): StringBui
  * Copyright 2010-2023 JetBrains s.r.o. and Kotlin Programming Language contributors.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
-@InternalCodePointApi
-public fun StringBuilder.appendCodePointCommon(codePoint: CodePoint): StringBuilder {
+internal fun StringBuilder.appendCodePointCommon(codePoint: CodePoint): StringBuilder {
     // Copied from StringBuilder.kt,
     val code = codePoint.code
     if (code <= Char.MAX_VALUE.code) {
@@ -54,8 +53,7 @@ public fun StringBuilder.appendCodePointCommon(codePoint: CodePoint): StringBuil
     return this
 }
 
-@InternalCodePointApi
-public fun CodePoint.charCountCommon(): Int {
+internal fun CodePoint.charCountCommon(): Int {
     return if (code >= 0x10000) 2 else 1
 }
 
@@ -94,8 +92,6 @@ private fun getCategoryForSupplementaryCodePoint(codePoint: Int): CharCategory {
 
     // 这里基于 Unicode 标准的范围检查确定字符类别
     return when {
-        // 这些是范围示例，完整实现需要包含所有补充字符的范围
-
         // 各种文字系统的字母 (Lo - OTHER_LETTER)
         (codePoint in 0x10000..0x1000B) -> CharCategory.OTHER_LETTER // 线性文字 B 音节
         (codePoint in 0x10080..0x100FA) -> CharCategory.OTHER_LETTER // 线性文字 B 表意文字
