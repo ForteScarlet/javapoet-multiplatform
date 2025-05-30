@@ -10,11 +10,9 @@ internal expect fun CodePoint.isJavaIdentifierStart(): Boolean
 internal expect fun CodePoint.isJavaIdentifierPart(): Boolean
 
 
-
 internal fun CodePoint.isJavaIdentifierStartCommon(): Boolean {
-    val codeInt = code.toInt()
     if (charCount() == 1) {
-        return Char(codeInt).isJavaIdentifierStart()
+        return Char(code).isJavaIdentifierStart()
     }
 
     // 获取字符类别
@@ -32,7 +30,7 @@ internal fun CodePoint.isJavaIdentifierStartCommon(): Boolean {
             -> true
 
         // 下划线特殊处理
-        CharCategory.CONNECTOR_PUNCTUATION -> code.toInt() == 0x005F // 只允许下划线
+        CharCategory.CONNECTOR_PUNCTUATION -> code == 0x005F // 只允许下划线
 
         // 其他所有类别都不允许作为标识符开始
         else -> false
@@ -40,9 +38,8 @@ internal fun CodePoint.isJavaIdentifierStartCommon(): Boolean {
 }
 
 internal fun CodePoint.isJavaIdentifierPartCommon(): Boolean {
-    val codeInt = code.toInt()
     if (charCount() == 1) {
-        return Char(codeInt).isJavaIdentifierPart()
+        return Char(code).isJavaIdentifierPart()
     }
 
     // 获取字符类别

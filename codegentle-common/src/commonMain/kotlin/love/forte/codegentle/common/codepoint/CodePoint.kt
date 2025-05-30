@@ -16,7 +16,7 @@ import kotlin.jvm.JvmInline
  */
 @JvmInline
 @InternalCodePointApi
-public value class CodePoint internal constructor(public val code: UInt) {
+public value class CodePoint internal constructor(public val code: Int) {
     override fun toString(): String = stringValue()
 }
 
@@ -45,18 +45,18 @@ public expect fun StringBuilder.appendCodePoint(codePoint: CodePoint): StringBui
 public fun StringBuilder.appendCodePointCommon(codePoint: CodePoint): StringBuilder {
     // Copied from StringBuilder.kt,
     val code = codePoint.code
-    if (code <= Char.MAX_VALUE.code.toUInt()) {
-        append(code.toInt().toChar())
+    if (code <= Char.MAX_VALUE.code) {
+        append(code.toChar())
     } else {
-        append(Char.MIN_HIGH_SURROGATE + ((code - 0x10000u) shr 10).toInt())
-        append(Char.MIN_LOW_SURROGATE + (code and 0x3ffu).toInt())
+        append(Char.MIN_HIGH_SURROGATE + ((code - 0x10000) shr 10))
+        append(Char.MIN_LOW_SURROGATE + (code and 0x3ff))
     }
     return this
 }
 
 @InternalCodePointApi
 public fun CodePoint.charCountCommon(): Int {
-    return if (code >= 0x10000u) 2 else 1
+    return if (code >= 0x10000) 2 else 1
 }
 
 /**
@@ -69,13 +69,12 @@ public fun CodePoint.charCountCommon(): Int {
  */
 @InternalCodePointApi
 public fun CodePoint.category(): CharCategory? {
-    val codeInt = code.toInt()
-    return if (codeInt <= Char.MAX_VALUE.code) {
-        Char(codeInt).category
+    return if (code <= Char.MAX_VALUE.code) {
+        Char(code).category
     } else {
         // 对于超出 BMP 范围的码点，我们需要特殊处理
         // 这里使用范围检查确定字符类别
-        getCategoryForSupplementaryCodePoint(codeInt)
+        getCategoryForSupplementaryCodePoint(code)
     }
 }
 

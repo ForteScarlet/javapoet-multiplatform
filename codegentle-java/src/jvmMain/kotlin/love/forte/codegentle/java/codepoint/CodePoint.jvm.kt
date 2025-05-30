@@ -4,7 +4,7 @@ import love.forte.codegentle.common.codepoint.CodePoint
 
 
 internal actual fun CodePoint.isJavaIdentifierStart(): Boolean =
-    Character.isJavaIdentifierStart(code.toInt())
+    Character.isJavaIdentifierStart(code)
 
 internal actual fun CodePoint.isJavaIdentifierPart(): Boolean =
-    Character.isJavaIdentifierPart(code.toInt())
+    Character.isJavaIdentifierPart(code)

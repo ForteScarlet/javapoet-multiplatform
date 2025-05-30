@@ -8,9 +8,9 @@ internal expect fun jsFromCodePoint(code: Int): String
 
 @InternalCodePointApi
 public actual fun String.codePointAt(index: Int): CodePoint {
-    val code = jsCodePointAt(this, index).toUInt()
+    val code = jsCodePointAt(this, index)
     return CodePoint(code)
 }
 
 internal actual fun CodePoint.stringValue(): String =
-    jsFromCodePoint(code.toInt())
+    jsFromCodePoint(code)
