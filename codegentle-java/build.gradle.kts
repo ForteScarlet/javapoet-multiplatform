@@ -1,3 +1,4 @@
+import com.google.devtools.ksp.gradle.KspTaskMetadata
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
@@ -5,7 +6,7 @@ plugins {
     // Use the Kotlin Multiplatform plugin without specifying version
     // The version is inherited from the root project
     alias(libs.plugins.kotlinMultiplatform)
-    // alias(libs.plugins.ksp)
+    alias(libs.plugins.ksp)
     // alias(libs.plugins.kotlinxBinaryCompatibilityValidator)
 }
 
@@ -14,6 +15,10 @@ plugins {
 //         listOf("love.forte.codepoet.java.InternalApi")
 //     )
 // }
+
+dependencies {
+    kspCommonMainMetadata(project(":internal:enum-set"))
+}
 
 
 kotlin {
@@ -78,6 +83,10 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":codegentle-common"))
+            }
+
+            tasks.withType<KspTaskMetadata> {
+                kotlin.srcDir(destinationDirectory.file("kotlin"))
             }
         }
 

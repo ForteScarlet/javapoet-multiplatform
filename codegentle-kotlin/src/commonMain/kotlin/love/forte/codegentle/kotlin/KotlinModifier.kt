@@ -15,6 +15,11 @@
  */
 package love.forte.codegentle.kotlin
 
+import love.forte.codegentle.common.GenEnumSet
+
+public interface Hello
+
+@GenEnumSet(internal = true)
 public enum class KotlinModifier(
     internal val keyword: String,
     private vararg val targets: Target,
@@ -68,6 +73,7 @@ public enum class KotlinModifier(
     OUT("out", Target.VARIANCE_ANNOTATION),
     ;
 
+    @GenEnumSet(internal = true)
     internal enum class Target {
         CLASS,
         VARIANCE_ANNOTATION,

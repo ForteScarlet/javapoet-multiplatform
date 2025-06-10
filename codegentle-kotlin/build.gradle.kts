@@ -1,3 +1,4 @@
+import com.google.devtools.ksp.gradle.KspTaskMetadata
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
@@ -5,7 +6,12 @@ plugins {
     // The version is inherited from the root project
     // id("org.jetbrains.kotlin.multiplatform")
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.ksp)
     // alias(libs.plugins.kotlinxBinaryCompatibilityValidator)
+}
+
+dependencies {
+    kspCommonMainMetadata(project(":internal:enum-set"))
 }
 
 kotlin {
@@ -64,6 +70,10 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":codegentle-common"))
+            }
+
+            tasks.withType<KspTaskMetadata> {
+                kotlin.srcDir(destinationDirectory.file("kotlin"))
             }
         }
 

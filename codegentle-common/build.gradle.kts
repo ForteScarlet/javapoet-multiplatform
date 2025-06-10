@@ -11,7 +11,10 @@ plugins {
     // id("com.google.devtools.ksp")
 }
 
-dependencies.kspCommonMainMetadata(project(":internal:code-value-extensions"))
+dependencies {
+    kspCommonMainMetadata(project(":internal:code-value-extensions"))
+    kspCommonMainMetadata(project(":internal:enum-set"))
+}
 
 kotlin {
     explicitApi()
