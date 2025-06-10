@@ -54,7 +54,7 @@ public class JavaCodeWriter private constructor(
     override val staticImports: Set<String> = emptySet(),
     override val alwaysQualify: Set<String> = emptySet(),
     internal val importedTypes: Map<String, ClassName> = emptyMap()
-) : CodeWriter {
+) : AbstractCodeWriter() {
 
     internal enum class CommentType(
         val isJavadoc: Boolean = false,
@@ -64,7 +64,6 @@ public class JavaCodeWriter private constructor(
     }
 
 
-    internal var indentLevel = 0
     internal var commentType: CommentType? = null
 
     // internal var javadoc = false
@@ -79,23 +78,12 @@ public class JavaCodeWriter private constructor(
     internal val typeSpecStack = ArrayDeque<JavaTypeSpec>()
     internal val currentTypeVariables: Multiset<String> = Multiset()
 
-    private var trailingNewline = false
-
     /**
      * When emitting a statement, this is the line of the statement currently being written. The first
      * line of a statement is indented normally and subsequent wrapped lines are double-indented. This
      * is -1 when the currently-written line isn't part of a statement.
      */
     internal var statementLine: Int = -1
-
-    override fun indent(levels: Int) {
-        indentLevel += levels
-    }
-
-    override fun unindent(levels: Int) {
-        check(indentLevel - levels >= 0) { "cannot unindent $levels from $indentLevel" }
-        indentLevel -= levels
-    }
 
     internal fun pushPackage(packageName: PackageName) {
         check(this.packageName == null) { "package already set: ${this.packageName}" }

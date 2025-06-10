@@ -3,7 +3,7 @@ package love.forte.codegentle.java.strategy
 import love.forte.codegentle.common.writer.Strategy
 
 /**
- * The strategies for writing java files.
+ * The strategies for writing Java files.
  *
  * @author ForteScarlet
  */
