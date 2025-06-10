@@ -73,7 +73,11 @@ public enum class KotlinModifier(
     OUT("out", Target.VARIANCE_ANNOTATION),
     ;
 
-    @GenEnumSet(internal = true)
+    @GenEnumSet(
+        internal = true,
+        immutableName = "KotlinModifierTargetSet",
+        mutableName = "MutableKotlinModifierTargetSet"
+    )
     internal enum class Target {
         CLASS,
         VARIANCE_ANNOTATION,
@@ -89,7 +93,7 @@ public enum class KotlinModifier(
     }
 }
 
-internal val VISIBILITY_MODIFIERS: Set<KotlinModifier> = setOf(
+internal val VISIBILITY_MODIFIERS: Set<KotlinModifier> = KotlinModifierSet.of(
     KotlinModifier.PUBLIC,
     KotlinModifier.INTERNAL,
     KotlinModifier.PROTECTED,

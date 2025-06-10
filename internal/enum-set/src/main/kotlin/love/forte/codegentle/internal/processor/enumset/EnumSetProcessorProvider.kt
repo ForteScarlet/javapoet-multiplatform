@@ -10,7 +10,7 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
  *
  * @author ForteScarlet
  */
-public class EnumSetProcessorProvider : SymbolProcessorProvider {
+class EnumSetProcessorProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
         return EnumSetProcessor(environment)
     }
