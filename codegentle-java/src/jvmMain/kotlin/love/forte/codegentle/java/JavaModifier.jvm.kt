@@ -1,5 +1,7 @@
 package love.forte.codegentle.java
 
+import javax.lang.model.element.Modifier
+
 // javax.lang.model.element.Modifier
 
 // /**
@@ -8,6 +10,16 @@ package love.forte.codegentle.java
 // @Suppress("ACTUAL_ANNOTATIONS_NOT_MATCH_EXPECT")
 // public actual typealias JavaModifier = javax.lang.model.element.Modifier
 
-public fun javax.lang.model.element.Modifier.toJavaModifier(): JavaModifier = JavaModifier.valueOf(name)
+public fun Modifier.toJavaModifier(): JavaModifier = JavaModifier.valueOf(name)
 
-public fun JavaModifier.toJavaxModifier(): javax.lang.model.element.Modifier = javax.lang.model.element.Modifier.valueOf(name)
+public fun JavaModifier.toJavaxModifier(): Modifier = Modifier.valueOf(name)
+
+
+public fun JavaModifierBuilderContainer.addModifier(modifier: Modifier) =
+    addModifier(modifier.toJavaModifier())
+
+public fun JavaModifierBuilderContainer.addModifier(vararg modifiers: Modifier) =
+    addModifiers(modifiers.map { it.toJavaModifier() })
+
+public fun JavaModifierBuilderContainer.addModifier(modifiers: Iterable<Modifier>) =
+    addModifiers(modifiers.map { it.toJavaModifier() })

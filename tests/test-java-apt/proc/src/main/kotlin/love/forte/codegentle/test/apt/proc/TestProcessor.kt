@@ -3,9 +3,11 @@ package love.forte.codegentle.test.apt.proc
 import love.forte.codegentle.common.code.emitLiteral
 import love.forte.codegentle.common.code.emitType
 import love.forte.codegentle.common.naming.parseToPackageName
+import love.forte.codegentle.common.naming.toClassName
 import love.forte.codegentle.common.ref.annotationRefs
 import love.forte.codegentle.java.JavaFile
-import love.forte.codegentle.java.naming.toJavaClassName
+import love.forte.codegentle.java.JavaModifier
+import love.forte.codegentle.java.addModifier
 import love.forte.codegentle.java.naming.toTypeName
 import love.forte.codegentle.java.naming.toTypeVariableName
 import love.forte.codegentle.java.ref.addGenerated
@@ -100,11 +102,11 @@ class TestProcessor : AbstractProcessor() {
             this.elements.add(method)
 
             val enclosingElement = method.enclosingElement as TypeElement
-            val enclosingClassName = enclosingElement.toJavaClassName()
+            val enclosingClassName = enclosingElement.toClassName()
 
             val newMethod =
                 JavaMethodSpec(enclosingElement.simpleName.toString() + "_" + method.simpleName.toString()) {
-                    addModifiers(Modifier.STATIC, Modifier.PUBLIC)
+                    addModifiers(JavaModifier.STATIC, JavaModifier.PUBLIC)
                     addExceptions(method.thrownTypes.map { it.toTypeName().javaRef() })
                     addTypeVariables(method.typeParameters.map { it.toTypeVariableName().javaRef() })
                     addParameters(method.javaParameterSpecs)

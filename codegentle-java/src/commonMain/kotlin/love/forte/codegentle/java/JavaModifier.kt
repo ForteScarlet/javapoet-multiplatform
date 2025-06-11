@@ -100,97 +100,6 @@ public enum class JavaModifier {
     override fun toString(): String = name.lowercase()
 }
 
-/**
- * 始终按照 [JavaModifier] 的 [JavaModifier.ordinal] 进行排序的 [Set] 实现。
- * 类似 TreeSet 或 SortedSet。
- */
-@InternalJavaCodeGentleApi
-public class JavaModifierSet0(private var value: Int = 0) : Set<JavaModifier> {
-    override val size: Int
-        get() = value.countOneBits()
-
-    override fun contains(element: JavaModifier): Boolean {
-        return value and element.ordinal == element.ordinal
-    }
-
-    override fun containsAll(elements: Collection<JavaModifier>): Boolean {
-        return elements.all { contains(it) }
-    }
-
-    public fun add(element: JavaModifier) {
-        value = value or (1 shl element.ordinal)
-    }
-
-    public fun addAll(vararg elements: JavaModifier) {
-        elements.forEach { add(it) }
-    }
-
-    public fun addAll(elements: Iterable<JavaModifier>) {
-        if (elements is JavaModifierSet0) {
-            value = value or elements.value
-        } else {
-            elements.forEach { add(it) }
-        }
-    }
-
-    public fun remove(element: JavaModifier) {
-        value or (1 shl element.ordinal)
-    }
-
-    override fun toString(): String {
-        if (isEmpty()) return "[]"
-
-        return joinToString(", ", prefix = "[", postfix = "]") { it.name }
-    }
-
-
-    override fun isEmpty(): Boolean = value == 0
-
-    override fun iterator(): Iterator<JavaModifier> {
-        if (isEmpty()) return EMPTY_ITERATOR
-
-        return iterator {
-            var bits = value
-            var lowestBit = bits.takeLowestOneBit()
-            do {
-                val index = (lowestBit and -1).countTrailingZeroBits()
-                yield(JavaModifier.entries[index])
-                bits = bits xor lowestBit
-                lowestBit = bits.takeLowestOneBit()
-            } while (bits > 0 && lowestBit > 0)
-        }
-    }
-
-    public fun copy(): JavaModifierSet0 = JavaModifierSet0(value)
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Set<*>) return false
-
-        if (other is JavaModifierSet0) return value == other.value
-
-        // Other sets
-
-        if (other.size != size) return false
-
-        return other.all { it in this }
-    }
-
-    override fun hashCode(): Int {
-        return value
-    }
-
-    public companion object {
-        private val EMPTY_ITERATOR = object : Iterator<JavaModifier> {
-            override fun hasNext(): Boolean = false
-
-            override fun next(): JavaModifier {
-                throw NoSuchElementException("No next modifier found.")
-            }
-        }
-    }
-}
-
 public interface JavaModifierBuilderContainer : BuilderDsl {
     public fun addModifier(modifier: JavaModifier): JavaModifierBuilderContainer
     public fun addModifiers(vararg modifiers: JavaModifier): JavaModifierBuilderContainer
@@ -222,6 +131,14 @@ public value class JavaModifiers
 
     public fun static() {
         container.addModifier(JavaModifier.STATIC)
+    }
+
+    public fun sealed() {
+        container.addModifier(JavaModifier.SEALED)
+    }
+
+    public fun nonSealed() {
+        container.addModifier(JavaModifier.NON_SEALED)
     }
 
     public fun final() {
