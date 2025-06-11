@@ -14,10 +14,10 @@ class ModifierTest {
 
     @Test
     fun testModifierSet() {
-        JavaModifierSet().also { set ->
+        MutableJavaModifierSet.empty().also { set ->
             assertEquals(0, set.size)
 
-            set.addAll(JavaModifier.PUBLIC, JavaModifier.ABSTRACT, JavaModifier.NATIVE)
+            set.addAll(arrayOf(JavaModifier.PUBLIC, JavaModifier.ABSTRACT, JavaModifier.NATIVE))
 
             assertEquals(3, set.size)
 
@@ -35,10 +35,10 @@ class ModifierTest {
             assertFalse(iterator.hasNext())
         }
 
-        JavaModifierSet().also { set ->
+        MutableJavaModifierSet.empty().also { set ->
             assertEquals(0, set.size)
 
-            set.addAll(JavaModifier.NATIVE, JavaModifier.ABSTRACT, JavaModifier.PUBLIC)
+            set.addAll(arrayOf(JavaModifier.NATIVE, JavaModifier.ABSTRACT, JavaModifier.PUBLIC))
 
             assertEquals(3, set.size)
 
@@ -58,7 +58,7 @@ class ModifierTest {
             assertFalse(iterator.hasNext())
         }
 
-        JavaModifierSet().also { set ->
+        MutableJavaModifierSet.empty().also { set ->
             assertEquals(0, set.size)
             val iterator = set.iterator()
             assertFalse(iterator.hasNext())
@@ -69,21 +69,39 @@ class ModifierTest {
     fun testToString() {
         assertEquals(
             "[]",
-            JavaModifierSet().toString()
+            MutableJavaModifierSet.empty().toString()
+        )
+        assertEquals(
+            "[]",
+            JavaModifierSet.empty().toString()
         )
 
         assertEquals(
-            "[PUBLIC, ABSTRACT, NATIVE]",
-            JavaModifierSet().apply {
-                addAll(JavaModifier.NATIVE, JavaModifier.ABSTRACT, JavaModifier.PUBLIC)
+            "[public, abstract, native]",
+            MutableJavaModifierSet.empty().apply {
+                addAll(arrayOf(JavaModifier.NATIVE, JavaModifier.ABSTRACT, JavaModifier.PUBLIC))
             }.toString()
         )
 
         assertEquals(
-            "[PUBLIC, ABSTRACT, NATIVE]",
-            JavaModifierSet().apply {
-                addAll(JavaModifier.PUBLIC, JavaModifier.ABSTRACT, JavaModifier.NATIVE)
+            "[public, abstract, native]",
+            MutableJavaModifierSet.empty().apply {
+                addAll(arrayOf(JavaModifier.NATIVE, JavaModifier.ABSTRACT, JavaModifier.PUBLIC))
+            }.immutable().toString()
+        )
+
+        assertEquals(
+            "[public, abstract, native]",
+            MutableJavaModifierSet.empty().apply {
+                addAll(arrayOf(JavaModifier.PUBLIC, JavaModifier.ABSTRACT, JavaModifier.NATIVE))
             }.toString()
+        )
+
+        assertEquals(
+            "[public, abstract, native]",
+            MutableJavaModifierSet.empty().apply {
+                addAll(arrayOf(JavaModifier.PUBLIC, JavaModifier.ABSTRACT, JavaModifier.NATIVE))
+            }.immutable().toString()
         )
     }
 

@@ -52,7 +52,7 @@ public class JavaAnonymousClassTypeSpecBuilder @PublishedApi internal constructo
             anonymousTypeArguments = anonymousTypeArguments,
             javadoc = javadoc.build(),
             annotations = annotationRefs.toList(),
-            modifiers = modifierSet.copy(),
+            modifiers = modifierSet.immutable(),
             typeVariables = typeVariableRefs.toList(),
             superclass = superclass,
             superinterfaces = superinterfaces.toList(),

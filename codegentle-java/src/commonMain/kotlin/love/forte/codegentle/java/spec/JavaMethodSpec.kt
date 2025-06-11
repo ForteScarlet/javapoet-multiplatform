@@ -17,13 +17,8 @@
 package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.common.BuilderDsl
-import love.forte.codegentle.common.code.CodeArgumentPart
+import love.forte.codegentle.common.code.*
 import love.forte.codegentle.common.code.CodePart.Companion.literal
-import love.forte.codegentle.common.code.CodeValue
-import love.forte.codegentle.common.code.CodeValueBuilder
-import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
-import love.forte.codegentle.common.code.beginControlFlow
-import love.forte.codegentle.common.code.nextControlFlow
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
@@ -32,7 +27,7 @@ import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.spec.NamedSpec
 import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.JavaModifierBuilderContainer
-import love.forte.codegentle.java.JavaModifierSet
+import love.forte.codegentle.java.MutableJavaModifierSet
 import love.forte.codegentle.java.ref.JavaTypeRefBuilderDsl
 import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.internal.JavaMethodSpecImpl
@@ -109,7 +104,7 @@ public class JavaMethodSpecBuilder internal constructor(
 
     internal val typeVariables: MutableList<TypeRef<TypeVariableName>> = mutableListOf()
     internal val annotations: MutableList<AnnotationRef> = mutableListOf()
-    internal val modifiers = JavaModifierSet()
+    internal val modifiers = MutableJavaModifierSet.empty()
     internal val parameters: MutableList<JavaParameterSpec> = mutableListOf()
 
     public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): JavaMethodSpecBuilder = apply {
@@ -137,7 +132,7 @@ public class JavaMethodSpecBuilder internal constructor(
     }
 
     override fun addModifiers(vararg modifiers: JavaModifier): JavaMethodSpecBuilder = apply {
-        this.modifiers.addAll(*modifiers)
+        this.modifiers.addAll(modifiers)
     }
 
     public fun addTypeVariable(typeVariable: TypeRef<TypeVariableName>): JavaMethodSpecBuilder = apply {
@@ -264,7 +259,7 @@ public class JavaMethodSpecBuilder internal constructor(
             name = name,
             javadoc = javadoc.build(),
             annotations = annotations.toList(),
-            modifiers = modifiers.copy(),
+            modifiers = modifiers.immutable(),
             typeVariables = typeVariables.toList(),
             returnType = returnType,
             parameters = parameters.toList(),

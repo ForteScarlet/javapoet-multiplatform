@@ -135,6 +135,27 @@ public abstract class I32EnumSet<E : Enum<E>>(protected open var bitset: UInt = 
         bitset = elements.fold(0u) { acc, e -> acc or (1u shl e.ordinal) }
         return bitset != old
     }
+
+    override fun toString(): String {
+        return joinToString(", ", "[", "]")
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Set<*>) return false
+        if (size != other.size) return false
+
+        if (other is I32EnumSet<*>) {
+            return bitset == other.bitset
+        }
+
+        return other.all { it in this }
+    }
+
+    override fun hashCode(): Int {
+        // 使用标准的 Set hashCode 计算方式
+        return sumOf { it.hashCode() }
+    }
 }
 
 /**
@@ -250,6 +271,27 @@ public abstract class I64EnumSet<E : Enum<E>>(protected open var bitset: ULong =
         bitset = elements.fold(0uL) { acc, e -> acc or (1uL shl e.ordinal) }
         return bitset != old
     }
+
+    override fun toString(): String {
+        return joinToString(", ", "[", "]")
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Set<*>) return false
+        if (size != other.size) return false
+
+        if (other is I64EnumSet<*>) {
+            return bitset == other.bitset
+        }
+
+        return other.all { it in this }
+    }
+
+    override fun hashCode(): Int {
+        return sumOf { it.hashCode() }
+    }
+
 }
 
 /**
@@ -436,5 +478,36 @@ public abstract class BigEnumSet<E : Enum<E>>(
         }
         if (modified) bitset = newBitset
         return modified
+    }
+
+    override fun toString(): String {
+        return joinToString(", ", "[", "]")
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Set<*>) return false
+        if (size != other.size) return false
+
+        // 如果是同类型的 BigEnumSet，使用位运算优化
+        if (other is BigEnumSet<*>) {
+            val otherBitset = other.bitset
+            val maxSize = maxOf(bitset.size, otherBitset.size)
+
+            for (i in 0 until maxSize) {
+                val thisBit = if (i < bitset.size) bitset[i] else 0L
+                val otherBit = if (i < otherBitset.size) otherBitset[i] else 0L
+                if (thisBit != otherBit) return false
+            }
+            return true
+        }
+
+        // 使用标准的 Set equals 语义
+        return other.all { it in this }
+    }
+
+    override fun hashCode(): Int {
+        // 使用标准的 Set hashCode 计算方式
+        return sumOf { it.hashCode() }
     }
 }

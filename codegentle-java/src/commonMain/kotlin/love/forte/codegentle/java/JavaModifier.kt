@@ -26,6 +26,7 @@
 package love.forte.codegentle.java
 
 import love.forte.codegentle.common.BuilderDsl
+import love.forte.codegentle.common.GenEnumSet
 import kotlin.jvm.JvmInline
 
 
@@ -33,7 +34,8 @@ import kotlin.jvm.JvmInline
  *
  * see `javax.lang.model.element.Modifier`
  */
-public expect enum class JavaModifier {
+@GenEnumSet(internal = true)
+public enum class JavaModifier {
 
     // See JLS sections 8.1.1, 8.3.1, 8.4.3, 8.8.3, and 9.1.1.
     // java.lang.reflect.Modifier includes INTERFACE, but that's a VMism.
@@ -56,6 +58,18 @@ public expect enum class JavaModifier {
     /** The modifier `static` */
     STATIC,
 
+    /**
+     * The modifier `sealed` (since Java 17)
+     */
+    SEALED,
+
+    /**
+     * The modifier `non-sealed` (since Java 17)
+     */
+    NON_SEALED {
+        override fun toString(): String = "non-sealed"
+    },
+
     /** The modifier `final` */
     FINAL,
 
@@ -73,6 +87,17 @@ public expect enum class JavaModifier {
 
     /** The modifier `strictfp` */
     STRICTFP;
+
+    /**
+     * Returns this modifier's name as defined in
+     * *The Java Language Specification*.
+     * The modifier name is the [name of the enum constant][name]
+     * in lowercase and with any underscores ("`_`")
+     * replaced with hyphens ("`-`").
+     *
+     * @return the modifier's name
+     */
+    override fun toString(): String = name.lowercase()
 }
 
 /**
@@ -80,7 +105,7 @@ public expect enum class JavaModifier {
  * 类似 TreeSet 或 SortedSet。
  */
 @InternalJavaCodeGentleApi
-public class JavaModifierSet(private var value: Int = 0) : Set<JavaModifier> {
+public class JavaModifierSet0(private var value: Int = 0) : Set<JavaModifier> {
     override val size: Int
         get() = value.countOneBits()
 
@@ -101,7 +126,7 @@ public class JavaModifierSet(private var value: Int = 0) : Set<JavaModifier> {
     }
 
     public fun addAll(elements: Iterable<JavaModifier>) {
-        if (elements is JavaModifierSet) {
+        if (elements is JavaModifierSet0) {
             value = value or elements.value
         } else {
             elements.forEach { add(it) }
@@ -136,13 +161,13 @@ public class JavaModifierSet(private var value: Int = 0) : Set<JavaModifier> {
         }
     }
 
-    public fun copy(): JavaModifierSet = JavaModifierSet(value)
+    public fun copy(): JavaModifierSet0 = JavaModifierSet0(value)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Set<*>) return false
 
-        if (other is JavaModifierSet) return value == other.value
+        if (other is JavaModifierSet0) return value == other.value
 
         // Other sets
 

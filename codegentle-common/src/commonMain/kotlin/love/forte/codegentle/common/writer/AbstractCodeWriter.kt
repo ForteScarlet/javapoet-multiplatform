@@ -6,8 +6,8 @@ package love.forte.codegentle.common.writer
  */
 @InternalWriterApi
 public abstract class AbstractCodeWriter : CodeWriter {
-    protected var indentLevel: Int = 0
-    protected var trailingNewline: Boolean = false
+    public var indentLevel: Int = 0
+    public var trailingNewline: Boolean = false
 
     override fun indent(levels: Int) {
         indentLevel += levels

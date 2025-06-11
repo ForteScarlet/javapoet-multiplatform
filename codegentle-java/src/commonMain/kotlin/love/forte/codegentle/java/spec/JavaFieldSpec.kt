@@ -27,7 +27,7 @@ import love.forte.codegentle.common.spec.NamedSpec
 import love.forte.codegentle.java.InternalJavaCodeGentleApi
 import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.JavaModifierBuilderContainer
-import love.forte.codegentle.java.JavaModifierSet
+import love.forte.codegentle.java.MutableJavaModifierSet
 import love.forte.codegentle.java.ref.JavaTypeRefBuilderDsl
 import love.forte.codegentle.java.ref.javaRef
 import love.forte.codegentle.java.spec.internal.JavaFieldSpecImpl
@@ -91,7 +91,7 @@ public class JavaFieldSpecBuilder @PublishedApi internal constructor(
     AnnotationRefCollectable<JavaFieldSpecBuilder> {
     internal val javadoc = CodeValue.builder()
     internal val annotations = mutableListOf<AnnotationRef>()
-    internal val modifiers = JavaModifierSet()
+    internal val modifiers = MutableJavaModifierSet.empty()
     internal var initializer: CodeValue? = null
 
     public fun addJavadoc(format: String, vararg argumentParts: CodeArgumentPart): JavaFieldSpecBuilder = apply {
@@ -111,7 +111,7 @@ public class JavaFieldSpecBuilder @PublishedApi internal constructor(
     }
 
     override fun addModifiers(vararg modifiers: JavaModifier): JavaFieldSpecBuilder = apply {
-        this.modifiers.addAll(*modifiers)
+        this.modifiers.addAll(modifiers)
     }
 
     override fun addModifiers(modifiers: Iterable<JavaModifier>): JavaFieldSpecBuilder = apply {

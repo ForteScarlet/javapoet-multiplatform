@@ -5,6 +5,7 @@ package love.forte.codegentle.java.spec
 
 import love.forte.codegentle.java.naming.toTypeName
 import love.forte.codegentle.java.ref.javaRef
+import love.forte.codegentle.java.toJavaModifier
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.VariableElement
@@ -30,7 +31,7 @@ public fun VariableElement.toJavaParameterSpec(): JavaParameterSpec {
     // TODO annotationMirrors?
 
     return JavaParameterSpec(type.javaRef(), name) {
-        addModifiers(this@toJavaParameterSpec.modifiers)
+        addModifiers(this@toJavaParameterSpec.modifiers.map { it.toJavaModifier() })
     }
 }
 

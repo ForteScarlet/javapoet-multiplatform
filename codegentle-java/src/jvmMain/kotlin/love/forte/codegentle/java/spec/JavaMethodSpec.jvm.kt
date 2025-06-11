@@ -23,14 +23,14 @@ public inline fun ExecutableElement.toJavaMethodSpecOverring(
     require(Modifier.FINAL !in enclosingElement.modifiers) {
         "Cannot override method $name on final class $enclosingElement"
     }
-    val methodModifiers = method.modifiers
-    require(Modifier.FINAL !in methodModifiers) {
+    val methodModifiers = method.modifiers.map { JavaModifier.valueOf(it.name) }
+    require(JavaModifier.FINAL !in methodModifiers) {
         "Cannot override final method $name on class $enclosingElement"
     }
-    require(Modifier.PRIVATE !in methodModifiers) {
+    require(JavaModifier.PRIVATE !in methodModifiers) {
         "Cannot override private method $name on class $enclosingElement"
     }
-    require(Modifier.STATIC !in methodModifiers) {
+    require(JavaModifier.STATIC !in methodModifiers) {
         "Cannot override static method $name on class $enclosingElement"
     }
 

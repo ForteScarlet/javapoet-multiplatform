@@ -26,7 +26,7 @@ import love.forte.codegentle.common.ref.AnnotationRefCollectable
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.JavaModifierBuilderContainer
-import love.forte.codegentle.java.JavaModifierSet
+import love.forte.codegentle.java.MutableJavaModifierSet
 import love.forte.codegentle.java.internal.isSourceName
 import love.forte.codegentle.java.naming.isPrimitive
 import love.forte.codegentle.java.ref.JavaTypeRefBuilderDsl
@@ -224,7 +224,7 @@ public sealed class JavaTypeSpecBuilder<B : JavaTypeSpecBuilder<B, T>, T : JavaT
     internal val initializerBlock = CodeValue.builder()
 
     internal val annotationRefs: MutableList<AnnotationRef> = mutableListOf()
-    internal val modifierSet: JavaModifierSet = JavaModifierSet()
+    internal val modifierSet = MutableJavaModifierSet.empty()
     internal val typeVariableRefs: MutableList<TypeRef<TypeVariableName>> = mutableListOf()
     internal val superinterfaces: MutableList<TypeName> = mutableListOf()
     internal val fields: MutableList<JavaFieldSpec> = mutableListOf()
@@ -260,7 +260,7 @@ public sealed class JavaTypeSpecBuilder<B : JavaTypeSpecBuilder<B, T>, T : JavaT
     }
 
     override fun addModifiers(vararg modifiers: JavaModifier): B = self.apply {
-        this.modifierSet.addAll(*modifiers)
+        this.modifierSet.addAll(modifiers)
     }
 
     override fun addModifiers(modifiers: Iterable<JavaModifier>): B = self.apply {
