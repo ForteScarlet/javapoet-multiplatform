@@ -12,6 +12,7 @@ import love.forte.codegentle.kotlin.KotlinModifierContainer
  *
  * @author ForteScarlet
  */
+@SubclassOptInRequired(CodeGentleKotlinSpecImplementation::class)
 public interface KotlinFunctionLikeSpec : Spec, KotlinModifierContainer {
     /**
      * Function name if it exists.

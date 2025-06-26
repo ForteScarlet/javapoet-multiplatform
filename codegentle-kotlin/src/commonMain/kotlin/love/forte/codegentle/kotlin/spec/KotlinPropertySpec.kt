@@ -36,12 +36,23 @@ public interface KotlinPropertySpec : Spec, KotlinModifierContainer {
     public val delegate: CodeValue?
 
     public companion object {
+        /**
+         * Create a builder for a property.
+         *
+         * @param name the property name
+         * @param type the property type
+         * @return a new builder
+         */
+        public fun builder(name: String, type: TypeRef<*>): KotlinPropertySpecBuilder {
+            return KotlinPropertySpecBuilder(name, type)
+        }
+
         public operator fun invoke(
             name: String,
+            type: TypeRef<*>,
             block: KotlinPropertySpecBuilder.() -> Unit = {}
         ): KotlinPropertySpec {
-            // TODO: 实现 invoke 方法
-            throw NotImplementedError("KotlinPropertySpec.invoke 方法尚未实现")
+            return builder(name, type).apply(block).build()
         }
     }
 }
@@ -61,12 +72,17 @@ public class KotlinPropertySpecBuilder @PublishedApi internal constructor(
     private val annotations = mutableListOf<AnnotationRef>()
 
     /**
-     * val prop: $type by $codeValue
+     * Property's delegate.
+     *
+     * `val prop: $type by $codeValue`.
+     *
+     * Cannot exist at the same time as `initializer`.
      */
     private var delegate: CodeValue? = null
 
     /**
-     * Initializer for property. Cannot exist at the same time as `delegate`.
+     * Initializer for property.
+     * Cannot exist at the same time as `delegate`.
      */
     private var initializer: CodeValue? = null
 

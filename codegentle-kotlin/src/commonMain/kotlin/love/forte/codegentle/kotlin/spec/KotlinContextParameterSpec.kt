@@ -3,13 +3,13 @@ package love.forte.codegentle.kotlin.spec
 import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.spec.Spec
-import love.forte.codegentle.kotlin.KotlinModifierContainer
+import love.forte.codegentle.kotlin.spec.internal.KotlinContextParameterSpecImpl
 
 /**
  * A Kotlin context parameter.
  */
 @SubclassOptInRequired(CodeGentleKotlinSpecImplementation::class)
-public interface KotlinContextParameterSpec : Spec, KotlinModifierContainer {
+public interface KotlinContextParameterSpec : Spec {
     /**
      * Parameter name.
      * `null` if it's `_`, e.g., `context(_: ParameterType)`.
@@ -29,7 +29,7 @@ public interface KotlinContextParameterSpec : Spec, KotlinModifierContainer {
 }
 
 /**
- * Builder for [KotlinValueParameterSpec].
+ * Builder for [KotlinContextParameterSpec].
  */
 public class KotlinContextParameterSpecBuilder @PublishedApi internal constructor(
     public val name: String?,
@@ -37,8 +37,8 @@ public class KotlinContextParameterSpecBuilder @PublishedApi internal constructo
 ) : BuilderDsl {
 
     /**
-     * Build [KotlinValueParameterSpec].
+     * Build [KotlinContextParameterSpec].
      */
     public fun build(): KotlinContextParameterSpec =
-        TODO()
+        KotlinContextParameterSpecImpl(name, type)
 }

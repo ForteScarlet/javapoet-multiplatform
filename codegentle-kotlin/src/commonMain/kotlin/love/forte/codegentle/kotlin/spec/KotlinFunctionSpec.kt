@@ -31,8 +31,8 @@ public interface KotlinFunctionSpec : Spec, KotlinModifierContainer {
     public val annotations: List<AnnotationRef>
     public val typeVariables: List<TypeRef<TypeVariableName>>
     public val parameters: List<KotlinValueParameterSpec>
-    // TODO receiver: TypeRef<*>?
-    // TODO contextParameters: List<KotlinContextParameterSpec>
+    public val receiver: TypeRef<*>?
+    public val contextParameters: List<KotlinContextParameterSpec>
     public val kDoc: CodeValue
     public val code: CodeValue
 
@@ -64,6 +64,8 @@ public class KotlinFunctionSpecBuilder @PublishedApi internal constructor(
     private val annotations = mutableListOf<AnnotationRef>()
     private val typeVariables = mutableListOf<TypeRef<TypeVariableName>>()
     private val parameters = mutableListOf<KotlinValueParameterSpec>()
+    private var receiver: TypeRef<*>? = null
+    private val contextParameters = mutableListOf<KotlinContextParameterSpec>()
 
     override fun addModifier(modifier: KotlinModifier): KotlinFunctionSpecBuilder = apply {
         modifierSet.add(modifier)
@@ -117,6 +119,48 @@ public class KotlinFunctionSpecBuilder @PublishedApi internal constructor(
         this.parameters.addAll(parameters)
     }
 
+    /**
+     * Set the receiver type for this function.
+     *
+     * @param receiverType the receiver type
+     * @return this builder
+     */
+    public fun receiver(receiverType: TypeRef<*>): KotlinFunctionSpecBuilder = apply {
+        this.receiver = receiverType
+    }
+
+    /**
+     * Add a context parameter to this function.
+     *
+     * @param contextParameter the context parameter
+     * @return this builder
+     */
+    public fun addContextParameter(contextParameter: KotlinContextParameterSpec): KotlinFunctionSpecBuilder = apply {
+        contextParameters.add(contextParameter)
+    }
+
+    /**
+     * Add multiple context parameters to this function.
+     *
+     * @param contextParameters the context parameters
+     * @return this builder
+     */
+    public fun addContextParameters(contextParameters: Iterable<KotlinContextParameterSpec>): KotlinFunctionSpecBuilder =
+        apply {
+            this.contextParameters.addAll(contextParameters)
+        }
+
+    /**
+     * Add multiple context parameters to this function.
+     *
+     * @param contextParameters the context parameters
+     * @return this builder
+     */
+    public fun addContextParameters(vararg contextParameters: KotlinContextParameterSpec): KotlinFunctionSpecBuilder =
+        apply {
+            this.contextParameters.addAll(contextParameters)
+        }
+
     public fun addCode(codeValue: CodeValue): KotlinFunctionSpecBuilder = apply {
         code.add(codeValue)
     }
@@ -146,6 +190,8 @@ public class KotlinFunctionSpecBuilder @PublishedApi internal constructor(
             modifiers = modifierSet.immutable(),
             typeVariables = typeVariables.toList(),
             parameters = parameters.toList(),
+            receiver = receiver,
+            contextParameters = contextParameters.toList(),
             kDoc = kDoc.build(),
             code = code.build()
         )
