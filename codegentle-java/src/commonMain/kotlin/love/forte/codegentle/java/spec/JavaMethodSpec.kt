@@ -27,6 +27,7 @@ import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.spec.NamedSpec
 import love.forte.codegentle.java.JavaModifier
 import love.forte.codegentle.java.JavaModifierBuilderContainer
+import love.forte.codegentle.java.JavaModifierContainer
 import love.forte.codegentle.java.MutableJavaModifierSet
 import love.forte.codegentle.java.ref.JavaTypeRefBuilderDsl
 import love.forte.codegentle.java.ref.javaRef
@@ -39,11 +40,11 @@ import kotlin.jvm.JvmStatic
  * A generated constructor or method declaration.
  */
 @SubclassOptInRequired(CodeGentleJavaSpecImplementation::class)
-public interface JavaMethodSpec : JavaSpec, NamedSpec {
+public interface JavaMethodSpec : JavaSpec, NamedSpec, JavaModifierContainer {
     override val name: String
     public val javadoc: CodeValue
     public val annotations: List<AnnotationRef>
-    public val modifiers: Set<JavaModifier>
+    override val modifiers: Set<JavaModifier>
     public val typeVariables: List<TypeRef<TypeVariableName>>
     public val returnType: TypeRef<*>?
     public val parameters: List<JavaParameterSpec>
@@ -51,8 +52,6 @@ public interface JavaMethodSpec : JavaSpec, NamedSpec {
     public val exceptions: List<TypeRef<*>>
     public val code: CodeValue
     public val defaultValue: CodeValue
-
-    public fun hasModifier(modifier: JavaModifier): Boolean = modifier in modifiers
 
     public val isConstructor: Boolean
         get() = name == CONSTRUCTOR

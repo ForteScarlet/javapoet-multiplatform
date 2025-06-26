@@ -13,7 +13,7 @@ import love.forte.codegentle.kotlin.ref.KotlinTypeNameRefStatus
 @InternalKotlinCodeGentleApi
 internal data class KotlinTypeNameRefStatusImpl(
     override val annotations: List<AnnotationRef>,
-    val nullable: Boolean
+    override val nullable: Boolean
 ) : KotlinTypeNameRefStatus
 
 //

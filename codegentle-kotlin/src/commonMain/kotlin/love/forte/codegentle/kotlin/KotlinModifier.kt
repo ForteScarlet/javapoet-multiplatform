@@ -104,6 +104,12 @@ internal val VISIBILITY_MODIFIERS: Set<KotlinModifier> = KotlinModifierSet.of(
     KotlinModifier.PRIVATE
 )
 
+public interface KotlinModifierContainer {
+    public val modifiers: Set<KotlinModifier>
+
+    public fun hasModifier(modifier: KotlinModifier): Boolean = modifier in modifiers
+}
+
 
 public inline val KotlinModifierBuilderContainer.modifiers: KotlinModifiers
     get() = KotlinModifiers(this)

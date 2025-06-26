@@ -1,87 +1,209 @@
 package love.forte.codegentle.kotlin.spec
 
+import love.forte.codegentle.common.BuilderDsl
+import love.forte.codegentle.common.code.CodeArgumentPart
+import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueBuilder
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
+import love.forte.codegentle.common.naming.TypeVariableName
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.AnnotationRefCollectable
+import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.spec.Spec
+import love.forte.codegentle.kotlin.KotlinModifier
+import love.forte.codegentle.kotlin.KotlinModifierBuilderContainer
+import love.forte.codegentle.kotlin.KotlinModifierContainer
+import love.forte.codegentle.kotlin.MutableKotlinModifierSet
+import love.forte.codegentle.kotlin.spec.internal.KotlinFunctionSpecImpl
 
 /**
- * 表示一个 Kotlin 函数规范。
- *
- * @property name 函数名称
- *
- * TODO: 实现 KotlinFunctionSpec 类，参考 JavaMethodSpec 的实现
+ * A Kotlin function。
  */
 @SubclassOptInRequired(CodeGentleKotlinSpecImplementation::class)
-public interface KotlinFunctionSpec : Spec {
+public interface KotlinFunctionSpec : Spec, KotlinModifierContainer {
     /**
-     * 函数名称。
+     * Function name.
      */
     public val name: String
+    public val returnType: TypeRef<*>
 
-    /**
-     * 创建一个 Kotlin 函数规范的构建器。
-     *
-     * @param name 函数名称
-     * @return 新的构建器实例
-     */
+    override val modifiers: Set<KotlinModifier>
+    public val annotations: List<AnnotationRef>
+    public val typeVariables: List<TypeRef<TypeVariableName>>
+    public val parameters: List<KotlinValueParameterSpec>
+    // TODO receiver: TypeRef<*>?
+    // TODO contextParameters: List<KotlinContextParameterSpec>
+    public val kDoc: CodeValue
+    public val code: CodeValue
+
     public companion object {
         /**
-         * 创建一个 Kotlin 函数规范。
+         * Create a function builder.
          *
-         * @param name 函数名称
-         * @param block 配置构建器的代码块
-         * @return 新的 [KotlinFunctionSpec] 实例
+         * @return new [KotlinFunctionSpecBuilder] instance.
          */
-        public operator fun invoke(
-            name: String,
-            block: KotlinFunctionSpecBuilder.() -> Unit = {}
-        ): KotlinFunctionSpec {
-            // TODO: 实现 invoke 方法
-            TODO("KotlinFunctionSpec.invoke 方法尚未实现")
+        public fun builder(name: String, type: TypeRef<*>): KotlinFunctionSpecBuilder {
+            return KotlinFunctionSpecBuilder(name, type)
         }
     }
-
 }
 
 /**
- * Kotlin 函数规范的构建器。
+ * Builder for [KotlinFunctionSpec].
  */
-public class KotlinFunctionSpecBuilder {
-    /**
-     * 函数名称。
-     */
-    public val name: String = TODO()
+public class KotlinFunctionSpecBuilder @PublishedApi internal constructor(
+    public val name: String,
+    public val returnType: TypeRef<*>
+) : BuilderDsl,
+    KotlinModifierBuilderContainer,
+    AnnotationRefCollectable<KotlinFunctionSpecBuilder> {
 
-    // TODO addStatement
+    private val kDoc: CodeValueBuilder = CodeValue.builder()
+    private val code: CodeValueBuilder = CodeValue.builder()
+    private val modifierSet = MutableKotlinModifierSet.empty()
+    private val annotations = mutableListOf<AnnotationRef>()
+    private val typeVariables = mutableListOf<TypeRef<TypeVariableName>>()
+    private val parameters = mutableListOf<KotlinValueParameterSpec>()
+
+    override fun addModifier(modifier: KotlinModifier): KotlinFunctionSpecBuilder = apply {
+        modifierSet.add(modifier)
+    }
+
+    override fun addModifiers(vararg modifiers: KotlinModifier): KotlinFunctionSpecBuilder = apply {
+        modifierSet.addAll(modifiers)
+    }
+
+    override fun addModifiers(modifiers: Iterable<KotlinModifier>): KotlinFunctionSpecBuilder = apply {
+        modifierSet.addAll(modifiers)
+    }
+
+    override fun addAnnotationRef(ref: AnnotationRef): KotlinFunctionSpecBuilder = apply {
+        annotations.add(ref)
+    }
+
+    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): KotlinFunctionSpecBuilder = apply {
+        annotations.addAll(refs)
+    }
+
+    public fun addKDoc(codeValue: CodeValue): KotlinFunctionSpecBuilder = apply {
+        kDoc.add(codeValue)
+    }
+
+    public fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): KotlinFunctionSpecBuilder = apply {
+        kDoc.add(format, *argumentParts)
+    }
+
+    public fun addTypeVariable(typeVariable: TypeRef<TypeVariableName>): KotlinFunctionSpecBuilder = apply {
+        typeVariables.add(typeVariable)
+    }
+
+    public fun addTypeVariables(vararg typeVariables: TypeRef<TypeVariableName>): KotlinFunctionSpecBuilder = apply {
+        this.typeVariables.addAll(typeVariables)
+    }
+
+    public fun addTypeVariables(typeVariables: Iterable<TypeRef<TypeVariableName>>): KotlinFunctionSpecBuilder = apply {
+        this.typeVariables.addAll(typeVariables)
+    }
+
+    public fun addParameter(parameter: KotlinValueParameterSpec): KotlinFunctionSpecBuilder = apply {
+        parameters.add(parameter)
+    }
+
+    public fun addParameters(parameters: Iterable<KotlinValueParameterSpec>): KotlinFunctionSpecBuilder = apply {
+        this.parameters.addAll(parameters)
+    }
+
+    public fun addParameters(vararg parameters: KotlinValueParameterSpec): KotlinFunctionSpecBuilder = apply {
+        this.parameters.addAll(parameters)
+    }
+
+    public fun addCode(codeValue: CodeValue): KotlinFunctionSpecBuilder = apply {
+        code.add(codeValue)
+    }
+
+    public fun addCode(format: String, vararg argumentParts: CodeArgumentPart): KotlinFunctionSpecBuilder = apply {
+        code.add(format, *argumentParts)
+    }
+
+    public fun addStatement(format: String, vararg argumentParts: CodeArgumentPart): KotlinFunctionSpecBuilder = apply {
+        code.addStatement(format, *argumentParts)
+    }
+
+    public fun addStatement(codeValue: CodeValue): KotlinFunctionSpecBuilder = apply {
+        code.addStatement(codeValue)
+    }
 
     /**
      * 构建 [KotlinFunctionSpec] 实例。
      *
      * @return 新的 [KotlinFunctionSpec] 实例
      */
-    public fun build(): KotlinFunctionSpec = TODO()
+    public fun build(): KotlinFunctionSpec =
+        KotlinFunctionSpecImpl(
+            name = name,
+            returnType = returnType,
+            annotations = annotations.toList(),
+            modifiers = modifierSet.immutable(),
+            typeVariables = typeVariables.toList(),
+            parameters = parameters.toList(),
+            kDoc = kDoc.build(),
+            code = code.build()
+        )
 }
 
 /**
- * 语句构建器。
+ * Create a [KotlinFunctionSpec] with the given name and return type.
+ *
+ * @param name the function name
+ * @param type the return type
+ * @param block the configuration block
+ * @return a new [KotlinFunctionSpec] instance
  */
-public interface KFSStatementBuilder {
-    /**
-     * 添加字符串参数。
-     *
-     * @param value 字符串值
-     */
-    public fun emitString(value: String)
+public inline fun KotlinFunctionSpec(
+    name: String,
+    type: TypeRef<*>,
+    block: KotlinFunctionSpecBuilder.() -> Unit = {}
+): KotlinFunctionSpec =
+    KotlinFunctionSpec.builder(name, type).apply(block).build()
 
-    /**
-     * 添加数字参数。
-     *
-     * @param value 数字值
-     */
-    public fun emitNumber(value: Number)
+/**
+ * Add KDoc with a format string and a configuration block.
+ *
+ * @param format the format string
+ * @param block the configuration block
+ * @return this builder
+ */
+public inline fun KotlinFunctionSpecBuilder.addKDoc(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinFunctionSpecBuilder = apply {
+    addKDoc(CodeValue(format, block))
+}
 
-    /**
-     * 添加布尔参数。
-     *
-     * @param value 布尔值
-     */
-    public fun emitBoolean(value: Boolean)
+/**
+ * Add code with a format string and a configuration block.
+ *
+ * @param format the format string
+ * @param block the configuration block
+ * @return this builder
+ */
+public inline fun KotlinFunctionSpecBuilder.addCode(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinFunctionSpecBuilder = apply {
+    addCode(CodeValue(format, block))
+}
+
+/**
+ * Add a statement with a format string and a configuration block.
+ *
+ * @param format the format string
+ * @param block the configuration block
+ * @return this builder
+ */
+public inline fun KotlinFunctionSpecBuilder.addStatement(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinFunctionSpecBuilder = apply {
+    addStatement(CodeValue(format, block))
 }

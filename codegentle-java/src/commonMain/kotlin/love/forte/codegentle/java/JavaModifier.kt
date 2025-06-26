@@ -104,6 +104,12 @@ public enum class JavaModifier {
     override fun toString(): String = name.lowercase()
 }
 
+public interface JavaModifierContainer {
+    public val modifiers: Set<JavaModifier>
+
+    public fun hasModifier(modifier: JavaModifier): Boolean = modifier in modifiers
+}
+
 public inline val JavaModifierBuilderContainer.modifiers: JavaModifiers
     get() = JavaModifiers(this)
 

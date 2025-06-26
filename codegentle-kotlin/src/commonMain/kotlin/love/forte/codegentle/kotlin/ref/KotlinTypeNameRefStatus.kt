@@ -8,6 +8,7 @@ import love.forte.codegentle.kotlin.ref.internal.KotlinTypeNameRefStatusImpl
 @SubclassOptInRequired(CodeGentleRefImplementation::class)
 public interface KotlinTypeNameRefStatus : TypeNameRefStatus {
     public val annotations: List<AnnotationRef>
+    public val nullable: Boolean
 
     public companion object : TypeNameRefStatusBuilderFactory<KotlinTypeNameRefStatus, KotlinTypeNameRefStatusBuilder> {
         override fun createBuilder(): KotlinTypeNameRefStatusBuilder = KotlinTypeNameRefStatusBuilder()

@@ -1,134 +1,145 @@
 package love.forte.codegentle.kotlin.spec
 
+import love.forte.codegentle.common.BuilderDsl
+import love.forte.codegentle.common.code.CodeArgumentPart
+import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueBuilder
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.AnnotationRefCollectable
+import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.spec.Spec
+import love.forte.codegentle.kotlin.KotlinModifier
+import love.forte.codegentle.kotlin.KotlinModifierBuilderContainer
+import love.forte.codegentle.kotlin.KotlinModifierContainer
+import love.forte.codegentle.kotlin.MutableKotlinModifierSet
+import love.forte.codegentle.kotlin.spec.internal.KotlinPropertySpecImpl
 
 /**
- * 表示一个 Kotlin 属性规范。
- *
- * @property name 属性名称
- *
- * TODO: 实现 KotlinPropertySpec 类，参考 JavaFieldSpec 的实现
+ * A Kotlin property.
  */
 @SubclassOptInRequired(CodeGentleKotlinSpecImplementation::class)
-public interface KotlinPropertySpec : Spec {
+public interface KotlinPropertySpec : Spec, KotlinModifierContainer {
     /**
-     * 属性名称。
+     * Property's name.
      */
     public val name: String
 
     /**
-     * 创建一个 Kotlin 属性规范的构建器。
-     *
-     * @param name 属性名称
-     * @return 新的构建器实例
+     * Property's type ref.
      */
+    public val typeRef: TypeRef<*>
+
+    public val annotations: List<AnnotationRef>
+    override val modifiers: Set<KotlinModifier>
+    public val kDoc: CodeValue
+    public val initializer: CodeValue?
+    public val delegate: CodeValue?
+
     public companion object {
-        /**
-         * 创建一个 Kotlin 属性规范。
-         *
-         * @param name 属性名称
-         * @param block 配置构建器的代码块
-         * @return 新的 [KotlinPropertySpec] 实例
-         */
         public operator fun invoke(
             name: String,
-            block: Builder.() -> Unit = {}
+            block: KotlinPropertySpecBuilder.() -> Unit = {}
         ): KotlinPropertySpec {
             // TODO: 实现 invoke 方法
             throw NotImplementedError("KotlinPropertySpec.invoke 方法尚未实现")
         }
     }
+}
+
+/**
+ * Builder for [KotlinPropertySpec].
+ */
+public class KotlinPropertySpecBuilder @PublishedApi internal constructor(
+    public val name: String,
+    public val type: TypeRef<*>
+) : BuilderDsl,
+    KotlinModifierBuilderContainer,
+    AnnotationRefCollectable<KotlinPropertySpecBuilder> {
+
+    private val kDoc: CodeValueBuilder = CodeValue.builder()
+    private val modifierSet = MutableKotlinModifierSet.empty()
+    private val annotations = mutableListOf<AnnotationRef>()
 
     /**
-     * Kotlin 属性规范的构建器。
+     * val prop: $type by $codeValue
      */
-    public interface Builder {
-        /**
-         * 属性名称。
-         */
-        public val name: String
+    private var delegate: CodeValue? = null
 
-        /**
-         * 设置属性的初始化表达式。
-         *
-         * @param format 格式字符串
-         * @param args 参数
-         * @return 当前构建器实例
-         */
-        public fun initializer(format: String, vararg args: Any?): Builder
+    /**
+     * Initializer for property. Cannot exist at the same time as `delegate`.
+     */
+    private var initializer: CodeValue? = null
 
-        /**
-         * 设置属性的初始化表达式。
-         *
-         * @param format 格式字符串
-         * @param block 配置初始化表达式的代码块
-         * @return 当前构建器实例
-         */
-        public fun initializer(format: String, block: InitializerBuilder.() -> Unit): Builder
-
-        /**
-         * 设置属性为可变（var）。
-         *
-         * @return 当前构建器实例
-         */
-        public fun mutable(): Builder
-
-        /**
-         * 设置属性为只读（val）。
-         *
-         * @return 当前构建器实例
-         */
-        public fun readonly(): Builder
-
-        /**
-         * 设置属性的委托表达式。
-         *
-         * @param format 格式字符串
-         * @param args 参数
-         * @return 当前构建器实例
-         */
-        public fun delegate(format: String, vararg args: Any?): Builder
-
-        /**
-         * 设置属性的委托表达式。
-         *
-         * @param format 格式字符串
-         * @param block 配置委托表达式的代码块
-         * @return 当前构建器实例
-         */
-        public fun delegate(format: String, block: InitializerBuilder.() -> Unit): Builder
-
-        /**
-         * 构建 [KotlinPropertySpec] 实例。
-         *
-         * @return 新的 [KotlinPropertySpec] 实例
-         */
-        public fun build(): KotlinPropertySpec
+    /**
+     * @throws IllegalArgumentException Cannot exist at the same time as `delegate`.
+     */
+    public fun initializer(codeValue: CodeValue): KotlinPropertySpecBuilder = apply {
+        require(delegate == null) { "Cannot exist at the same time as `delegate`" }
+        initializer = codeValue
     }
 
     /**
-     * 初始化表达式构建器。
+     * @throws IllegalArgumentException Cannot exist at the same time as `initializer`.
      */
-    public interface InitializerBuilder {
-        /**
-         * 添加字符串参数。
-         *
-         * @param value 字符串值
-         */
-        public fun emitString(value: String)
-
-        /**
-         * 添加数字参数。
-         *
-         * @param value 数字值
-         */
-        public fun emitNumber(value: Number)
-
-        /**
-         * 添加布尔参数。
-         *
-         * @param value 布尔值
-         */
-        public fun emitBoolean(value: Boolean)
+    public fun initializer(format: String, vararg arguments: CodeArgumentPart): KotlinPropertySpecBuilder = apply {
+        initializer(CodeValue(format, *arguments))
     }
+
+    /**
+     * @throws IllegalArgumentException Cannot exist at the same time as `initializer`.
+     */
+    public fun delegate(codeValue: CodeValue): KotlinPropertySpecBuilder = apply {
+        require(initializer == null) { "Cannot exist at the same time as `initializer`" }
+        delegate = codeValue
+    }
+
+    /**
+     * @throws IllegalArgumentException Cannot exist at the same time as `initializer`.
+     */
+    public fun delegate(format: String, vararg arguments: CodeArgumentPart): KotlinPropertySpecBuilder = apply {
+        require(initializer == null) { "Cannot exist at the same time as `initializer`" }
+        delegate(format, *arguments)
+    }
+
+    override fun addModifier(modifier: KotlinModifier): KotlinModifierBuilderContainer = apply {
+        modifierSet.add(modifier)
+    }
+
+    override fun addModifiers(vararg modifiers: KotlinModifier): KotlinModifierBuilderContainer = apply {
+        modifierSet.addAll(modifiers)
+    }
+
+    override fun addModifiers(modifiers: Iterable<KotlinModifier>): KotlinModifierBuilderContainer = apply {
+        modifierSet.addAll(modifiers)
+    }
+
+    override fun addAnnotationRef(ref: AnnotationRef): KotlinPropertySpecBuilder = apply {
+        annotations.add(ref)
+    }
+
+    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): KotlinPropertySpecBuilder = apply {
+        annotations.addAll(refs)
+    }
+
+    public fun addKDoc(codeValue: CodeValue): KotlinPropertySpecBuilder = apply {
+        kDoc.add(codeValue)
+    }
+
+    public fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): KotlinPropertySpecBuilder = apply {
+        kDoc.add(format, *argumentParts)
+    }
+
+    /**
+     * Build [KotlinPropertySpec] instance.
+     */
+    public fun build(): KotlinPropertySpec =
+        KotlinPropertySpecImpl(
+            name = name,
+            typeRef = type,
+            annotations = annotations.toList(),
+            modifiers = modifierSet.immutable(),
+            kDoc = kDoc.build(),
+            initializer = initializer,
+            delegate = delegate
+        )
 }
