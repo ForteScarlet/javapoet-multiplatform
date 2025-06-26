@@ -22,6 +22,18 @@ internal class EnumSetProcessor(private val environment: SymbolProcessorEnvironm
     private val logger = environment.logger
     private val genEnumSetAnnotationName = "love.forte.codegentle.common.GenEnumSet"
 
+    // List of Kotlin keywords that need to be escaped with backticks when used as identifiers
+    private val kotlinKeywords = setOf(
+        "as", "break", "class", "continue", "do", "else", "false", "for", "fun", "if", "in", "interface", 
+        "is", "null", "object", "package", "return", "super", "this", "throw", "true", "try", "typealias", 
+        "typeof", "val", "var", "when", "while", "by", "catch", "constructor", "delegate", "dynamic", 
+        "field", "file", "finally", "get", "import", "init", "param", "property", "receiver", "set", 
+        "setparam", "value", "where", "abstract", "actual", "annotation", "companion", "const", "crossinline", 
+        "data", "enum", "expect", "external", "final", "infix", "inline", "inner", "internal", "lateinit", 
+        "noinline", "open", "operator", "out", "override", "private", "protected", "public", "reified", 
+        "sealed", "suspend", "tailrec", "vararg"
+    )
+
     // Collected enum classes to process
     private val collectedEnums = mutableListOf<KSClassDeclaration>()
 
@@ -94,6 +106,28 @@ internal class EnumSetProcessor(private val environment: SymbolProcessorEnvironm
             ?.find { it.name?.asString() == "mutableName" }
             ?.value as? String ?: ""
 
+        // Get containerName and operatorsName
+        val containerName = annotation
+            ?.arguments
+            ?.find { it.name?.asString() == "containerName" }
+            ?.value as? String ?: ""
+
+        val operatorsName = annotation
+            ?.arguments
+            ?.find { it.name?.asString() == "operatorsName" }
+            ?.value as? String ?: ""
+
+        // Get container adder function names
+        val containerSingleAdder = annotation
+            ?.arguments
+            ?.find { it.name?.asString() == "containerSingleAdder" }
+            ?.value as? String ?: ""
+
+        val containerMultiAdder = annotation
+            ?.arguments
+            ?.find { it.name?.asString() == "containerMultiAdder" }
+            ?.value as? String ?: ""
+
         // Determine visibility modifier
         val visibilityModifier = if (isInternal) "internal" else "public"
 
@@ -105,7 +139,11 @@ internal class EnumSetProcessor(private val environment: SymbolProcessorEnvironm
             baseClass = baseClass, 
             visibilityModifier = visibilityModifier,
             immutableName = immutableName,
-            mutableName = mutableName
+            mutableName = mutableName,
+            containerName = containerName,
+            operatorsName = operatorsName,
+            containerSingleAdder = containerSingleAdder,
+            containerMultiAdder = containerMultiAdder
         )
     }
 
@@ -116,11 +154,15 @@ internal class EnumSetProcessor(private val environment: SymbolProcessorEnvironm
         baseClass: String,
         visibilityModifier: String,
         immutableName: String,
-        mutableName: String
+        mutableName: String,
+        containerName: String,
+        operatorsName: String,
+        containerSingleAdder: String,
+        containerMultiAdder: String
     ) {
         // Determine the actual interface names to use (custom or default)
-        val actualImmutableName = if (immutableName.isNotEmpty()) immutableName else "${enumName}Set"
-        val actualMutableName = if (mutableName.isNotEmpty()) mutableName else "Mutable${enumName}Set"
+        val actualImmutableName = immutableName.ifEmpty { "${enumName}Set" }
+        val actualMutableName = mutableName.ifEmpty { "Mutable${enumName}Set" }
 
         // Define implementation class names
         val immutableImplName = "${enumName}SetImpl"
@@ -146,7 +188,7 @@ internal class EnumSetProcessor(private val environment: SymbolProcessorEnvironm
 
             // Generate the immutable EnumSet interface
             writer.write("/**\n")
-            writer.write(" * A set implementation for the ${enumName} enum.\n")
+            writer.write(" * A set implementation for the $enumName enum.\n")
             writer.write(" * @see $enumName\n")
             writer.write(" */\n")
             writer.write("@OptIn(InternalEnumSetApi::class)\n")
@@ -317,6 +359,46 @@ internal class EnumSetProcessor(private val environment: SymbolProcessorEnvironm
             }
 
             writer.write("}\n")
+
+            // Generate container interface if containerName is not empty
+            if (containerName.isNotEmpty()) {
+                // Determine the actual adder function names to use (custom or default)
+                val actualSingleAdder = containerSingleAdder.ifEmpty { "addModifier" }
+                val actualMultiAdder = containerMultiAdder.ifEmpty { "addModifiers" }
+
+                writer.write("\n/**\n")
+                writer.write(" * A builder container for $enumName modifiers.\n")
+                writer.write(" */\n")
+                writer.write("public interface $containerName : love.forte.codegentle.common.BuilderDsl {\n")
+                writer.write("    public fun $actualSingleAdder(modifier: $enumName): $containerName\n")
+                writer.write("    public fun $actualMultiAdder(vararg modifiers: $enumName): $containerName\n")
+                writer.write("    public fun $actualMultiAdder(modifiers: Iterable<$enumName>): $containerName\n")
+                writer.write("}\n")
+
+                // Generate value class if operatorsName is not empty
+                if (operatorsName.isNotEmpty()) {
+                    writer.write("\n@kotlin.jvm.JvmInline\n")
+                    writer.write("public value class $operatorsName\n")
+                    writer.write("@PublishedApi internal constructor(private val container: $containerName) {\n")
+
+                    // Generate methods for each enum entry
+                    for (entry in enumClass.declarations
+                        .filterIsInstance<KSClassDeclaration>()
+                        .filter { it.classKind == ClassKind.ENUM_ENTRY }) {
+                        val entryName = entry.simpleName.asString()
+                        val methodName = entryName.lowercase()
+
+                        // Check if the method name is a Kotlin keyword, if so wrap it in backticks
+                        val safeMethodName = if (methodName in kotlinKeywords) "`$methodName`" else methodName
+
+                        writer.write("    public fun $safeMethodName() {\n")
+                        writer.write("        container.$actualSingleAdder($enumName.$entryName)\n")
+                        writer.write("    }\n\n")
+                    }
+
+                    writer.write("}\n")
+                }
+            }
         }
 
         logger.info("Generated EnumSet implementation for $enumName")

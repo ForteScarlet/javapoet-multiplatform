@@ -25,16 +25,20 @@
 
 package love.forte.codegentle.java
 
-import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.GenEnumSet
-import kotlin.jvm.JvmInline
 
 
 /**
  *
  * see `javax.lang.model.element.Modifier`
  */
-@GenEnumSet(internal = true)
+@GenEnumSet(
+    internal = true,
+    containerName = "JavaModifierBuilderContainer",
+    containerSingleAdder = "addModifier",
+    containerMultiAdder = "addModifiers",
+    operatorsName = "JavaModifiers"
+)
 public enum class JavaModifier {
 
     // See JLS sections 8.1.1, 8.3.1, 8.4.3, 8.8.3, and 9.1.1.
@@ -98,72 +102,6 @@ public enum class JavaModifier {
      * @return the modifier's name
      */
     override fun toString(): String = name.lowercase()
-}
-
-public interface JavaModifierBuilderContainer : BuilderDsl {
-    public fun addModifier(modifier: JavaModifier): JavaModifierBuilderContainer
-    public fun addModifiers(vararg modifiers: JavaModifier): JavaModifierBuilderContainer
-    public fun addModifiers(modifiers: Iterable<JavaModifier>): JavaModifierBuilderContainer
-}
-
-@JvmInline
-public value class JavaModifiers
-@PublishedApi internal constructor(private val container: JavaModifierBuilderContainer) {
-    public fun public() {
-        container.addModifier(JavaModifier.PUBLIC)
-    }
-
-    public fun protected() {
-        container.addModifier(JavaModifier.PROTECTED)
-    }
-
-    public fun private() {
-        container.addModifier(JavaModifier.PRIVATE)
-    }
-
-    public fun abstract() {
-        container.addModifier(JavaModifier.ABSTRACT)
-    }
-
-    public fun default() {
-        container.addModifier(JavaModifier.DEFAULT)
-    }
-
-    public fun static() {
-        container.addModifier(JavaModifier.STATIC)
-    }
-
-    public fun sealed() {
-        container.addModifier(JavaModifier.SEALED)
-    }
-
-    public fun nonSealed() {
-        container.addModifier(JavaModifier.NON_SEALED)
-    }
-
-    public fun final() {
-        container.addModifier(JavaModifier.FINAL)
-    }
-
-    public fun transient() {
-        container.addModifier(JavaModifier.TRANSIENT)
-    }
-
-    public fun volatile() {
-        container.addModifier(JavaModifier.VOLATILE)
-    }
-
-    public fun synchronized() {
-        container.addModifier(JavaModifier.SYNCHRONIZED)
-    }
-
-    public fun native() {
-        container.addModifier(JavaModifier.NATIVE)
-    }
-
-    public fun strictfp() {
-        container.addModifier(JavaModifier.STRICTFP)
-    }
 }
 
 public inline val JavaModifierBuilderContainer.modifiers: JavaModifiers

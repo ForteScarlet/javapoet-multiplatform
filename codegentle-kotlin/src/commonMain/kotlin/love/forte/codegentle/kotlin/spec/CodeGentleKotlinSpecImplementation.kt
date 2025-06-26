@@ -9,7 +9,7 @@ import kotlin.annotation.AnnotationTarget.*
  * 使用这个注解的类应该是内部实现，不应该被外部代码直接使用。
  */
 @RequiresOptIn(
-    message = "这是一个内部实现 API，不应该被直接使用",
+    message = "this is an internally implemented spec API",
     level = RequiresOptIn.Level.ERROR
 )
 @Retention(AnnotationRetention.BINARY)

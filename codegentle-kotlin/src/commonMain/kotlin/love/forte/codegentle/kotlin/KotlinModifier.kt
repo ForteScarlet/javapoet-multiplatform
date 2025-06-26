@@ -17,9 +17,13 @@ package love.forte.codegentle.kotlin
 
 import love.forte.codegentle.common.GenEnumSet
 
-public interface Hello
-
-@GenEnumSet(internal = true)
+@GenEnumSet(
+    internal = true,
+    containerName = "KotlinModifierBuilderContainer",
+    containerSingleAdder = "addModifier",
+    containerMultiAdder = "addModifiers",
+    operatorsName = "KotlinModifiers"
+)
 public enum class KotlinModifier(
     internal val keyword: String,
     private vararg val targets: Target,
@@ -99,3 +103,22 @@ internal val VISIBILITY_MODIFIERS: Set<KotlinModifier> = KotlinModifierSet.of(
     KotlinModifier.PROTECTED,
     KotlinModifier.PRIVATE
 )
+
+
+public inline val KotlinModifierBuilderContainer.modifiers: KotlinModifiers
+    get() = KotlinModifiers(this)
+
+/**
+ * ```kotlin
+ * container.modifiers {
+ *    // add Modifier.PUBLIC
+ *    public()
+ *
+ *    // add Modifier.IN
+ *    `in`()
+ * }
+ * ```
+ */
+public inline fun KotlinModifierBuilderContainer.modifiers(block: KotlinModifiers.() -> Unit) {
+    modifiers.block()
+}

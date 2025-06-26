@@ -1,6 +1,11 @@
 package love.forte.codegentle.kotlin.spec
 
+import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.ref.AnnotationRef
+import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.spec.Spec
+import love.forte.codegentle.kotlin.KotlinModifier
+import love.forte.codegentle.kotlin.MutableKotlinModifierSet
 
 /**
  * 表示一个 Kotlin 参数规范。
@@ -15,6 +20,12 @@ public interface KotlinParameterSpec : Spec {
      * 参数名称。
      */
     public val name: String
+    public val typeRef: TypeRef<*>
+
+    public val annotations: List<AnnotationRef>
+    public val modifiers: Set<KotlinModifier>
+    public val kdoc: CodeValue
+    public val defaultValue: CodeValue?
 
     /**
      * 创建一个 Kotlin 参数规范的构建器。
@@ -32,92 +43,105 @@ public interface KotlinParameterSpec : Spec {
          */
         public operator fun invoke(
             name: String,
-            block: Builder.() -> Unit = {}
+            block: KotlinParameterSpecBuilder.() -> Unit = {}
         ): KotlinParameterSpec {
             // TODO: 实现 invoke 方法
             throw NotImplementedError("KotlinParameterSpec.invoke 方法尚未实现")
         }
     }
 
+}
+
+/**
+ * Kotlin 参数规范的构建器。
+ */
+public class KotlinParameterSpecBuilder @PublishedApi internal constructor(public val name: String) {
+    private val modifierSet = MutableKotlinModifierSet.empty()
+
     /**
-     * Kotlin 参数规范的构建器。
+     * 设置参数为可变参数（vararg）。
+     *
+     * @return 当前构建器实例
      */
-    public interface Builder {
-        /**
-         * 参数名称。
-         */
-        public val name: String
-
-        /**
-         * 设置参数为可变参数（vararg）。
-         *
-         * @return 当前构建器实例
-         */
-        public fun vararg(): Builder
-
-        /**
-         * 设置参数为 noinline。
-         *
-         * @return 当前构建器实例
-         */
-        public fun noinline(): Builder
-
-        /**
-         * 设置参数为 crossinline。
-         *
-         * @return 当前构建器实例
-         */
-        public fun crossinline(): Builder
-
-        /**
-         * 设置参数的默认值。
-         *
-         * @param format 格式字符串
-         * @param args 参数
-         * @return 当前构建器实例
-         */
-        public fun defaultValue(format: String, vararg args: Any?): Builder
-
-        /**
-         * 设置参数的默认值。
-         *
-         * @param format 格式字符串
-         * @param block 配置默认值的代码块
-         * @return 当前构建器实例
-         */
-        public fun defaultValue(format: String, block: DefaultValueBuilder.() -> Unit): Builder
-
-        /**
-         * 构建 [KotlinParameterSpec] 实例。
-         *
-         * @return 新的 [KotlinParameterSpec] 实例
-         */
-        public fun build(): KotlinParameterSpec
+    public fun vararg(): KotlinParameterSpecBuilder = apply {
+        TODO()
     }
 
     /**
-     * 默认值构建器。
+     * 设置参数为 noinline。
+     *
+     * @return 当前构建器实例
      */
-    public interface DefaultValueBuilder {
-        /**
-         * 添加字符串参数。
-         *
-         * @param value 字符串值
-         */
-        public fun emitString(value: String)
-
-        /**
-         * 添加数字参数。
-         *
-         * @param value 数字值
-         */
-        public fun emitNumber(value: Number)
-
-        /**
-         * 添加布尔参数。
-         *
-         * @param value 布尔值
-         */
-        public fun emitBoolean(value: Boolean)
+    public fun noinline(): KotlinParameterSpecBuilder = apply {
+        TODO()
     }
+
+    /**
+     * 设置参数为 crossinline。
+     *
+     * @return 当前构建器实例
+     */
+    public fun crossinline(): KotlinParameterSpecBuilder = apply {
+        TODO()
+    }
+
+    /**
+     * 设置参数的默认值。
+     *
+     * @param format 格式字符串
+     * @param args 参数
+     * @return 当前构建器实例
+     */
+    public fun defaultValue(format: String, vararg args: Any?): KotlinParameterSpecBuilder = apply {
+        TODO()
+    }
+
+    /**
+     * 设置参数的默认值。
+     *
+     * @param format 格式字符串
+     * @param block 配置默认值的代码块
+     * @return 当前构建器实例
+     */
+    public fun defaultValue(
+        format: String,
+        block: KotlinParameterSpecDefaultValueBuilder.() -> Unit
+    ): KotlinParameterSpecBuilder = apply {
+        TODO()
+    }
+
+    /**
+     * 构建 [KotlinParameterSpec] 实例。
+     *
+     * @return 新的 [KotlinParameterSpec] 实例
+     */
+    public fun build(): KotlinParameterSpec {
+        TODO()
+    }
+}
+
+/**
+ * 默认值构建器。
+ */
+public interface KotlinParameterSpecDefaultValueBuilder {
+    /**
+     * 添加字符串参数。
+     *
+     * @param value 字符串值
+     */
+    public fun emitString(value: String)
+
+    /**
+     * 添加数字参数。
+     *
+     * @param value 数字值
+     */
+    public fun emitNumber(value: Number)
+
+    /**
+     * 添加布尔参数。
+     *
+     * @param value 布尔值
+     */
+    public fun emitBoolean(value: Boolean)
 }

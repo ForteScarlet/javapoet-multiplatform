@@ -31,3 +31,44 @@ enum class BigTestEnum {
     F1, F2, F3, F4, F5, F6, F7, F8, F9, F10,
     G1, G2, G3, G4, G5, G6, G7, G8, G9, G10
 }
+
+/**
+ * Test enum class with containerName parameter to test the container interface generation.
+ */
+@GenEnumSet(containerName = "TestEnumBuilderContainer")
+enum class ContainerTestEnum {
+    ONE, TWO, THREE
+}
+
+/**
+ * Test enum class with containerName and operatorsName parameters to test the value class generation.
+ */
+@GenEnumSet(containerName = "OperatorsTestEnumBuilderContainer", operatorsName = "OperatorsTestEnumModifiers")
+enum class OperatorsTestEnum {
+    ALPHA, BETA, GAMMA
+}
+
+/**
+ * Test enum class with containerName, operatorsName, containerSingleAdder, and containerMultiAdder parameters.
+ */
+@GenEnumSet(
+    containerName = "CustomAdderTestEnumBuilderContainer", 
+    operatorsName = "CustomAdderTestEnumModifiers",
+    containerSingleAdder = "addElement",
+    containerMultiAdder = "addElements"
+)
+enum class CustomAdderTestEnum {
+    ONE, TWO, THREE
+}
+
+/**
+ * Test enum class with entries that become Kotlin keywords when lowercase.
+ * This tests the backtick escaping for Kotlin keywords in the generated value class.
+ */
+@GenEnumSet(
+    containerName = "KeywordTestEnumBuilderContainer",
+    operatorsName = "KeywordTestEnumModifiers"
+)
+enum class KeywordTestEnum {
+    FUN, IN, IS, AS, OBJECT, CLASS, INTERFACE, VAL, VAR, WHEN, IF, ELSE, RETURN
+}
