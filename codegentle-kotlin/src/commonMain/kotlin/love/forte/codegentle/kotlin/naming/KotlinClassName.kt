@@ -1,10 +1,6 @@
 package love.forte.codegentle.kotlin.naming
 
-import love.forte.codegentle.common.naming.ClassName
-import love.forte.codegentle.common.naming.PackageName
-import love.forte.codegentle.common.naming.canonicalName
-import love.forte.codegentle.common.naming.isEmpty
-import love.forte.codegentle.common.naming.simpleNames
+import love.forte.codegentle.common.naming.*
 import love.forte.codegentle.kotlin.spec.KotlinTypeSpec
 import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 
@@ -77,7 +73,7 @@ internal fun ClassName.emitTo(codeWriter: KotlinCodeWriter) {
 private fun KotlinCodeWriter.isImported(className: ClassName): Boolean {
     // Check if the class is imported, either as a regular import or a static import
     return importedTypes[className.simpleName] == className ||
-            className.canonicalName in staticImports
+        className.canonicalName in staticImports
 }
 
 private fun KotlinCodeWriter.isInSamePackage(className: ClassName): Boolean {
@@ -206,11 +202,43 @@ private fun KotlinCodeWriter.resolve(simpleName: String): ClassName? {
 }
 
 private val commonKotlinTypeSimpleNames = setOf(
-    "Any", "Unit", "String", "Char", "Boolean", "Byte", "Short", "Int", "Long", "Float", "Double",
-    "Array", "ByteArray", "ShortArray", "IntArray", "LongArray", "FloatArray", "DoubleArray", "BooleanArray", "CharArray",
-    "List", "Set", "Map", "MutableList", "MutableSet", "MutableMap",
-    "Collection", "MutableCollection", "Iterable", "MutableIterable",
-    "Pair", "Triple", "Nothing", "Throwable", "Exception", "RuntimeException", "Error"
+    "Any",
+    "Unit",
+    "String",
+    "Char",
+    "Boolean",
+    "Byte",
+    "Short",
+    "Int",
+    "Long",
+    "Float",
+    "Double",
+    "Array",
+    "ByteArray",
+    "ShortArray",
+    "IntArray",
+    "LongArray",
+    "FloatArray",
+    "DoubleArray",
+    "BooleanArray",
+    "CharArray",
+    "List",
+    "Set",
+    "Map",
+    "MutableList",
+    "MutableSet",
+    "MutableMap",
+    "Collection",
+    "MutableCollection",
+    "Iterable",
+    "MutableIterable",
+    "Pair",
+    "Triple",
+    "Nothing",
+    "Throwable",
+    "Exception",
+    "RuntimeException",
+    "Error"
 )
 
 /**

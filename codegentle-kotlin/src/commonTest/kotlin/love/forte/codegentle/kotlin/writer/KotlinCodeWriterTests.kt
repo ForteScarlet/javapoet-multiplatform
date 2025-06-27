@@ -150,9 +150,6 @@ class KotlinCodeWriterTests {
 
     @Test
     fun testNestedTypes() {
-        val className = ClassName("com.example", "OuterClass")
-        val typeRef = className.kotlinRef()
-
         val innerClass = KotlinSimpleTypeSpec.builder(KotlinTypeSpec.Kind.CLASS, "InnerClass")
             .addKDoc("This is an inner class.")
             .addModifier(KotlinModifier.INNER)

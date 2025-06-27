@@ -5,7 +5,6 @@ import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.PackageName
-import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.canonicalName
 import love.forte.codegentle.common.naming.parseToPackageName
 import love.forte.codegentle.kotlin.internal.KotlinFileImpl
@@ -15,7 +14,6 @@ import love.forte.codegentle.kotlin.spec.KotlinTypeSpec
 import love.forte.codegentle.kotlin.strategy.KotlinWriteStrategy
 import love.forte.codegentle.kotlin.strategy.ToStringKotlinWriteStrategy
 import love.forte.codegentle.kotlin.writer.KotlinCodeEmitter
-import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 
 /**
  * Represents a Kotlin source file.
@@ -44,7 +42,7 @@ public interface KotlinFile : KotlinCodeEmitter {
 
     /**
      * Gets the first type in the file (if any)
-     * 
+     *
      * This property is provided for backward compatibility
      */
     public val type: KotlinTypeSpec
