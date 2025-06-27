@@ -7,8 +7,7 @@ import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.kotlin.KotlinModifier
-import love.forte.codegentle.kotlin.MutableKotlinModifierSet
-import love.forte.codegentle.kotlin.spec.internal.KotlinAnnotationTypeSpecImpl
+import love.forte.codegentle.kotlin.spec.internal.KotlinAnnotationTypeSpecBuilderImpl
 
 /**
  * A generated Kotlin annotation class.
@@ -41,7 +40,7 @@ public interface KotlinAnnotationTypeSpec : KotlinTypeSpec {
          * @return a new builder
          */
         public fun builder(name: String): Builder {
-            return KotlinAnnotationTypeSpecBuilder(name)
+            return KotlinAnnotationTypeSpecBuilderImpl(name)
         }
     }
 
@@ -126,84 +125,6 @@ public interface KotlinAnnotationTypeSpec : KotlinTypeSpec {
     }
 }
 
-/**
- * Builder implementation for [KotlinAnnotationTypeSpec].
- */
-private class KotlinAnnotationTypeSpecBuilder(
-    override val name: String
-) : KotlinAnnotationTypeSpec.Builder {
-    private val kDoc = CodeValue.builder()
-
-    private val annotationRefs: MutableList<AnnotationRef> = mutableListOf()
-    private val modifierSet = MutableKotlinModifierSet.empty()
-    private val typeVariableRefs: MutableList<TypeRef<TypeVariableName>> = mutableListOf()
-    private val properties: MutableList<KotlinPropertySpec> = mutableListOf()
-
-    override fun addKDoc(codeValue: CodeValue): KotlinAnnotationTypeSpec.Builder = apply {
-        kDoc.add(codeValue)
-    }
-
-    override fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): KotlinAnnotationTypeSpec.Builder = apply {
-        kDoc.add(format, *argumentParts)
-    }
-
-    override fun addAnnotationRef(ref: AnnotationRef): KotlinAnnotationTypeSpec.Builder = apply {
-        annotationRefs.add(ref)
-    }
-
-    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): KotlinAnnotationTypeSpec.Builder = apply {
-        annotationRefs.addAll(refs)
-    }
-
-    override fun addModifiers(vararg modifiers: KotlinModifier): KotlinAnnotationTypeSpec.Builder = apply {
-        this.modifierSet.addAll(modifiers)
-    }
-
-    override fun addModifiers(modifiers: Iterable<KotlinModifier>): KotlinAnnotationTypeSpec.Builder = apply {
-        this.modifierSet.addAll(modifiers)
-    }
-
-    override fun addModifier(modifier: KotlinModifier): KotlinAnnotationTypeSpec.Builder = apply {
-        this.modifierSet.add(modifier)
-    }
-
-    override fun addTypeVariableRefs(vararg typeVariables: TypeRef<TypeVariableName>): KotlinAnnotationTypeSpec.Builder = apply {
-        this.typeVariableRefs.addAll(typeVariables)
-    }
-
-    override fun addTypeVariableRefs(typeVariables: Iterable<TypeRef<TypeVariableName>>): KotlinAnnotationTypeSpec.Builder = apply {
-        this.typeVariableRefs.addAll(typeVariables)
-    }
-
-    override fun addTypeVariableRef(typeVariable: TypeRef<TypeVariableName>): KotlinAnnotationTypeSpec.Builder = apply {
-        this.typeVariableRefs.add(typeVariable)
-    }
-
-    override fun addProperties(vararg properties: KotlinPropertySpec): KotlinAnnotationTypeSpec.Builder = apply {
-        this.properties.addAll(properties)
-    }
-
-    override fun addProperties(properties: Iterable<KotlinPropertySpec>): KotlinAnnotationTypeSpec.Builder = apply {
-        this.properties.addAll(properties)
-    }
-
-    override fun addProperty(property: KotlinPropertySpec): KotlinAnnotationTypeSpec.Builder = apply {
-        this.properties.add(property)
-    }
-
-    override fun build(): KotlinAnnotationTypeSpec {
-        return KotlinAnnotationTypeSpecImpl(
-            name = name,
-            kDoc = kDoc.build(),
-            annotations = annotationRefs.toList(),
-            modifiers = modifierSet.immutable(),
-            typeVariables = typeVariableRefs.toList(),
-            properties = properties.toList(),
-            functions = emptyList<KotlinFunctionSpec>(),
-            subtypes = emptyList<KotlinTypeSpec>()
-        )
-    }
-}
 
 /**
  * Create a [KotlinAnnotationTypeSpec] with the given name.

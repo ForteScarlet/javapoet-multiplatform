@@ -3,7 +3,7 @@ package love.forte.codegentle.kotlin.spec
 import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.spec.Spec
-import love.forte.codegentle.kotlin.spec.internal.KotlinContextParameterSpecImpl
+import love.forte.codegentle.kotlin.spec.internal.KotlinContextParameterSpecBuilderImpl
 
 /**
  * A Kotlin context parameter.
@@ -17,28 +17,36 @@ public interface KotlinContextParameterSpec : Spec {
     public val name: String?
     public val typeRef: TypeRef<*>
 
+    /**
+     * Builder for [KotlinContextParameterSpec].
+     */
+    public interface Builder : BuilderDsl {
+        /**
+         * Parameter name.
+         * `null` if it's `_`, e.g., `context(_: ParameterType)`.
+         */
+        public val name: String?
+
+        /**
+         * Parameter type.
+         */
+        public val type: TypeRef<*>
+
+        /**
+         * Build [KotlinContextParameterSpec].
+         */
+        public fun build(): KotlinContextParameterSpec
+    }
+
     public companion object {
         /**
-         * Create a [KotlinContextParameterSpecBuilder].
+         * Create a [Builder].
          *
-         * @return new [KotlinContextParameterSpec] instance
+         * @param name the parameter name, or null for `_`
+         * @param type the parameter type
+         * @return new [Builder] instance
          */
-        public fun builder(name: String?, type: TypeRef<*>): KotlinContextParameterSpecBuilder =
-            KotlinContextParameterSpecBuilder(name, type)
+        public fun builder(name: String?, type: TypeRef<*>): Builder =
+            KotlinContextParameterSpecBuilderImpl(name, type)
     }
-}
-
-/**
- * Builder for [KotlinContextParameterSpec].
- */
-public class KotlinContextParameterSpecBuilder @PublishedApi internal constructor(
-    public val name: String?,
-    public val type: TypeRef<*>
-) : BuilderDsl {
-
-    /**
-     * Build [KotlinContextParameterSpec].
-     */
-    public fun build(): KotlinContextParameterSpec =
-        KotlinContextParameterSpecImpl(name, type)
 }

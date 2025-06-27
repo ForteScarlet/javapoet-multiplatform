@@ -7,8 +7,7 @@ import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.kotlin.KotlinModifier
-import love.forte.codegentle.kotlin.MutableKotlinModifierSet
-import love.forte.codegentle.kotlin.spec.internal.KotlinEnumTypeSpecImpl
+import love.forte.codegentle.kotlin.spec.internal.KotlinEnumTypeSpecBuilderImpl
 
 /**
  * A generated Kotlin enum class.
@@ -41,7 +40,7 @@ public interface KotlinEnumTypeSpec : KotlinTypeSpec {
          * @return a new builder
          */
         public fun builder(name: String): Builder {
-            return KotlinEnumTypeSpecBuilder(name)
+            return KotlinEnumTypeSpecBuilderImpl(name)
         }
     }
 
@@ -173,132 +172,6 @@ public interface KotlinEnumTypeSpec : KotlinTypeSpec {
          * Build [KotlinEnumTypeSpec] instance.
          */
         public fun build(): KotlinEnumTypeSpec
-    }
-}
-
-/**
- * Builder implementation for [KotlinEnumTypeSpec].
- */
-private class KotlinEnumTypeSpecBuilder(
-    override val name: String
-) : KotlinEnumTypeSpec.Builder {
-    private val kDoc = CodeValue.builder()
-    private val initializerBlock = CodeValue.builder()
-
-    private val annotationRefs: MutableList<AnnotationRef> = mutableListOf()
-    private val modifierSet = MutableKotlinModifierSet.empty()
-    private val typeVariableRefs: MutableList<TypeRef<TypeVariableName>> = mutableListOf()
-    private val superinterfaces: MutableList<TypeName> = mutableListOf()
-    private val properties: MutableList<KotlinPropertySpec> = mutableListOf()
-    private val functions: MutableList<KotlinFunctionSpec> = mutableListOf()
-    private val enumConstants = linkedMapOf<String, KotlinTypeSpec>()
-
-    override fun addKDoc(codeValue: CodeValue): KotlinEnumTypeSpec.Builder = apply {
-        kDoc.add(codeValue)
-    }
-
-    override fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): KotlinEnumTypeSpec.Builder = apply {
-        kDoc.add(format, *argumentParts)
-    }
-
-    override fun addInitializerBlock(codeValue: CodeValue): KotlinEnumTypeSpec.Builder = apply {
-        this.initializerBlock.add(codeValue)
-    }
-
-    override fun addInitializerBlock(format: String, vararg argumentParts: CodeArgumentPart): KotlinEnumTypeSpec.Builder = apply {
-        this.initializerBlock.add(format, *argumentParts)
-    }
-
-    override fun addAnnotationRef(ref: AnnotationRef): KotlinEnumTypeSpec.Builder = apply {
-        annotationRefs.add(ref)
-    }
-
-    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): KotlinEnumTypeSpec.Builder = apply {
-        annotationRefs.addAll(refs)
-    }
-
-    override fun addModifiers(vararg modifiers: KotlinModifier): KotlinEnumTypeSpec.Builder = apply {
-        this.modifierSet.addAll(modifiers)
-    }
-
-    override fun addModifiers(modifiers: Iterable<KotlinModifier>): KotlinEnumTypeSpec.Builder = apply {
-        this.modifierSet.addAll(modifiers)
-    }
-
-    override fun addModifier(modifier: KotlinModifier): KotlinEnumTypeSpec.Builder = apply {
-        this.modifierSet.add(modifier)
-    }
-
-    override fun addTypeVariableRefs(vararg typeVariables: TypeRef<TypeVariableName>): KotlinEnumTypeSpec.Builder = apply {
-        this.typeVariableRefs.addAll(typeVariables)
-    }
-
-    override fun addTypeVariableRefs(typeVariables: Iterable<TypeRef<TypeVariableName>>): KotlinEnumTypeSpec.Builder = apply {
-        this.typeVariableRefs.addAll(typeVariables)
-    }
-
-    override fun addTypeVariableRef(typeVariable: TypeRef<TypeVariableName>): KotlinEnumTypeSpec.Builder = apply {
-        this.typeVariableRefs.add(typeVariable)
-    }
-
-    override fun addSuperinterfaces(vararg superinterfaces: TypeName): KotlinEnumTypeSpec.Builder = apply {
-        this.superinterfaces.addAll(superinterfaces)
-    }
-
-    override fun addSuperinterfaces(superinterfaces: Iterable<TypeName>): KotlinEnumTypeSpec.Builder = apply {
-        this.superinterfaces.addAll(superinterfaces)
-    }
-
-    override fun addSuperinterface(superinterface: TypeName): KotlinEnumTypeSpec.Builder = apply {
-        this.superinterfaces.add(superinterface)
-    }
-
-    override fun addProperties(vararg properties: KotlinPropertySpec): KotlinEnumTypeSpec.Builder = apply {
-        this.properties.addAll(properties)
-    }
-
-    override fun addProperties(properties: Iterable<KotlinPropertySpec>): KotlinEnumTypeSpec.Builder = apply {
-        this.properties.addAll(properties)
-    }
-
-    override fun addProperty(property: KotlinPropertySpec): KotlinEnumTypeSpec.Builder = apply {
-        this.properties.add(property)
-    }
-
-    override fun addFunctions(functions: Iterable<KotlinFunctionSpec>): KotlinEnumTypeSpec.Builder = apply {
-        this.functions.addAll(functions)
-    }
-
-    override fun addFunctions(vararg functions: KotlinFunctionSpec): KotlinEnumTypeSpec.Builder = apply {
-        this.functions.addAll(functions)
-    }
-
-    override fun addFunction(function: KotlinFunctionSpec): KotlinEnumTypeSpec.Builder = apply {
-        this.functions.add(function)
-    }
-
-    override fun addEnumConstant(name: String): KotlinEnumTypeSpec.Builder = apply {
-        this.enumConstants[name] = KotlinSimpleTypeSpec.builder(KotlinTypeSpec.Kind.ENUM, name).build()
-    }
-
-    override fun addEnumConstant(name: String, typeSpec: KotlinTypeSpec): KotlinEnumTypeSpec.Builder = apply {
-        this.enumConstants[name] = typeSpec
-    }
-
-    override fun build(): KotlinEnumTypeSpec {
-        return KotlinEnumTypeSpecImpl(
-            name = name,
-            enumConstants = enumConstants.toMap(linkedMapOf()),
-            kDoc = kDoc.build(),
-            annotations = annotationRefs.toList(),
-            modifiers = modifierSet.immutable(),
-            typeVariables = typeVariableRefs.toList(),
-            superinterfaces = superinterfaces.toList(),
-            properties = properties.toList(),
-            initializerBlock = initializerBlock.build(),
-            functions = functions.toList(),
-            subtypes = emptyList<KotlinTypeSpec>()
-        )
     }
 }
 

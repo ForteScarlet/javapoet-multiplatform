@@ -50,16 +50,7 @@ public sealed class CodePart {
          * [methods][MethodSpec], and [types][TypeSpec].
          */
         @CodePartFactory
-        public fun name(name: String?): CodeArgumentPart = CodeArgumentPart.Name(name)
-
-        /**
-         * Emits a `name`, using name collision avoidance where necessary.
-         * Arguments for names may be strings (actually any [character sequence][CharSequence]),
-         * [parameters][ParameterSpec], [fields][FieldSpec],
-         * [methods][MethodSpec], and [types][TypeSpec].
-         */
-        @CodePartFactory
-        public fun name(nameValue: Any): CodeArgumentPart = CodeArgumentPart.Name(nameValue)
+        public fun name(nameValue: Any?): CodeArgumentPart = CodeArgumentPart.Name(nameValue)
 
         /**
          * Escapes the value as a `string`, wraps it with double quotes, and emits
@@ -167,10 +158,10 @@ public sealed class CodeArgumentPart : CodePart() {
      */
     public class Name internal constructor(public val name: String?) : CodeArgumentPart() {
 
-        internal constructor(name: Any) : this(argToName(name))
+        internal constructor(name: Any?) : this(argToName(name))
 
         public companion object {
-            private fun argToName(o: Any): String? {
+            private fun argToName(o: Any?): String? {
                 return when (o) {
                     is CharSequence -> o.toString()
                     is Named -> o.name
@@ -248,7 +239,8 @@ public sealed class CodeArgumentPart : CodePart() {
         }
     }
 
-    public class TypeRef internal constructor(public val type: love.forte.codegentle.common.ref.TypeRef<*>) : CodeArgumentPart() {
+    public class TypeRef internal constructor(public val type: love.forte.codegentle.common.ref.TypeRef<*>) :
+        CodeArgumentPart() {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other !is Type) return false

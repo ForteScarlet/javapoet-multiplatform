@@ -1,11 +1,13 @@
 package love.forte.codegentle.kotlin.spec.internal
 
+import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.kotlin.KotlinModifier
+import love.forte.codegentle.kotlin.MutableKotlinModifierSet
 import love.forte.codegentle.kotlin.spec.*
 
 /**
@@ -30,5 +32,128 @@ internal data class KotlinValueClassSpecImpl(
 
     override fun toString(): String {
         return "KotlinValueClassSpec(name='$name', kind=$kind)"
+    }
+}
+
+/**
+ * Builder implementation for [KotlinValueClassSpec].
+ */
+internal class KotlinValueClassSpecBuilderImpl(
+    override val name: String,
+    override val primaryParameter: KotlinValueParameterSpec
+) : KotlinValueClassSpec.Builder {
+    private val kDoc = CodeValue.builder()
+    private val initializerBlock = CodeValue.builder()
+
+    private val annotationRefs: MutableList<AnnotationRef> = mutableListOf()
+    private val modifierSet = MutableKotlinModifierSet.empty()
+    private val typeVariableRefs: MutableList<TypeRef<TypeVariableName>> = mutableListOf()
+    private val superinterfaces: MutableList<TypeName> = mutableListOf()
+    private val properties: MutableList<KotlinPropertySpec> = mutableListOf()
+    private val functions: MutableList<KotlinFunctionSpec> = mutableListOf()
+
+    override fun addKDoc(codeValue: CodeValue): KotlinValueClassSpec.Builder = apply {
+        kDoc.add(codeValue)
+    }
+
+    override fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): KotlinValueClassSpec.Builder = apply {
+        kDoc.add(format, *argumentParts)
+    }
+
+    override fun addInitializerBlock(codeValue: CodeValue): KotlinValueClassSpec.Builder = apply {
+        this.initializerBlock.add(codeValue)
+    }
+
+    override fun addInitializerBlock(
+        format: String,
+        vararg argumentParts: CodeArgumentPart
+    ): KotlinValueClassSpec.Builder = apply {
+        this.initializerBlock.add(format, *argumentParts)
+    }
+
+    override fun addAnnotationRef(ref: AnnotationRef): KotlinValueClassSpec.Builder = apply {
+        annotationRefs.add(ref)
+    }
+
+    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): KotlinValueClassSpec.Builder = apply {
+        annotationRefs.addAll(refs)
+    }
+
+    override fun addModifiers(vararg modifiers: KotlinModifier): KotlinValueClassSpec.Builder = apply {
+        this.modifierSet.addAll(modifiers)
+    }
+
+    override fun addModifiers(modifiers: Iterable<KotlinModifier>): KotlinValueClassSpec.Builder = apply {
+        this.modifierSet.addAll(modifiers)
+    }
+
+    override fun addModifier(modifier: KotlinModifier): KotlinValueClassSpec.Builder = apply {
+        this.modifierSet.add(modifier)
+    }
+
+    override fun addTypeVariableRefs(vararg typeVariables: TypeRef<TypeVariableName>): KotlinValueClassSpec.Builder =
+        apply {
+            this.typeVariableRefs.addAll(typeVariables)
+        }
+
+    override fun addTypeVariableRefs(typeVariables: Iterable<TypeRef<TypeVariableName>>): KotlinValueClassSpec.Builder =
+        apply {
+            this.typeVariableRefs.addAll(typeVariables)
+        }
+
+    override fun addTypeVariableRef(typeVariable: TypeRef<TypeVariableName>): KotlinValueClassSpec.Builder = apply {
+        this.typeVariableRefs.add(typeVariable)
+    }
+
+    override fun addSuperinterfaces(vararg superinterfaces: TypeName): KotlinValueClassSpec.Builder = apply {
+        this.superinterfaces.addAll(superinterfaces)
+    }
+
+    override fun addSuperinterfaces(superinterfaces: Iterable<TypeName>): KotlinValueClassSpec.Builder = apply {
+        this.superinterfaces.addAll(superinterfaces)
+    }
+
+    override fun addSuperinterface(superinterface: TypeName): KotlinValueClassSpec.Builder = apply {
+        this.superinterfaces.add(superinterface)
+    }
+
+    override fun addProperties(vararg properties: KotlinPropertySpec): KotlinValueClassSpec.Builder = apply {
+        this.properties.addAll(properties)
+    }
+
+    override fun addProperties(properties: Iterable<KotlinPropertySpec>): KotlinValueClassSpec.Builder = apply {
+        this.properties.addAll(properties)
+    }
+
+    override fun addProperty(property: KotlinPropertySpec): KotlinValueClassSpec.Builder = apply {
+        this.properties.add(property)
+    }
+
+    override fun addFunctions(functions: Iterable<KotlinFunctionSpec>): KotlinValueClassSpec.Builder = apply {
+        this.functions.addAll(functions)
+    }
+
+    override fun addFunctions(vararg functions: KotlinFunctionSpec): KotlinValueClassSpec.Builder = apply {
+        this.functions.addAll(functions)
+    }
+
+    override fun addFunction(function: KotlinFunctionSpec): KotlinValueClassSpec.Builder = apply {
+        this.functions.add(function)
+    }
+
+    override fun build(): KotlinValueClassSpec {
+        return KotlinValueClassSpecImpl(
+            name = name,
+            primaryParameter = primaryParameter,
+            kDoc = kDoc.build(),
+            annotations = annotationRefs.toList(),
+            modifiers = modifierSet.immutable(),
+            typeVariables = typeVariableRefs.toList(),
+            superinterfaces = superinterfaces.toList(),
+            properties = properties.toList(),
+            initializerBlock = initializerBlock.build(),
+            functions = functions.toList(),
+            subtypes = emptyList<KotlinTypeSpec>()
+        )
     }
 }

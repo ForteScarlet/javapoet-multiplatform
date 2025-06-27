@@ -17,3 +17,22 @@ internal data class KotlinContextParameterSpecImpl(
         return "KotlinContextParameterSpec(name='$name', type=${typeRef.typeName})"
     }
 }
+
+
+
+/**
+ * Implementation of [KotlinContextParameterSpec.Builder].
+ *
+ * @author ForteScarlet
+ */
+internal class KotlinContextParameterSpecBuilderImpl(
+    override val name: String?,
+    override val type: TypeRef<*>
+) : KotlinContextParameterSpec.Builder {
+
+    /**
+     * Build [KotlinContextParameterSpec].
+     */
+    override fun build(): KotlinContextParameterSpec =
+        KotlinContextParameterSpecImpl(name, type)
+}

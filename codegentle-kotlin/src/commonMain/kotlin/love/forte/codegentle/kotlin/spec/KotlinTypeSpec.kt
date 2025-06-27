@@ -376,7 +376,7 @@ public inline fun KotlinTypeSpecBuilder<*, *>.addInitializerBlock(
 public inline fun KotlinTypeSpecBuilder<*, *>.addProperty(
     name: String,
     type: TypeRef<*>,
-    block: KotlinPropertySpecBuilder.() -> Unit = {}
+    block: KotlinPropertySpec.Builder.() -> Unit = {}
 ) {
     addProperty(KotlinPropertySpec.builder(name, type).apply(block).build())
 }
@@ -387,7 +387,7 @@ public inline fun KotlinTypeSpecBuilder<*, *>.addProperty(
 public inline fun KotlinTypeSpecBuilder<*, *>.addFunction(
     name: String,
     type: TypeRef<*>,
-    block: KotlinFunctionSpecBuilder.() -> Unit = {}
+    block: KotlinFunctionSpec.Builder.() -> Unit = {}
 ) {
     addFunction(KotlinFunctionSpec(name, type, block))
 }

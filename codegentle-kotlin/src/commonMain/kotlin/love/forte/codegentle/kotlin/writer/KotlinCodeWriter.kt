@@ -1,27 +1,37 @@
 package love.forte.codegentle.kotlin.writer
 
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.common.naming.ClassName
+import love.forte.codegentle.common.naming.PackageName
 import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.common.writer.*
+import love.forte.codegentle.common.writer.CodeWriter.Companion.DEFAULT_COLUMN_LIMIT
+import love.forte.codegentle.common.writer.CodeWriter.Companion.DEFAULT_INDENT
+import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.emitTo
+import love.forte.codegentle.kotlin.ref.emitTo
 import love.forte.codegentle.kotlin.ref.kotlinOrNull
+import love.forte.codegentle.kotlin.spec.KotlinTypeSpec
+import love.forte.codegentle.kotlin.strategy.DefaultKotlinWriteStrategy
 import love.forte.codegentle.kotlin.strategy.KotlinWriteStrategy
+import love.forte.codegentle.kotlin.strategy.ToStringKotlinWriteStrategy
 
 /**
+ * A code writer for generating Kotlin code.
  *
  * @author ForteScarlet
  */
 @OptIn(InternalWriterApi::class)
-public class KotlinCodeWriter private  constructor(
+public class KotlinCodeWriter private constructor(
     override val strategy: KotlinWriteStrategy,
     override val indentValue: String,
     internal val out: LineWrapper,
 
-    // public val staticImportClassNames: Set<ClassName> = emptySet(),
     override val staticImports: Set<String> = emptySet(),
     override val alwaysQualify: Set<String> = emptySet(),
     internal val importedTypes: Map<String, ClassName> = emptyMap()
@@ -211,4 +221,218 @@ public class KotlinCodeWriter private  constructor(
 
     internal var commentType: CommentType? = null
     internal var statementLine: Int = -1
+    internal var packageName: PackageName? = null
+
+    // simple name -> class name
+    internal val importableTypes: MutableMap<String, ClassName> = linkedMapOf()
+    internal val referencedNames: MutableSet<String> = linkedSetOf()
+
+    // Stack of type specs being processed
+    internal val typeSpecStack = ArrayDeque<KotlinTypeSpec>()
+    internal val currentTypeVariables: Multiset<String> = Multiset()
+
+    internal fun pushPackage(packageName: PackageName) {
+        check(this.packageName == null) { "package already set: ${this.packageName}" }
+        this.packageName = packageName
+    }
+
+    internal fun popPackage() {
+        check(this.packageName != null) { "package not set" }
+        this.packageName = null
+    }
+
+    internal fun pushType(type: KotlinTypeSpec) {
+        this.typeSpecStack.addLast(type)
+    }
+
+    internal fun popType() {
+        this.typeSpecStack.removeLast()
+    }
+
+    internal fun emitTypeVariableRefs(typeVariables: List<TypeRef<TypeVariableName>>) {
+        if (typeVariables.isEmpty()) return
+
+        typeVariables.forEach { typeVariable -> currentTypeVariables.add(typeVariable.typeName.name) }
+
+        emit("<")
+        var firstTypeVariable = true
+        for (typeVariable in typeVariables) {
+            if (!firstTypeVariable) emit(", ")
+            emit(typeVariable)
+            var firstBound = true
+            for (bound in typeVariable.typeName.bounds) {
+                if (firstBound) {
+                    emit(" : ")
+                } else {
+                    emit(" & ")
+                }
+                emit(bound)
+                firstBound = false
+            }
+            firstTypeVariable = false
+        }
+        emit(">")
+    }
+
+    internal fun popTypeVariableRefs(typeVariableRefs: List<TypeRef<TypeVariableName>>) {
+        typeVariableRefs.forEach { typeVariableRef -> currentTypeVariables.remove(typeVariableRef.typeName.name) }
+    }
+
+    internal fun emitModifiers(modifiers: Set<KotlinModifier>, implicitModifiers: Set<KotlinModifier> = emptySet()) {
+        if (modifiers.isEmpty()) return
+
+        for (modifier in modifiers) {
+            if (modifier in implicitModifiers) continue
+            emitAndIndent(modifier.keyword)
+            emitAndIndent(" ")
+        }
+    }
+
+    internal fun emitAnnotationRefs(annotations: Iterable<AnnotationRef>, inline: Boolean) {
+        for (annotation in annotations) {
+            annotation.emitTo(this)
+            emit(if (inline) " " else strategy.newline())
+        }
+    }
+
+    internal fun emitWrappingSpace() {
+        out.wrappingSpace(indentLevel + 2)
+    }
+
+    public companion object {
+        internal fun create(
+            out: Appendable,
+            strategy: KotlinWriteStrategy = DefaultKotlinWriteStrategy
+        ): KotlinCodeWriter {
+            return create(
+                strategy = strategy,
+                out = out,
+                indent = DEFAULT_INDENT,
+                staticImports = emptySet(),
+                alwaysQualify = emptySet()
+            )
+        }
+
+        internal fun create(
+            strategy: KotlinWriteStrategy,
+            out: Appendable,
+            indent: String,
+            staticImports: Set<String>,
+            alwaysQualify: Set<String>,
+        ): KotlinCodeWriter {
+            return create(
+                strategy = strategy,
+                out = out,
+                indent = indent,
+                importedTypes = emptyMap(),
+                staticImports = staticImports,
+                alwaysQualify = alwaysQualify
+            )
+        }
+
+        internal fun create(
+            strategy: KotlinWriteStrategy,
+            out: Appendable,
+            indent: String,
+            importedTypes: Map<String, ClassName>,
+            staticImports: Set<String>,
+            alwaysQualify: Set<String>
+        ): KotlinCodeWriter {
+            return KotlinCodeWriter(
+                strategy = strategy,
+                indentValue = indent,
+                out = LineWrapper.create(out, indent, DEFAULT_COLUMN_LIMIT),
+                importedTypes = importedTypes,
+                staticImports = staticImports,
+                alwaysQualify = alwaysQualify,
+            )
+        }
+    }
 }
+
+private data class IntWrapper(var value: Int = 0)
+
+internal class Multiset<T> {
+    private val map = linkedMapOf<T, IntWrapper>()
+
+    fun add(t: T) {
+        val wrapper = map[t]
+        if (wrapper != null) {
+            wrapper.value += 1
+        } else {
+            map[t] = IntWrapper(1)
+        }
+    }
+
+    fun remove(t: T) {
+        val wrapper = map[t]
+        if (wrapper != null) {
+            wrapper.value -= 1
+            if (wrapper.value == 0) {
+                map.remove(t)
+            }
+        }
+    }
+
+    fun contains(t: T): Boolean {
+        return (map[t]?.value ?: 0) > 0
+    }
+}
+
+internal inline fun KotlinCodeWriter.inPackage(packageName: PackageName, block: () -> Unit) {
+    pushPackage(packageName)
+    block()
+    popPackage()
+}
+
+internal inline fun KotlinCodeWriter.emit(
+    format: String,
+    vararg options: CodeValueEmitOption,
+    block: CodeValueSingleFormatBuilderDsl = {}
+) {
+    emit(CodeValue(format, block), *options)
+}
+
+internal inline fun KotlinCodeWriter.emit(format: String, block: CodeValueSingleFormatBuilderDsl = {}) {
+    emit(CodeValue(format, block))
+}
+
+internal fun KotlinCodeEmitter.emitToString(): String =
+    buildString {
+        emit(
+            KotlinCodeWriter.create(
+                out = this,
+                strategy = ToStringKotlinWriteStrategy
+            )
+        )
+    }
+
+public fun TypeRef<*>.writeToKotlinString(strategy: KotlinWriteStrategy = ToStringKotlinWriteStrategy): String =
+    buildString {
+        KotlinCodeWriter.create(out = this, strategy = strategy)
+            .emit(this@writeToKotlinString)
+    }
+
+public fun TypeName.writeToKotlinString(strategy: KotlinWriteStrategy = ToStringKotlinWriteStrategy): String =
+    buildString {
+        KotlinCodeWriter.create(out = this, strategy = strategy)
+            .emit(this@writeToKotlinString)
+    }
+
+public fun AnnotationRef.writeToKotlinString(strategy: KotlinWriteStrategy = ToStringKotlinWriteStrategy): String =
+    buildString {
+        KotlinCodeWriter.create(out = this, strategy = strategy)
+            .emit(this@writeToKotlinString)
+    }
+
+public fun CodeValue.writeToKotlinString(strategy: KotlinWriteStrategy = ToStringKotlinWriteStrategy): String =
+    buildString {
+        KotlinCodeWriter.create(out = this, strategy = strategy)
+            .emit(this@writeToKotlinString)
+    }
+
+public fun KotlinCodeEmitter.writeToKotlinString(strategy: KotlinWriteStrategy = ToStringKotlinWriteStrategy): String =
+    buildString {
+        val writer = KotlinCodeWriter.create(out = this, strategy = strategy)
+        this@writeToKotlinString.emit(writer)
+    }

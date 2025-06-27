@@ -3,7 +3,6 @@ package love.forte.codegentle.kotlin.spec
 import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.code.CodeValue
-import love.forte.codegentle.common.code.CodeValueBuilder
 import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
@@ -13,8 +12,7 @@ import love.forte.codegentle.common.spec.Spec
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.KotlinModifierBuilderContainer
 import love.forte.codegentle.kotlin.KotlinModifierContainer
-import love.forte.codegentle.kotlin.MutableKotlinModifierSet
-import love.forte.codegentle.kotlin.spec.internal.KotlinFunctionSpecImpl
+import love.forte.codegentle.kotlin.spec.internal.KotlinFunctionSpecBuilderImpl
 
 /**
  * A Kotlin function。
@@ -36,165 +34,133 @@ public interface KotlinFunctionSpec : Spec, KotlinModifierContainer {
     public val kDoc: CodeValue
     public val code: CodeValue
 
+    /**
+     * Builder for [KotlinFunctionSpec].
+     */
+    public interface Builder : BuilderDsl,
+        KotlinModifierBuilderContainer,
+        AnnotationRefCollectable<Builder> {
+
+        /**
+         * Function name.
+         */
+        public val name: String
+
+        /**
+         * Function return type.
+         */
+        public val returnType: TypeRef<*>
+
+        /**
+         * Add KDoc to the function.
+         */
+        public fun addKDoc(codeValue: CodeValue): Builder
+
+        /**
+         * Add KDoc to the function.
+         */
+        public fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): Builder
+
+        /**
+         * Add a type variable to the function.
+         */
+        public fun addTypeVariable(typeVariable: TypeRef<TypeVariableName>): Builder
+
+        /**
+         * Add type variables to the function.
+         */
+        public fun addTypeVariables(vararg typeVariables: TypeRef<TypeVariableName>): Builder
+
+        /**
+         * Add type variables to the function.
+         */
+        public fun addTypeVariables(typeVariables: Iterable<TypeRef<TypeVariableName>>): Builder
+
+        /**
+         * Add a parameter to the function.
+         */
+        public fun addParameter(parameter: KotlinValueParameterSpec): Builder
+
+        /**
+         * Add parameters to the function.
+         */
+        public fun addParameters(parameters: Iterable<KotlinValueParameterSpec>): Builder
+
+        /**
+         * Add parameters to the function.
+         */
+        public fun addParameters(vararg parameters: KotlinValueParameterSpec): Builder
+
+        /**
+         * Set the receiver type for this function.
+         *
+         * @param receiverType the receiver type
+         * @return this builder
+         */
+        public fun receiver(receiverType: TypeRef<*>): Builder
+
+        /**
+         * Add a context parameter to this function.
+         *
+         * @param contextParameter the context parameter
+         * @return this builder
+         */
+        public fun addContextParameter(contextParameter: KotlinContextParameterSpec): Builder
+
+        /**
+         * Add multiple context parameters to this function.
+         *
+         * @param contextParameters the context parameters
+         * @return this builder
+         */
+        public fun addContextParameters(contextParameters: Iterable<KotlinContextParameterSpec>): Builder
+
+        /**
+         * Add multiple context parameters to this function.
+         *
+         * @param contextParameters the context parameters
+         * @return this builder
+         */
+        public fun addContextParameters(vararg contextParameters: KotlinContextParameterSpec): Builder
+
+        /**
+         * Add code to the function.
+         */
+        public fun addCode(codeValue: CodeValue): Builder
+
+        /**
+         * Add code to the function.
+         */
+        public fun addCode(format: String, vararg argumentParts: CodeArgumentPart): Builder
+
+        /**
+         * Add a statement to the function.
+         */
+        public fun addStatement(format: String, vararg argumentParts: CodeArgumentPart): Builder
+
+        /**
+         * Add a statement to the function.
+         */
+        public fun addStatement(codeValue: CodeValue): Builder
+
+        /**
+         * Build a [KotlinFunctionSpec] instance.
+         */
+        public fun build(): KotlinFunctionSpec
+    }
+
     public companion object {
         /**
          * Create a function builder.
          *
-         * @return new [KotlinFunctionSpecBuilder] instance.
+         * @param name the function name
+         * @param type the return type
+         * @return new [Builder] instance.
          */
-        public fun builder(name: String, type: TypeRef<*>): KotlinFunctionSpecBuilder {
-            return KotlinFunctionSpecBuilder(name, type)
+        public fun builder(name: String, type: TypeRef<*>): Builder {
+            return KotlinFunctionSpecBuilderImpl(name, type)
         }
     }
-}
-
-/**
- * Builder for [KotlinFunctionSpec].
- */
-public class KotlinFunctionSpecBuilder @PublishedApi internal constructor(
-    public val name: String,
-    public val returnType: TypeRef<*>
-) : BuilderDsl,
-    KotlinModifierBuilderContainer,
-    AnnotationRefCollectable<KotlinFunctionSpecBuilder> {
-
-    private val kDoc: CodeValueBuilder = CodeValue.builder()
-    private val code: CodeValueBuilder = CodeValue.builder()
-    private val modifierSet = MutableKotlinModifierSet.empty()
-    private val annotations = mutableListOf<AnnotationRef>()
-    private val typeVariables = mutableListOf<TypeRef<TypeVariableName>>()
-    private val parameters = mutableListOf<KotlinValueParameterSpec>()
-    private var receiver: TypeRef<*>? = null
-    private val contextParameters = mutableListOf<KotlinContextParameterSpec>()
-
-    override fun addModifier(modifier: KotlinModifier): KotlinFunctionSpecBuilder = apply {
-        modifierSet.add(modifier)
-    }
-
-    override fun addModifiers(vararg modifiers: KotlinModifier): KotlinFunctionSpecBuilder = apply {
-        modifierSet.addAll(modifiers)
-    }
-
-    override fun addModifiers(modifiers: Iterable<KotlinModifier>): KotlinFunctionSpecBuilder = apply {
-        modifierSet.addAll(modifiers)
-    }
-
-    override fun addAnnotationRef(ref: AnnotationRef): KotlinFunctionSpecBuilder = apply {
-        annotations.add(ref)
-    }
-
-    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): KotlinFunctionSpecBuilder = apply {
-        annotations.addAll(refs)
-    }
-
-    public fun addKDoc(codeValue: CodeValue): KotlinFunctionSpecBuilder = apply {
-        kDoc.add(codeValue)
-    }
-
-    public fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): KotlinFunctionSpecBuilder = apply {
-        kDoc.add(format, *argumentParts)
-    }
-
-    public fun addTypeVariable(typeVariable: TypeRef<TypeVariableName>): KotlinFunctionSpecBuilder = apply {
-        typeVariables.add(typeVariable)
-    }
-
-    public fun addTypeVariables(vararg typeVariables: TypeRef<TypeVariableName>): KotlinFunctionSpecBuilder = apply {
-        this.typeVariables.addAll(typeVariables)
-    }
-
-    public fun addTypeVariables(typeVariables: Iterable<TypeRef<TypeVariableName>>): KotlinFunctionSpecBuilder = apply {
-        this.typeVariables.addAll(typeVariables)
-    }
-
-    public fun addParameter(parameter: KotlinValueParameterSpec): KotlinFunctionSpecBuilder = apply {
-        parameters.add(parameter)
-    }
-
-    public fun addParameters(parameters: Iterable<KotlinValueParameterSpec>): KotlinFunctionSpecBuilder = apply {
-        this.parameters.addAll(parameters)
-    }
-
-    public fun addParameters(vararg parameters: KotlinValueParameterSpec): KotlinFunctionSpecBuilder = apply {
-        this.parameters.addAll(parameters)
-    }
-
-    /**
-     * Set the receiver type for this function.
-     *
-     * @param receiverType the receiver type
-     * @return this builder
-     */
-    public fun receiver(receiverType: TypeRef<*>): KotlinFunctionSpecBuilder = apply {
-        this.receiver = receiverType
-    }
-
-    /**
-     * Add a context parameter to this function.
-     *
-     * @param contextParameter the context parameter
-     * @return this builder
-     */
-    public fun addContextParameter(contextParameter: KotlinContextParameterSpec): KotlinFunctionSpecBuilder = apply {
-        contextParameters.add(contextParameter)
-    }
-
-    /**
-     * Add multiple context parameters to this function.
-     *
-     * @param contextParameters the context parameters
-     * @return this builder
-     */
-    public fun addContextParameters(contextParameters: Iterable<KotlinContextParameterSpec>): KotlinFunctionSpecBuilder =
-        apply {
-            this.contextParameters.addAll(contextParameters)
-        }
-
-    /**
-     * Add multiple context parameters to this function.
-     *
-     * @param contextParameters the context parameters
-     * @return this builder
-     */
-    public fun addContextParameters(vararg contextParameters: KotlinContextParameterSpec): KotlinFunctionSpecBuilder =
-        apply {
-            this.contextParameters.addAll(contextParameters)
-        }
-
-    public fun addCode(codeValue: CodeValue): KotlinFunctionSpecBuilder = apply {
-        code.add(codeValue)
-    }
-
-    public fun addCode(format: String, vararg argumentParts: CodeArgumentPart): KotlinFunctionSpecBuilder = apply {
-        code.add(format, *argumentParts)
-    }
-
-    public fun addStatement(format: String, vararg argumentParts: CodeArgumentPart): KotlinFunctionSpecBuilder = apply {
-        code.addStatement(format, *argumentParts)
-    }
-
-    public fun addStatement(codeValue: CodeValue): KotlinFunctionSpecBuilder = apply {
-        code.addStatement(codeValue)
-    }
-
-    /**
-     * 构建 [KotlinFunctionSpec] 实例。
-     *
-     * @return 新的 [KotlinFunctionSpec] 实例
-     */
-    public fun build(): KotlinFunctionSpec =
-        KotlinFunctionSpecImpl(
-            name = name,
-            returnType = returnType,
-            annotations = annotations.toList(),
-            modifiers = modifierSet.immutable(),
-            typeVariables = typeVariables.toList(),
-            parameters = parameters.toList(),
-            receiver = receiver,
-            contextParameters = contextParameters.toList(),
-            kDoc = kDoc.build(),
-            code = code.build()
-        )
 }
 
 /**
@@ -208,7 +174,7 @@ public class KotlinFunctionSpecBuilder @PublishedApi internal constructor(
 public inline fun KotlinFunctionSpec(
     name: String,
     type: TypeRef<*>,
-    block: KotlinFunctionSpecBuilder.() -> Unit = {}
+    block: KotlinFunctionSpec.Builder.() -> Unit = {}
 ): KotlinFunctionSpec =
     KotlinFunctionSpec.builder(name, type).apply(block).build()
 
@@ -219,10 +185,10 @@ public inline fun KotlinFunctionSpec(
  * @param block the configuration block
  * @return this builder
  */
-public inline fun KotlinFunctionSpecBuilder.addKDoc(
+public inline fun KotlinFunctionSpec.Builder.addKDoc(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
-): KotlinFunctionSpecBuilder = apply {
+): KotlinFunctionSpec.Builder = apply {
     addKDoc(CodeValue(format, block))
 }
 
@@ -233,10 +199,10 @@ public inline fun KotlinFunctionSpecBuilder.addKDoc(
  * @param block the configuration block
  * @return this builder
  */
-public inline fun KotlinFunctionSpecBuilder.addCode(
+public inline fun KotlinFunctionSpec.Builder.addCode(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
-): KotlinFunctionSpecBuilder = apply {
+): KotlinFunctionSpec.Builder = apply {
     addCode(CodeValue(format, block))
 }
 
@@ -247,9 +213,9 @@ public inline fun KotlinFunctionSpecBuilder.addCode(
  * @param block the configuration block
  * @return this builder
  */
-public inline fun KotlinFunctionSpecBuilder.addStatement(
+public inline fun KotlinFunctionSpec.Builder.addStatement(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
-): KotlinFunctionSpecBuilder = apply {
+): KotlinFunctionSpec.Builder = apply {
     addStatement(CodeValue(format, block))
 }

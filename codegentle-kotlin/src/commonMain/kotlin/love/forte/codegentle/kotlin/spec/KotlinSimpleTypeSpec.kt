@@ -7,8 +7,7 @@ import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.kotlin.KotlinModifier
-import love.forte.codegentle.kotlin.MutableKotlinModifierSet
-import love.forte.codegentle.kotlin.spec.internal.KotlinSimpleTypeSpecImpl
+import love.forte.codegentle.kotlin.spec.internal.KotlinSimpleTypeSpecBuilderImpl
 
 /**
  * 表示一个简单的 Kotlin 类型规范，如类、接口等。
@@ -42,7 +41,7 @@ public interface KotlinSimpleTypeSpec : KotlinTypeSpec {
             kind: KotlinTypeSpec.Kind,
             name: String
         ): Builder {
-            return KotlinSimpleTypeSpecBuilder(kind, name)
+            return KotlinSimpleTypeSpecBuilderImpl(kind, name)
         }
     }
 
@@ -194,144 +193,3 @@ public interface KotlinSimpleTypeSpec : KotlinTypeSpec {
     }
 }
 
-/**
- * Builder implementation for [KotlinSimpleTypeSpec].
- */
-private class KotlinSimpleTypeSpecBuilder(
-    override val kind: KotlinTypeSpec.Kind,
-    override val name: String
-) : KotlinSimpleTypeSpec.Builder {
-    private val kDoc = CodeValue.builder()
-    private var superclass: TypeName? = null
-    private val initializerBlock = CodeValue.builder()
-
-    private val annotationRefs: MutableList<AnnotationRef> = mutableListOf()
-    private val modifierSet = MutableKotlinModifierSet.empty()
-    private val typeVariableRefs: MutableList<TypeRef<TypeVariableName>> = mutableListOf()
-    private val superinterfaces: MutableList<TypeName> = mutableListOf()
-    private val properties: MutableList<KotlinPropertySpec> = mutableListOf()
-    private val functions: MutableList<KotlinFunctionSpec> = mutableListOf()
-    private val subtypes: MutableList<KotlinTypeSpec> = mutableListOf()
-
-    override fun addKDoc(codeValue: CodeValue): KotlinSimpleTypeSpec.Builder = apply {
-        kDoc.add(codeValue)
-    }
-
-    override fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): KotlinSimpleTypeSpec.Builder = apply {
-        kDoc.add(format, *argumentParts)
-    }
-
-    override fun superclass(superclass: TypeName): KotlinSimpleTypeSpec.Builder = apply {
-        this.superclass = superclass
-    }
-
-    override fun addInitializerBlock(codeValue: CodeValue): KotlinSimpleTypeSpec.Builder = apply {
-        this.initializerBlock.add(codeValue)
-    }
-
-    override fun addInitializerBlock(
-        format: String,
-        vararg argumentParts: CodeArgumentPart
-    ): KotlinSimpleTypeSpec.Builder = apply {
-        this.initializerBlock.add(format, *argumentParts)
-    }
-
-    override fun addAnnotationRef(ref: AnnotationRef): KotlinSimpleTypeSpec.Builder = apply {
-        annotationRefs.add(ref)
-    }
-
-    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): KotlinSimpleTypeSpec.Builder = apply {
-        annotationRefs.addAll(refs)
-    }
-
-    override fun addModifiers(vararg modifiers: KotlinModifier): KotlinSimpleTypeSpec.Builder = apply {
-        this.modifierSet.addAll(modifiers)
-    }
-
-    override fun addModifiers(modifiers: Iterable<KotlinModifier>): KotlinSimpleTypeSpec.Builder = apply {
-        this.modifierSet.addAll(modifiers)
-    }
-
-    override fun addModifier(modifier: KotlinModifier): KotlinSimpleTypeSpec.Builder = apply {
-        this.modifierSet.add(modifier)
-    }
-
-    override fun addTypeVariableRefs(vararg typeVariables: TypeRef<TypeVariableName>): KotlinSimpleTypeSpec.Builder =
-        apply {
-            this.typeVariableRefs.addAll(typeVariables)
-        }
-
-    override fun addTypeVariableRefs(typeVariables: Iterable<TypeRef<TypeVariableName>>): KotlinSimpleTypeSpec.Builder =
-        apply {
-            this.typeVariableRefs.addAll(typeVariables)
-        }
-
-    override fun addTypeVariableRef(typeVariable: TypeRef<TypeVariableName>): KotlinSimpleTypeSpec.Builder = apply {
-        this.typeVariableRefs.add(typeVariable)
-    }
-
-    override fun addSuperinterfaces(vararg superinterfaces: TypeName): KotlinSimpleTypeSpec.Builder = apply {
-        this.superinterfaces.addAll(superinterfaces)
-    }
-
-    override fun addSuperinterfaces(superinterfaces: Iterable<TypeName>): KotlinSimpleTypeSpec.Builder = apply {
-        this.superinterfaces.addAll(superinterfaces)
-    }
-
-    override fun addSuperinterface(superinterface: TypeName): KotlinSimpleTypeSpec.Builder = apply {
-        this.superinterfaces.add(superinterface)
-    }
-
-    override fun addProperties(vararg properties: KotlinPropertySpec): KotlinSimpleTypeSpec.Builder = apply {
-        this.properties.addAll(properties)
-    }
-
-    override fun addProperties(properties: Iterable<KotlinPropertySpec>): KotlinSimpleTypeSpec.Builder = apply {
-        this.properties.addAll(properties)
-    }
-
-    override fun addProperty(property: KotlinPropertySpec): KotlinSimpleTypeSpec.Builder = apply {
-        this.properties.add(property)
-    }
-
-    override fun addFunctions(functions: Iterable<KotlinFunctionSpec>): KotlinSimpleTypeSpec.Builder = apply {
-        this.functions.addAll(functions)
-    }
-
-    override fun addFunctions(vararg functions: KotlinFunctionSpec): KotlinSimpleTypeSpec.Builder = apply {
-        this.functions.addAll(functions)
-    }
-
-    override fun addFunction(function: KotlinFunctionSpec): KotlinSimpleTypeSpec.Builder = apply {
-        this.functions.add(function)
-    }
-
-    override fun addSubtypes(types: Iterable<KotlinTypeSpec>): KotlinSimpleTypeSpec.Builder = apply {
-        this.subtypes.addAll(types)
-    }
-
-    override fun addSubtypes(vararg types: KotlinTypeSpec): KotlinSimpleTypeSpec.Builder = apply {
-        this.subtypes.addAll(types)
-    }
-
-    override fun addSubtype(type: KotlinTypeSpec): KotlinSimpleTypeSpec.Builder = apply {
-        this.subtypes.add(type)
-    }
-
-    override fun build(): KotlinSimpleTypeSpec {
-        return KotlinSimpleTypeSpecImpl(
-            kind = kind,
-            name = name,
-            kDoc = kDoc.build(),
-            annotations = annotationRefs.toList(),
-            modifiers = modifierSet.immutable(),
-            typeVariables = typeVariableRefs.toList(),
-            superclass = superclass,
-            superinterfaces = superinterfaces.toList(),
-            properties = properties.toList(),
-            initializerBlock = initializerBlock.build(),
-            functions = functions.toList(),
-            subtypes = subtypes.toList()
-        )
-    }
-}
