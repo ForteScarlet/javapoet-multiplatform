@@ -9,6 +9,8 @@ import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.canonicalName
 import love.forte.codegentle.common.naming.parseToPackageName
 import love.forte.codegentle.kotlin.internal.KotlinFileImpl
+import love.forte.codegentle.kotlin.spec.KotlinFunctionSpec
+import love.forte.codegentle.kotlin.spec.KotlinPropertySpec
 import love.forte.codegentle.kotlin.spec.KotlinTypeSpec
 import love.forte.codegentle.kotlin.strategy.KotlinWriteStrategy
 import love.forte.codegentle.kotlin.strategy.ToStringKotlinWriteStrategy
@@ -18,7 +20,7 @@ import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 /**
  * Represents a Kotlin source file.
  *
- * A Kotlin source file can contain one or more top-level classes, interfaces, objects, etc.
+ * A Kotlin source file can contain one or more top-level classes, interfaces, objects, functions, properties, etc.
  */
 public interface KotlinFile : KotlinCodeEmitter {
 
@@ -29,6 +31,16 @@ public interface KotlinFile : KotlinCodeEmitter {
      * All top-level types in the file
      */
     public val types: List<KotlinTypeSpec>
+
+    /**
+     * All top-level functions in the file
+     */
+    public val functions: List<KotlinFunctionSpec>
+
+    /**
+     * All top-level properties in the file
+     */
+    public val properties: List<KotlinPropertySpec>
 
     /**
      * Gets the first type in the file (if any)
@@ -103,6 +115,8 @@ public class KotlinFileBuilder internal constructor(
     private var indent: String = "    "
     private val staticImports = linkedSetOf<String>()
     private val types = mutableListOf<KotlinTypeSpec>()
+    private val functions = mutableListOf<KotlinFunctionSpec>()
+    private val properties = mutableListOf<KotlinPropertySpec>()
 
     init {
         if (initialType != null) {
@@ -138,6 +152,66 @@ public class KotlinFileBuilder internal constructor(
      */
     public fun addTypes(vararg types: KotlinTypeSpec): KotlinFileBuilder = apply {
         this.types.addAll(types)
+    }
+
+    /**
+     * Adds a function to the file
+     *
+     * @param function The function to add
+     * @return The current builder instance
+     */
+    public fun addFunction(function: KotlinFunctionSpec): KotlinFileBuilder = apply {
+        functions.add(function)
+    }
+
+    /**
+     * Adds multiple functions to the file
+     *
+     * @param functions The collection of functions to add
+     * @return The current builder instance
+     */
+    public fun addFunctions(functions: Iterable<KotlinFunctionSpec>): KotlinFileBuilder = apply {
+        this.functions.addAll(functions)
+    }
+
+    /**
+     * Adds multiple functions to the file
+     *
+     * @param functions The array of functions to add
+     * @return The current builder instance
+     */
+    public fun addFunctions(vararg functions: KotlinFunctionSpec): KotlinFileBuilder = apply {
+        this.functions.addAll(functions)
+    }
+
+    /**
+     * Adds a property to the file
+     *
+     * @param property The property to add
+     * @return The current builder instance
+     */
+    public fun addProperty(property: KotlinPropertySpec): KotlinFileBuilder = apply {
+        properties.add(property)
+    }
+
+    /**
+     * Adds multiple properties to the file
+     *
+     * @param properties The collection of properties to add
+     * @return The current builder instance
+     */
+    public fun addProperties(properties: Iterable<KotlinPropertySpec>): KotlinFileBuilder = apply {
+        this.properties.addAll(properties)
+    }
+
+    /**
+     * Adds multiple properties to the file
+     *
+     * @param properties The array of properties to add
+     * @return The current builder instance
+     */
+    public fun addProperties(vararg properties: KotlinPropertySpec): KotlinFileBuilder = apply {
+        this.properties.addAll(properties)
     }
 
     /**
@@ -237,15 +311,17 @@ public class KotlinFileBuilder internal constructor(
         //     }
         // }
 
-        // Ensure there is at least one type
-        if (types.isEmpty()) {
-            throw IllegalStateException("At least one type must be added to the file")
+        // Ensure there is at least one element (type, function, or property)
+        if (types.isEmpty() && functions.isEmpty() && properties.isEmpty()) {
+            throw IllegalStateException("At least one type, function, or property must be added to the file")
         }
 
         return KotlinFileImpl(
             fileComment = fileComment.build(),
             packageName = packageName,
             types = types.toList(),
+            functions = functions.toList(),
+            properties = properties.toList(),
             skipKotlinImports = skipKotlinImports,
             staticImports = LinkedHashSet(staticImports),
             alwaysQualify = alwaysQualify,

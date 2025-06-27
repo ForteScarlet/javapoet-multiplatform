@@ -17,8 +17,6 @@ import kotlin.test.assertEquals
 
 /**
  * Tests for JavaWriter extension functions like writeToJavaString.
- *
- * @author AI Assistant
  */
 class JavaWriterExtensionsTests {
 

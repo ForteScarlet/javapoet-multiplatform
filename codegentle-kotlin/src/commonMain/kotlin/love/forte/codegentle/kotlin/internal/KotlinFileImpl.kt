@@ -28,6 +28,8 @@ internal class KotlinFileImpl(
     override val fileComment: CodeValue,
     override val packageName: PackageName,
     override val types: List<KotlinTypeSpec>,
+    override val functions: List<KotlinFunctionSpec>,
+    override val properties: List<KotlinPropertySpec>,
     override val skipKotlinImports: Boolean,
     override val staticImports: Set<String>,
     override val alwaysQualify: Set<String>,
@@ -41,6 +43,16 @@ internal class KotlinFileImpl(
         // 遍历所有类型收集导入
         for (typeSpec in types) {
             classImportVisitor.visitTypeSpec(typeSpec)
+        }
+
+        // 遍历所有顶层函数收集导入
+        for (function in functions) {
+            classImportVisitor.visitFunctionSpec(function)
+        }
+
+        // 遍历所有顶层属性收集导入
+        for (property in properties) {
+            classImportVisitor.visitPropertySpec(property)
         }
 
         // 创建代码写入器
@@ -103,13 +115,32 @@ internal class KotlinFileImpl(
                 codeWriter.emit("\n")
             }
 
-            // 发射所有类型
+            // 发射所有顶层元素（类型、函数、属性）
             var first = true
+
+            // 发射所有属性
+            for (property in properties) {
+                if (!first) {
+                    codeWriter.emit("\n\n")
+                }
+                property.emitTo(codeWriter)
+                first = false
+            }
+
+            // 发射所有函数
+            for (function in functions) {
+                if (!first) {
+                    codeWriter.emit("\n\n")
+                }
+                function.emitTo(codeWriter)
+                first = false
+            }
+
+            // 发射所有类型
             for (typeSpec in types) {
                 if (!first) {
                     codeWriter.emit("\n\n")
                 }
-                // 使用 emitTo 扩展函数
                 typeSpec.emitTo(codeWriter)
                 first = false
             }
@@ -124,6 +155,8 @@ internal class KotlinFileImpl(
         if (fileComment != other.fileComment) return false
         if (packageName != other.packageName) return false
         if (types != other.types) return false
+        if (functions != other.functions) return false
+        if (properties != other.properties) return false
         if (staticImports != other.staticImports) return false
         if (alwaysQualify != other.alwaysQualify) return false
         if (indent != other.indent) return false
@@ -136,6 +169,8 @@ internal class KotlinFileImpl(
         result = 31 * result + fileComment.hashCode()
         result = 31 * result + packageName.hashCode()
         result = 31 * result + types.hashCode()
+        result = 31 * result + functions.hashCode()
+        result = 31 * result + properties.hashCode()
         result = 31 * result + staticImports.hashCode()
         result = 31 * result + alwaysQualify.hashCode()
         result = 31 * result + indent.hashCode()

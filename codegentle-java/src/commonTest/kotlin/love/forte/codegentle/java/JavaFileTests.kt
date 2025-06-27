@@ -12,8 +12,6 @@ import kotlin.test.assertTrue
 
 /**
  * Tests for JavaFile functionality.
- *
- * @author AI Assistant
  */
 class JavaFileTests {
 

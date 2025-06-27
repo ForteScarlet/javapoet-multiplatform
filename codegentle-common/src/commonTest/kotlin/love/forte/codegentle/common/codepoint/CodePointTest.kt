@@ -7,8 +7,6 @@ import kotlin.test.assertTrue
 
 /**
  * Tests for the [CodePoint] class and its related functions.
- *
- * @author AI Assistant
  */
 class CodePointTest {
 

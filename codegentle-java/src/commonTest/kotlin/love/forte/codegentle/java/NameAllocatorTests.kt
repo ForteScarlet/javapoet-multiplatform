@@ -7,8 +7,6 @@ import kotlin.test.assertTrue
 
 /**
  * Tests for NameAllocator functionality.
- *
- * @author AI Assistant
  */
 class NameAllocatorTests {
 

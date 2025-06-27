@@ -16,8 +16,6 @@ import kotlin.test.assertTrue
 
 /**
  * Tests for JavaCodeWriter functionality.
- *
- * @author AI Assistant
  */
 class JavaCodeWriterTests {
 

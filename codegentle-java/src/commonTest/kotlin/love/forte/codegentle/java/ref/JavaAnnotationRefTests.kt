@@ -10,8 +10,6 @@ import kotlin.test.assertEquals
 
 /**
  * Tests for JavaAnnotationRef functionality.
- *
- * @author AI Assistant
  */
 class JavaAnnotationRefTests {
 
