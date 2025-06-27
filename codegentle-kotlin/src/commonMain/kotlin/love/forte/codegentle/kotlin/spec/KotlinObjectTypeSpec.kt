@@ -2,6 +2,7 @@ package love.forte.codegentle.kotlin.spec
 
 import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
@@ -235,3 +236,31 @@ public inline fun KotlinObjectTypeSpec(
 ): KotlinObjectTypeSpec {
     return KotlinObjectTypeSpec.companionBuilder().apply(block).build()
 }
+
+public inline fun KotlinObjectTypeSpec.Builder.addKDoc(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinObjectTypeSpec.Builder = addKDoc(CodeValue(format, block))
+
+public inline fun KotlinObjectTypeSpec.Builder.addInitializerBlock(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinObjectTypeSpec.Builder = addInitializerBlock(CodeValue(format, block))
+
+public inline fun KotlinObjectTypeSpec.Builder.addProperty(
+    name: String,
+    type: TypeRef<*>,
+    block: KotlinPropertySpec.Builder.() -> Unit = {}
+): KotlinObjectTypeSpec.Builder = addProperty(KotlinPropertySpec(name, type, block))
+
+public inline fun KotlinObjectTypeSpec.Builder.addFunction(
+    name: String,
+    type: TypeRef<*>,
+    block: KotlinFunctionSpec.Builder.() -> Unit = {}
+): KotlinObjectTypeSpec.Builder = addFunction(KotlinFunctionSpec(name, type, block))
+
+public inline fun KotlinObjectTypeSpec.Builder.addSubtype(
+    kind: KotlinTypeSpec.Kind,
+    name: String,
+    block: KotlinSimpleTypeSpec.Builder.() -> Unit = {}
+): KotlinObjectTypeSpec.Builder = addSubtype(KotlinSimpleTypeSpec.builder(kind, name).apply(block).build())

@@ -2,6 +2,7 @@ package love.forte.codegentle.kotlin.spec
 
 import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
@@ -192,4 +193,26 @@ public interface KotlinSimpleTypeSpec : KotlinTypeSpec {
         public fun build(): KotlinSimpleTypeSpec
     }
 }
+
+public inline fun KotlinSimpleTypeSpec.Builder.addKDoc(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinSimpleTypeSpec.Builder = addKDoc(CodeValue(format, block))
+
+public inline fun KotlinSimpleTypeSpec.Builder.addInitializerBlock(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinSimpleTypeSpec.Builder = addInitializerBlock(CodeValue(format, block))
+
+public inline fun KotlinSimpleTypeSpec.Builder.addProperty(
+    name: String,
+    type: TypeRef<*>,
+    block: KotlinPropertySpec.Builder.() -> Unit = {}
+): KotlinSimpleTypeSpec.Builder = addProperty(KotlinPropertySpec(name, type, block))
+
+public inline fun KotlinSimpleTypeSpec.Builder.addFunction(
+    name: String,
+    type: TypeRef<*>,
+    block: KotlinFunctionSpec.Builder.() -> Unit = {}
+): KotlinSimpleTypeSpec.Builder = addFunction(KotlinFunctionSpec(name, type, block))
 

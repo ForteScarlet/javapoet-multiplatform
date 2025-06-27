@@ -3,6 +3,7 @@ package love.forte.codegentle.kotlin.spec
 import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.AnnotationRefCollectable
 import love.forte.codegentle.common.ref.TypeRef
@@ -155,3 +156,18 @@ public inline fun KotlinPropertySpec(
     block: KotlinPropertySpec.Builder.() -> Unit = {}
 ): KotlinPropertySpec =
     KotlinPropertySpec.builder(name, type).also(block).build()
+
+public inline fun KotlinPropertySpec.Builder.initializer(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinPropertySpec.Builder = initializer(CodeValue(format, block))
+
+public inline fun KotlinPropertySpec.Builder.delegate(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinPropertySpec.Builder = delegate(CodeValue(format, block))
+
+public inline fun KotlinPropertySpec.Builder.addKDoc(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinPropertySpec.Builder = addKDoc(CodeValue(format, block))

@@ -225,3 +225,15 @@ public inline fun KotlinFunctionSpec.Builder.addStatement(
 ): KotlinFunctionSpec.Builder = apply {
     addStatement(CodeValue(format, block))
 }
+
+public inline fun KotlinFunctionSpec.Builder.addParameter(
+    name: String,
+    type: TypeRef<*>,
+    block: KotlinValueParameterSpec.Builder.() -> Unit = {}
+): KotlinFunctionSpec.Builder = addParameter(KotlinValueParameterSpec.builder(name, type).apply(block).build())
+
+public inline fun KotlinFunctionSpec.Builder.addContextParameter(
+    name: String?,
+    type: TypeRef<*>,
+    block: KotlinContextParameterSpec.Builder.() -> Unit = {}
+): KotlinFunctionSpec.Builder = addContextParameter(KotlinContextParameterSpec.builder(name, type).apply(block).build())

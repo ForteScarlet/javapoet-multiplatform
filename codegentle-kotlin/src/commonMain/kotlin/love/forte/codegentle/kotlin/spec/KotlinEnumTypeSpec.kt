@@ -2,6 +2,7 @@ package love.forte.codegentle.kotlin.spec
 
 import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
@@ -188,3 +189,25 @@ public inline fun KotlinEnumTypeSpec(
 ): KotlinEnumTypeSpec {
     return KotlinEnumTypeSpec.builder(name).apply(block).build()
 }
+
+public inline fun KotlinEnumTypeSpec.Builder.addKDoc(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinEnumTypeSpec.Builder = addKDoc(CodeValue(format, block))
+
+public inline fun KotlinEnumTypeSpec.Builder.addInitializerBlock(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinEnumTypeSpec.Builder = addInitializerBlock(CodeValue(format, block))
+
+public inline fun KotlinEnumTypeSpec.Builder.addProperty(
+    name: String,
+    type: TypeRef<*>,
+    block: KotlinPropertySpec.Builder.() -> Unit = {}
+): KotlinEnumTypeSpec.Builder = addProperty(KotlinPropertySpec(name, type, block))
+
+public inline fun KotlinEnumTypeSpec.Builder.addFunction(
+    name: String,
+    type: TypeRef<*>,
+    block: KotlinFunctionSpec.Builder.() -> Unit = {}
+): KotlinEnumTypeSpec.Builder = addFunction(KotlinFunctionSpec(name, type, block))

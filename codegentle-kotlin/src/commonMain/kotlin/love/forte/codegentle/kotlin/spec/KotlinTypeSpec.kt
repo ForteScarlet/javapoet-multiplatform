@@ -3,6 +3,7 @@ package love.forte.codegentle.kotlin.spec
 import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueBuilder
 import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.TypeVariableName
@@ -207,7 +208,10 @@ public sealed interface KotlinTypeSpec : KotlinSpec, KotlinModifierContainer {
          * @param primaryParameter the primary constructor parameter
          * @return a new builder
          */
-        public fun valueClassBuilder(name: String, primaryParameter: KotlinValueParameterSpec): KotlinValueClassSpec.Builder {
+        public fun valueClassBuilder(
+            name: String,
+            primaryParameter: KotlinValueParameterSpec
+        ): KotlinValueClassSpec.Builder {
             return KotlinValueClassSpec.builder(name, primaryParameter)
         }
 
@@ -233,45 +237,175 @@ public sealed interface KotlinTypeSpec : KotlinSpec, KotlinModifierContainer {
     }
 }
 
-public sealed class KotlinTypeSpecBuilder<B : KotlinTypeSpecBuilder<B, T>, T : KotlinTypeSpec>(
-    public val kind: KotlinTypeSpec.Kind,
-    public val name: String?,
-) : KotlinModifierBuilderContainer,
+/**
+ * Base interface for all Kotlin type spec builders.
+ */
+public interface KotlinTypeSpecBuilder<B : KotlinTypeSpecBuilder<B, T>, T : KotlinTypeSpec> :
+    KotlinModifierBuilderContainer,
     AnnotationRefCollectable<B>,
     BuilderDsl {
 
-    internal val kDoc = CodeValue.builder()
-    internal var superclass: TypeName? = null
-    internal val initializerBlock = CodeValue.builder()
+    /**
+     * The kind of the type.
+     */
+    public val kind: KotlinTypeSpec.Kind
 
-    internal val annotationRefs: MutableList<AnnotationRef> = mutableListOf()
-    internal val modifierSet = MutableKotlinModifierSet.empty()
-    internal val typeVariableRefs: MutableList<TypeRef<TypeVariableName>> = mutableListOf()
-    internal val superinterfaces: MutableList<TypeName> = mutableListOf()
-    internal val properties: MutableList<KotlinPropertySpec> = mutableListOf()
-    internal val functions: MutableList<KotlinFunctionSpec> = mutableListOf()
-    internal val subtypes: MutableList<KotlinTypeSpec> = mutableListOf()
+    /**
+     * The name of the type.
+     */
+    public val name: String?
 
+    /**
+     * Add KDoc.
+     */
+    public fun addKDoc(codeValue: CodeValue): B
+
+    /**
+     * Add KDoc.
+     */
+    public fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): B
+
+    /**
+     * Set superclass.
+     */
+    public fun superclass(superclass: TypeName): B
+
+    /**
+     * Add initializer block.
+     */
+    public fun addInitializerBlock(codeValue: CodeValue): B
+
+    /**
+     * Add initializer block.
+     */
+    public fun addInitializerBlock(format: String, vararg argumentParts: CodeArgumentPart): B
+
+    /**
+     * Add type variable references.
+     */
+    public fun addTypeVariableRefs(vararg typeVariables: TypeRef<TypeVariableName>): B
+
+    /**
+     * Add type variable references.
+     */
+    public fun addTypeVariableRefs(typeVariables: Iterable<TypeRef<TypeVariableName>>): B
+
+    /**
+     * Add type variable reference.
+     */
+    public fun addTypeVariableRef(typeVariable: TypeRef<TypeVariableName>): B
+
+    /**
+     * Add superinterfaces.
+     */
+    public fun addSuperinterfaces(vararg superinterfaces: TypeName): B
+
+    /**
+     * Add superinterfaces.
+     */
+    public fun addSuperinterfaces(superinterfaces: Iterable<TypeName>): B
+
+    /**
+     * Add superinterface.
+     */
+    public fun addSuperinterface(superinterface: TypeName): B
+
+    /**
+     * Add properties.
+     */
+    public fun addProperties(vararg properties: KotlinPropertySpec): B
+
+    /**
+     * Add properties.
+     */
+    public fun addProperties(properties: Iterable<KotlinPropertySpec>): B
+
+    /**
+     * Add property.
+     */
+    public fun addProperty(property: KotlinPropertySpec): B
+
+    /**
+     * Add functions.
+     */
+    public fun addFunctions(functions: Iterable<KotlinFunctionSpec>): B
+
+    /**
+     * Add functions.
+     */
+    public fun addFunctions(vararg functions: KotlinFunctionSpec): B
+
+    /**
+     * Add function.
+     */
+    public fun addFunction(function: KotlinFunctionSpec): B
+
+    /**
+     * Add subtypes.
+     */
+    public fun addSubtypes(types: Iterable<KotlinTypeSpec>): B
+
+    /**
+     * Add subtypes.
+     */
+    public fun addSubtypes(vararg types: KotlinTypeSpec): B
+
+    /**
+     * Add subtype.
+     */
+    public fun addSubtype(type: KotlinTypeSpec): B
+
+    /**
+     * Build the type spec.
+     */
+    public fun build(): T
+}
+
+/**
+ * Abstract implementation of [KotlinTypeSpecBuilder] that provides common functionality.
+ */
+@OptIn(CodeGentleKotlinSpecImplementation::class)
+internal abstract class AbstractKotlinTypeSpecBuilder<B : AbstractKotlinTypeSpecBuilder<B, T>, T : KotlinTypeSpec>(
+    override val kind: KotlinTypeSpec.Kind,
+    override val name: String?,
+) : KotlinTypeSpecBuilder<B, T> {
+
+    protected val kDoc: CodeValueBuilder = CodeValue.builder()
+    protected var superclass: TypeName? = null
+    protected val initializerBlock: CodeValueBuilder = CodeValue.builder()
+
+    protected val annotationRefs: MutableList<AnnotationRef> = mutableListOf()
+    private val modifierSet: MutableKotlinModifierSet = MutableKotlinModifierSet.empty()
+    protected val typeVariableRefs: MutableList<TypeRef<TypeVariableName>> = mutableListOf()
+    protected val superinterfaces: MutableList<TypeName> = mutableListOf()
+    protected val properties: MutableList<KotlinPropertySpec> = mutableListOf()
+    protected val functions: MutableList<KotlinFunctionSpec> = mutableListOf()
+    protected val subtypes: MutableList<KotlinTypeSpec> = mutableListOf()
+
+    /**
+     * Get the self reference for method chaining.
+     */
+    @Suppress("UNCHECKED_CAST")
     protected abstract val self: B
 
-    public fun addKDoc(codeValue: CodeValue): B = self.apply {
+    override fun addKDoc(codeValue: CodeValue): B = self.apply {
         kDoc.add(codeValue)
     }
 
-    public fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): B = self.apply {
+    override fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): B = self.apply {
         kDoc.add(format, *argumentParts)
     }
 
-    public fun superclass(superclass: TypeName): B = self.apply {
+    override fun superclass(superclass: TypeName): B = self.apply {
         this.superclass = superclass
     }
 
-    public fun addInitializerBlock(codeValue: CodeValue): B = self.apply {
-        this.initializerBlock.add(codeValue)
+    override fun addInitializerBlock(codeValue: CodeValue): B = self.apply {
+        initializerBlock.add(codeValue)
     }
 
-    public fun addInitializerBlock(format: String, vararg argumentParts: CodeArgumentPart): B = self.apply {
-        this.initializerBlock.add(format, *argumentParts)
+    override fun addInitializerBlock(format: String, vararg argumentParts: CodeArgumentPart): B = self.apply {
+        initializerBlock.add(format, *argumentParts)
     }
 
     override fun addAnnotationRef(ref: AnnotationRef): B = self.apply {
@@ -283,78 +417,76 @@ public sealed class KotlinTypeSpecBuilder<B : KotlinTypeSpecBuilder<B, T>, T : K
     }
 
     override fun addModifiers(vararg modifiers: KotlinModifier): B = self.apply {
-        this.modifierSet.addAll(modifiers)
+        modifierSet.addAll(modifiers)
     }
 
     override fun addModifiers(modifiers: Iterable<KotlinModifier>): B = self.apply {
-        this.modifierSet.addAll(modifiers)
+        modifierSet.addAll(modifiers)
     }
 
     override fun addModifier(modifier: KotlinModifier): B = self.apply {
-        this.modifierSet.add(modifier)
+        modifierSet.add(modifier)
     }
 
-    public fun addTypeVariableRefs(vararg typeVariables: TypeRef<TypeVariableName>): B = self.apply {
-        this.typeVariableRefs.addAll(typeVariables)
+    override fun addTypeVariableRefs(vararg typeVariables: TypeRef<TypeVariableName>): B = self.apply {
+        typeVariableRefs.addAll(typeVariables)
     }
 
-    public fun addTypeVariableRefs(typeVariables: Iterable<TypeRef<TypeVariableName>>): B = self.apply {
-        this.typeVariableRefs.addAll(typeVariables)
+    override fun addTypeVariableRefs(typeVariables: Iterable<TypeRef<TypeVariableName>>): B = self.apply {
+        typeVariableRefs.addAll(typeVariables)
     }
 
-    public fun addTypeVariableRef(typeVariable: TypeRef<TypeVariableName>): B = self.apply {
-        this.typeVariableRefs.add(typeVariable)
+    override fun addTypeVariableRef(typeVariable: TypeRef<TypeVariableName>): B = self.apply {
+        typeVariableRefs.add(typeVariable)
     }
 
-    public fun addSuperinterfaces(vararg superinterfaces: TypeName): B = self.apply {
+    override fun addSuperinterfaces(vararg superinterfaces: TypeName): B = self.apply {
         this.superinterfaces.addAll(superinterfaces)
     }
 
-    public fun addSuperinterfaces(superinterfaces: Iterable<TypeName>): B = self.apply {
+    override fun addSuperinterfaces(superinterfaces: Iterable<TypeName>): B = self.apply {
         this.superinterfaces.addAll(superinterfaces)
     }
 
-    public fun addSuperinterface(superinterface: TypeName): B = self.apply {
+    override fun addSuperinterface(superinterface: TypeName): B = self.apply {
         this.superinterfaces.add(superinterface)
     }
 
-    public fun addProperties(vararg properties: KotlinPropertySpec): B = self.apply {
+    override fun addProperties(vararg properties: KotlinPropertySpec): B = self.apply {
         this.properties.addAll(properties)
     }
 
-    public fun addProperties(properties: Iterable<KotlinPropertySpec>): B = self.apply {
+    override fun addProperties(properties: Iterable<KotlinPropertySpec>): B = self.apply {
         this.properties.addAll(properties)
     }
 
-    public fun addProperty(property: KotlinPropertySpec): B = self.apply {
+    override fun addProperty(property: KotlinPropertySpec): B = self.apply {
         this.properties.add(property)
     }
 
-    public fun addFunctions(functions: Iterable<KotlinFunctionSpec>): B = self.apply {
+    override fun addFunctions(functions: Iterable<KotlinFunctionSpec>): B = self.apply {
         this.functions.addAll(functions)
     }
 
-    public fun addFunctions(vararg functions: KotlinFunctionSpec): B = self.apply {
+    override fun addFunctions(vararg functions: KotlinFunctionSpec): B = self.apply {
         this.functions.addAll(functions)
     }
 
-    public fun addFunction(function: KotlinFunctionSpec): B = self.apply {
+    override fun addFunction(function: KotlinFunctionSpec): B = self.apply {
         this.functions.add(function)
     }
 
-    public fun addSubtypes(types: Iterable<KotlinTypeSpec>): B = self.apply {
+    override fun addSubtypes(types: Iterable<KotlinTypeSpec>): B = self.apply {
         this.subtypes.addAll(types)
     }
 
-    public fun addSubtypes(vararg types: KotlinTypeSpec): B = self.apply {
+    override fun addSubtypes(vararg types: KotlinTypeSpec): B = self.apply {
         this.subtypes.addAll(types)
     }
 
-    public fun addSubtype(type: KotlinTypeSpec): B = self.apply {
+    override fun addSubtype(type: KotlinTypeSpec): B = self.apply {
         this.subtypes.add(type)
     }
-
-    public abstract fun build(): T
 }
 
 // extensions

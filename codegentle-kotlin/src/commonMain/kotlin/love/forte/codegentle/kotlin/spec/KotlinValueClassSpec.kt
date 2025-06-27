@@ -2,6 +2,7 @@ package love.forte.codegentle.kotlin.spec
 
 import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.naming.TypeName
 import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
@@ -185,3 +186,25 @@ public inline fun KotlinValueClassSpec(
 ): KotlinValueClassSpec {
     return KotlinValueClassSpec.builder(name, primaryParameter).apply(block).build()
 }
+
+public inline fun KotlinValueClassSpec.Builder.addKDoc(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinValueClassSpec.Builder = addKDoc(CodeValue(format, block))
+
+public inline fun KotlinValueClassSpec.Builder.addInitializerBlock(
+    format: String,
+    block: CodeValueSingleFormatBuilderDsl = {}
+): KotlinValueClassSpec.Builder = addInitializerBlock(CodeValue(format, block))
+
+public inline fun KotlinValueClassSpec.Builder.addProperty(
+    name: String,
+    type: TypeRef<*>,
+    block: KotlinPropertySpec.Builder.() -> Unit = {}
+): KotlinValueClassSpec.Builder = addProperty(KotlinPropertySpec(name, type, block))
+
+public inline fun KotlinValueClassSpec.Builder.addFunction(
+    name: String,
+    type: TypeRef<*>,
+    block: KotlinFunctionSpec.Builder.() -> Unit = {}
+): KotlinValueClassSpec.Builder = addFunction(KotlinFunctionSpec(name, type, block))
