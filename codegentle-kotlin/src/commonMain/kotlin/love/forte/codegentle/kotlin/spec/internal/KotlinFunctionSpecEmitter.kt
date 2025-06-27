@@ -1,5 +1,8 @@
 package love.forte.codegentle.kotlin.spec.internal
 
+import love.forte.codegentle.common.code.CodePart
+import love.forte.codegentle.common.code.CodeSimplePart
+import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.kotlin.spec.KotlinFunctionSpec
 import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
@@ -21,10 +24,9 @@ internal fun KotlinFunctionSpec.emitTo(codeWriter: KotlinCodeWriter) {
         codeWriter.emit("context(")
         contextParameters.forEachIndexed { index, param ->
             if (index > 0) codeWriter.emit(", ")
-            // TODO: Implement contextParameter.emitTo(codeWriter)
-            codeWriter.emit(param.typeRef.toString())
+            param.emitTo(codeWriter)
         }
-        codeWriter.emit(") ")
+        codeWriter.emit(")\n")
     }
 
     // Emit modifiers
@@ -52,8 +54,7 @@ internal fun KotlinFunctionSpec.emitTo(codeWriter: KotlinCodeWriter) {
     codeWriter.emit("(")
     parameters.forEachIndexed { index, param ->
         if (index > 0) codeWriter.emit(", ")
-        // TODO: Implement parameter.emitTo(codeWriter)
-        codeWriter.emit("${param.name}: ${param.typeRef}")
+        param.emitTo(codeWriter)
     }
     codeWriter.emit(")")
 
@@ -61,15 +62,29 @@ internal fun KotlinFunctionSpec.emitTo(codeWriter: KotlinCodeWriter) {
     codeWriter.emit(": ")
     codeWriter.emit(returnType)
 
-    // Emit body
     if (!code.isEmpty) {
-        codeWriter.emit(" {\n")
-        codeWriter.indent()
-        codeWriter.emit(code)
-        codeWriter.unindent()
-        codeWriter.emit("\n}")
-    } else {
-        // Empty body
-        codeWriter.emit(" {}")
+        val parts = code.parts
+        val firstPart = parts.first()
+        if (firstPart is CodeSimplePart && firstPart.value.trimStart().startsWith("return ")) {
+            // { return ... } -> = ...
+            val replacedCode = CodeValue(buildList {
+                add(CodePart.simple(firstPart.value.replaceFirst("return ", "")))
+                addAll(parts.subList(1, parts.size))
+            })
+            codeWriter.emit(" = ")
+            codeWriter.indent()
+            codeWriter.emit(replacedCode)
+            codeWriter.unindent()
+        } else {
+            codeWriter.emit(" {\n")
+            codeWriter.indent()
+            codeWriter.emit(code)
+            codeWriter.unindent()
+            codeWriter.emit("\n}")
+        }
+
+        parts.first() as? CodeSimplePart
+
+
     }
 }

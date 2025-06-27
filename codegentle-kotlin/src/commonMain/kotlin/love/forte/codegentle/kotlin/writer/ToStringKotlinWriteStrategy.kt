@@ -13,4 +13,6 @@ public object ToStringKotlinWriteStrategy : KotlinWriteStrategy {
     override fun isValidSourceName(name: TypeName): Boolean = true
 
     override fun isValidSourceName(name: String): Boolean = true
+
+    override fun omitKotlinPackage(): Boolean = true
 }

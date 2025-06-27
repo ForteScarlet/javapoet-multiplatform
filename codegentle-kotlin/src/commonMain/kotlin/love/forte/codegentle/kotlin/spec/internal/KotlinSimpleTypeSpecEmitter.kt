@@ -1,6 +1,7 @@
 package love.forte.codegentle.kotlin.spec.internal
 
 import love.forte.codegentle.common.code.isEmpty
+import love.forte.codegentle.common.writer.withIndent
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.spec.KotlinSimpleTypeSpec
 import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
@@ -9,6 +10,10 @@ import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
  * Extension function to emit a [KotlinSimpleTypeSpec] to a [KotlinCodeWriter].
  */
 internal fun KotlinSimpleTypeSpec.emitTo(codeWriter: KotlinCodeWriter, implicitModifiers: Set<KotlinModifier> = emptySet()) {
+    // Push this type spec onto the stack so that functions can check if they're in an interface
+    codeWriter.pushType(this)
+    var blockLineRequired = false
+
     // Emit KDoc
     if (!kDoc.isEmpty) {
         codeWriter.emitDoc(kDoc)
@@ -69,32 +74,55 @@ internal fun KotlinSimpleTypeSpec.emitTo(codeWriter: KotlinCodeWriter, implicitM
     // Emit initializer block
     if (!initializerBlock.isEmpty) {
         codeWriter.emit("init {\n")
-        codeWriter.indent()
-        codeWriter.emit(initializerBlock)
-        codeWriter.unindent()
-        codeWriter.emit("}\n\n")
+        codeWriter.withIndent {
+            emit(initializerBlock)
+        }
+        codeWriter.emit("}\n")
+        blockLineRequired = true
     }
 
     // Emit properties
-    for (property in properties) {
-        // TODO: Implement property.emitTo(codeWriter)
-        codeWriter.emit("// Property: ${property.name}\n")
+    if (properties.isNotEmpty()) {
+        if (blockLineRequired) {
+            codeWriter.emitNewLine()
+        }
+
+        for (property in properties) {
+            property.emitTo(codeWriter)
+            codeWriter.emitNewLine()
+        }
+        blockLineRequired = true
     }
 
+
     // Emit functions
-    for (function in functions) {
-        // TODO: Implement function.emitTo(codeWriter)
-        codeWriter.emit("// Function: ${function.name}\n")
+    if (functions.isNotEmpty()) {
+        if (blockLineRequired) {
+            codeWriter.emitNewLine()
+        }
+        for (function in functions) {
+            function.emitTo(codeWriter)
+            codeWriter.emitNewLine()
+        }
+        blockLineRequired = true
     }
 
     // Emit subtypes
-    for (subtype in subtypes) {
-        // TODO: Implement subtype.emitTo(codeWriter)
-        codeWriter.emit("// Subtype\n")
+    if (subtypes.isNotEmpty()) {
+        if (blockLineRequired) {
+            codeWriter.emitNewLine()
+        }
+        for (subtype in subtypes) {
+            subtype.emitTo(codeWriter)
+            codeWriter.emitNewLine()
+        }
     }
 
     codeWriter.unindent()
     codeWriter.emit("}")
+
+    // Pop this type spec from the stack
+    codeWriter.popType()
 }
 
 /**

@@ -143,6 +143,12 @@ public interface KotlinFunctionSpec : Spec, KotlinModifierContainer {
          */
         public fun addStatement(codeValue: CodeValue): Builder
 
+        override fun addModifier(modifier: KotlinModifier): Builder
+
+        override fun addModifiers(modifiers: Iterable<KotlinModifier>): Builder
+
+        override fun addModifiers(vararg modifiers: KotlinModifier): Builder
+
         /**
          * Build a [KotlinFunctionSpec] instance.
          */

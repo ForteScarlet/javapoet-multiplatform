@@ -105,6 +105,12 @@ public interface KotlinPropertySpec : Spec, KotlinModifierContainer {
          */
         public fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): Builder
 
+        override fun addModifier(modifier: KotlinModifier): Builder
+
+        override fun addModifiers(modifiers: Iterable<KotlinModifier>): Builder
+
+        override fun addModifiers(vararg modifiers: KotlinModifier): Builder
+
         /**
          * Build a [KotlinPropertySpec] instance.
          *

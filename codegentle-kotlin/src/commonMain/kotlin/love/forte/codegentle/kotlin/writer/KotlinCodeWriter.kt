@@ -14,6 +14,7 @@ import love.forte.codegentle.common.writer.CodeWriter.Companion.DEFAULT_COLUMN_L
 import love.forte.codegentle.common.writer.CodeWriter.Companion.DEFAULT_INDENT
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.emitTo
+import love.forte.codegentle.kotlin.naming.emitTo
 import love.forte.codegentle.kotlin.ref.emitTo
 import love.forte.codegentle.kotlin.ref.kotlinOrNull
 import love.forte.codegentle.kotlin.spec.KotlinTypeSpec
@@ -35,7 +36,7 @@ public class KotlinCodeWriter private constructor(
     override val staticImports: Set<String> = emptySet(),
     override val alwaysQualify: Set<String> = emptySet(),
     internal val importedTypes: Map<String, ClassName> = emptyMap()
-): AbstractCodeWriter() {
+) : AbstractCodeWriter() {
 
     override fun emitComment(
         comment: CodeValue,
@@ -105,6 +106,7 @@ public class KotlinCodeWriter private constructor(
             is AnnotationRef -> {
                 emit(value, CommonAnnotationRefEmitOption.Inline)
             }
+
             else -> emitAndIndent(value.toString())
         }
     }
@@ -115,10 +117,10 @@ public class KotlinCodeWriter private constructor(
     ) {
         when (typeName) {
             is ClassName -> {
-                // For now, just emit the simple name
-                // In a more complete implementation, we would handle imports and qualified names
-                emit(typeName.simpleName)
+                // Use the emitTo extension function to handle imports and qualified names
+                typeName.emitTo(this)
             }
+
             else -> emit(typeName.toString())
         }
     }

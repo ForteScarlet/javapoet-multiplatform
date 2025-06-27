@@ -9,6 +9,11 @@ import love.forte.codegentle.common.writer.Strategy
  * @author ForteScarlet
  */
 public interface KotlinWriteStrategy : Strategy {
+    /**
+     * Whether to omit reference to `kotlin` packages.
+     */
+    public fun omitKotlinPackage(): Boolean
+
     // No need to declare methods that are already in Strategy
 }
 
@@ -41,6 +46,8 @@ public object DefaultKotlinWriteStrategy : KotlinWriteStrategy {
         // For Kotlin, we'll use the same rules as for identifiers
         return isIdentifier(name)
     }
+
+    override fun omitKotlinPackage(): Boolean = true
 }
 
 /**
@@ -60,6 +67,8 @@ public object ToStringKotlinWriteStrategy : KotlinWriteStrategy {
     override fun isValidSourceName(name: String): Boolean {
         return DefaultKotlinWriteStrategy.isValidSourceName(name)
     }
+
+    override fun omitKotlinPackage(): Boolean = true
 }
 
 /**

@@ -1,151 +1,354 @@
 package love.forte.codegentle.kotlin
 
+import love.forte.codegentle.common.BuilderDsl
+import love.forte.codegentle.common.code.CodeValue
+import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
+import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.PackageName
 import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.naming.canonicalName
+import love.forte.codegentle.common.naming.parseToPackageName
+import love.forte.codegentle.kotlin.internal.KotlinFileImpl
 import love.forte.codegentle.kotlin.spec.KotlinTypeSpec
+import love.forte.codegentle.kotlin.strategy.KotlinWriteStrategy
+import love.forte.codegentle.kotlin.strategy.ToStringKotlinWriteStrategy
+import love.forte.codegentle.kotlin.writer.KotlinCodeEmitter
+import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 
 /**
- * 表示一个 Kotlin 源文件。
+ * Represents a Kotlin source file.
  *
- * 一个 Kotlin 源文件可以包含一个或多个顶级类、接口、对象等。
- *
- * @property packageName 包名
- * @property typeSpec 类型规范
- *
- * TODO: 实现 KotlinFile 类，参考 JavaFile 的实现
+ * A Kotlin source file can contain one or more top-level classes, interfaces, objects, etc.
  */
-public class KotlinFile private constructor(
-    public val packageName: PackageName,
-    public val typeSpec: KotlinTypeSpec,
-    private var fileComment: String?,
-    private val importedTypes: Set<TypeName>,
-    private val staticImportedTypes: Map<TypeName, Set<String>>
-) {
-    // 用于存储导入语句的可变集合
-    private val mutableImports: MutableSet<TypeName> = importedTypes.toMutableSet()
-    
-    // 用于存储静态导入语句的可变映射
-    private val mutableStaticImports: MutableMap<TypeName, Set<String>> = staticImportedTypes.toMutableMap()
+public interface KotlinFile : KotlinCodeEmitter {
+
+    public val fileComment: CodeValue
+    public val packageName: PackageName
 
     /**
-     * 获取导入的类型。
+     * All top-level types in the file
      */
-    public val imports: Set<TypeName>
-        get() = mutableImports.toSet()
+    public val types: List<KotlinTypeSpec>
 
     /**
-     * 获取静态导入的类型和成员。
+     * Gets the first type in the file (if any)
+     * 
+     * This property is provided for backward compatibility
      */
-    public val staticImports: Map<TypeName, Set<String>>
-        get() = mutableStaticImports.toMap()
+    public val type: KotlinTypeSpec
+        get() = types.first()
 
     /**
-     * 构建器类，用于构建 [KotlinFile] 实例。
+     * Whether to skip importing types from the kotlin.* package
+     *
+     * By default, types from the kotlin.* package are explicitly imported to prevent naming conflicts.
+     * If set to true, types from the kotlin.* package will not be imported.
      */
-    public class Builder(
-        private val packageName: PackageName,
-        private val typeSpec: KotlinTypeSpec
-    ) {
-        private var fileComment: String? = null
-        private val imports: MutableSet<TypeName> = mutableSetOf()
-        private val staticImports: MutableMap<TypeName, MutableSet<String>> = mutableMapOf()
+    public val skipKotlinImports: Boolean
 
-        /**
-         * 添加文件注释。
-         *
-         * @param comment 注释内容
-         * @return 当前构建器实例
-         */
-        public fun addFileComment(comment: String): Builder = apply {
-            this.fileComment = comment
-        }
+    /**
+     * Statically imported types and members
+     */
+    public val staticImports: Set<String>
 
-        /**
-         * 添加导入语句。
-         *
-         * @param typeName 要导入的类型
-         * @return 当前构建器实例
-         */
-        public fun addImport(typeName: TypeName): Builder = apply {
-            imports.add(typeName)
-        }
+    /**
+     * Types that should always use fully qualified names
+     */
+    public val alwaysQualify: Set<String>
 
-        /**
-         * 添加静态导入语句。
-         *
-         * @param typeName 要导入的类型
-         * @param names 要导入的静态成员名称
-         * @return 当前构建器实例
-         */
-        public fun addStaticImport(typeName: TypeName, vararg names: String): Builder = apply {
-            val set = staticImports.getOrPut(typeName) { mutableSetOf() }
-            names.forEach { set.add(it) }
-        }
+    /**
+     * Indentation string
+     */
+    public val indent: String
 
-        /**
-         * 构建 [KotlinFile] 实例。
-         *
-         * @return 新的 [KotlinFile] 实例
-         */
-        public fun build(): KotlinFile {
-            return KotlinFile(
-                packageName = packageName,
-                typeSpec = typeSpec,
-                fileComment = fileComment,
-                importedTypes = imports.toSet(),
-                staticImportedTypes = staticImports.mapValues { it.value.toSet() }
-            )
-        }
-    }
+    /**
+     * Writes the Kotlin file to the specified Appendable
+     *
+     * @param out The output target
+     * @param strategy The writing strategy
+     */
+    public fun writeTo(out: Appendable, strategy: KotlinWriteStrategy)
 
     public companion object {
         /**
-         * 创建一个 [KotlinFile.Builder] 实例。
+         * Creates a [KotlinFileBuilder] instance.
          *
-         * @param packageName 包名
-         * @param typeSpec 类型规范
-         * @return 新的 [KotlinFile.Builder] 实例
+         * @param packageName The package name
+         * @param type The type specification
+         * @return A new [KotlinFileBuilder] instance
          */
-        public fun builder(packageName: PackageName, typeSpec: KotlinTypeSpec): Builder {
-            return Builder(packageName, typeSpec)
+        public fun builder(packageName: PackageName, type: KotlinTypeSpec): KotlinFileBuilder =
+            KotlinFileBuilder(packageName, type)
+
+        /**
+         * Creates a [KotlinFileBuilder] instance without an initial type.
+         *
+         * @param packageName The package name
+         * @return A new [KotlinFileBuilder] instance
+         */
+        public fun builder(packageName: PackageName): KotlinFileBuilder =
+            KotlinFileBuilder(packageName)
+    }
+}
+
+/**
+ * Kotlin file builder
+ */
+public class KotlinFileBuilder internal constructor(
+    public val packageName: PackageName,
+    initialType: KotlinTypeSpec? = null,
+) : BuilderDsl {
+    private val fileComment = CodeValue.builder()
+    private var skipKotlinImports: Boolean = true
+    private var indent: String = "    "
+    private val staticImports = linkedSetOf<String>()
+    private val types = mutableListOf<KotlinTypeSpec>()
+
+    init {
+        if (initialType != null) {
+            types.add(initialType)
         }
     }
 
     /**
-     * 创建一个 [KotlinFile] 实例。
+     * Adds a type to the file
      *
-     * @param packageName 包名
-     * @param typeSpec 类型规范
-     * @param block 配置 [KotlinFile.Builder] 的代码块
-     * @return 新的 [KotlinFile] 实例
+     * @param type The type to add
+     * @return The current builder instance
      */
-    public constructor(
-        packageName: PackageName,
-        typeSpec: KotlinTypeSpec,
-        block: Builder.() -> Unit = {}
-    ) : this(
-        packageName = packageName,
-        typeSpec = typeSpec,
-        fileComment = null,
-        importedTypes = emptySet(),
-        staticImportedTypes = emptyMap()
-    ) {
-        val builder = Builder(packageName, typeSpec).apply(block)
-        val file = builder.build()
-        this.fileComment = file.fileComment
-        this.mutableImports.addAll(file.imports)
-        this.mutableStaticImports.putAll(file.staticImports)
+    public fun addType(type: KotlinTypeSpec): KotlinFileBuilder = apply {
+        types.add(type)
     }
 
     /**
-     * 将 Kotlin 文件写入字符串。
+     * Adds multiple types to the file
      *
-     * @return 包含 Kotlin 代码的字符串
-     *
-     * TODO: 实现 writeToKotlinString 方法
+     * @param types The collection of types to add
+     * @return The current builder instance
      */
-    public fun writeToKotlinString(): String {
-        // 这里需要实现将 Kotlin 文件写入字符串的逻辑
-        return "// TODO: 实现 writeToKotlinString 方法"
+    public fun addTypes(types: Iterable<KotlinTypeSpec>): KotlinFileBuilder = apply {
+        this.types.addAll(types)
     }
+
+    /**
+     * Adds multiple types to the file
+     *
+     * @param types The array of types to add
+     * @return The current builder instance
+     */
+    public fun addTypes(vararg types: KotlinTypeSpec): KotlinFileBuilder = apply {
+        this.types.addAll(types)
+    }
+
+    /**
+     * Adds a file comment
+     *
+     * @param format The format string
+     * @param block The code value builder block
+     * @return The current builder instance
+     */
+    public fun addFileComment(format: String, block: CodeValueSingleFormatBuilderDsl = {}): KotlinFileBuilder = apply {
+        addFileComment(CodeValue(format, block))
+    }
+
+    /**
+     * Adds a file comment
+     *
+     * @param codeValue The code value
+     * @return The current builder instance
+     */
+    public fun addFileComment(codeValue: CodeValue): KotlinFileBuilder = apply {
+        fileComment.add(codeValue)
+    }
+
+    /**
+     * Adds a static import
+     *
+     * @param import The import statement
+     * @return The current builder instance
+     */
+    public fun addStaticImport(import: String): KotlinFileBuilder = apply {
+        staticImports.add(import)
+    }
+
+    /**
+     * Adds a static import
+     *
+     * @param className The class name
+     * @param names The member names
+     * @return The current builder instance
+     */
+    public fun addStaticImport(className: ClassName, vararg names: String): KotlinFileBuilder = apply {
+        require(names.isNotEmpty()) { "`names` is empty" }
+        for (name in names) {
+            staticImports.add(className.canonicalName + "." + name)
+        }
+    }
+
+    /**
+     * Adds a static import
+     *
+     * @param className The class name
+     * @param names The collection of member names
+     * @return The current builder instance
+     */
+    public fun addStaticImport(className: ClassName, names: Iterable<String>): KotlinFileBuilder = apply {
+        val iter = names.iterator()
+        require(iter.hasNext()) { "`names` is empty" }
+
+        for (name in iter) {
+            staticImports.add(className.canonicalName + "." + name)
+        }
+    }
+
+    /**
+     * Sets whether to skip importing types from the kotlin.* package
+     *
+     * @param skipKotlinImports Whether to skip
+     * @return The current builder instance
+     */
+    public fun skipKotlinImports(skipKotlinImports: Boolean): KotlinFileBuilder = apply {
+        this.skipKotlinImports = skipKotlinImports
+    }
+
+    /**
+     * Sets the indentation string
+     *
+     * @param indent The indentation string
+     * @return The current builder instance
+     */
+    public fun indent(indent: String): KotlinFileBuilder = apply {
+        this.indent = indent
+    }
+
+    /**
+     * Builds a [KotlinFile] instance
+     *
+     * @return A new [KotlinFile] instance
+     */
+    public fun build(): KotlinFile {
+        val alwaysQualify = linkedSetOf<String>()
+
+        // TODO: Collect types that should always use fully qualified names
+        // for (typeSpec in types) {
+        //     alwaysQualify.addAll(typeSpec.alwaysQualifiedNames)
+        //     for (nested in typeSpec.subtypes) {
+        //         fillAlwaysQualifiedNames(nested, alwaysQualify)
+        //     }
+        // }
+
+        // Ensure there is at least one type
+        if (types.isEmpty()) {
+            throw IllegalStateException("At least one type must be added to the file")
+        }
+
+        return KotlinFileImpl(
+            fileComment = fileComment.build(),
+            packageName = packageName,
+            types = types.toList(),
+            skipKotlinImports = skipKotlinImports,
+            staticImports = LinkedHashSet(staticImports),
+            alwaysQualify = alwaysQualify,
+            indent = indent
+        )
+    }
+}
+
+/**
+ * Creates a [KotlinFile] instance
+ *
+ * @param packageName The package name
+ * @param type The type specification
+ * @param block The code block to configure the [KotlinFileBuilder]
+ * @return A new [KotlinFile] instance
+ */
+public inline fun KotlinFile(
+    packageName: PackageName,
+    type: KotlinTypeSpec,
+    block: KotlinFileBuilder.() -> Unit = {}
+): KotlinFile =
+    KotlinFile.builder(packageName, type).also(block).build()
+
+/**
+ * Creates a [KotlinFile] instance
+ *
+ * @param packageName The package name
+ * @param types The list of type specifications
+ * @param block The code block to configure the [KotlinFileBuilder]
+ * @return A new [KotlinFile] instance
+ */
+public inline fun KotlinFile(
+    packageName: PackageName,
+    types: Iterable<KotlinTypeSpec>,
+    block: KotlinFileBuilder.() -> Unit = {}
+): KotlinFile =
+    KotlinFile.builder(packageName).apply { addTypes(types) }.also(block).build()
+
+/**
+ * Creates a [KotlinFile] instance
+ *
+ * @param packageName The package name
+ * @param types The array of type specifications
+ * @param block The code block to configure the [KotlinFileBuilder]
+ * @return A new [KotlinFile] instance
+ */
+public inline fun KotlinFile(
+    packageName: PackageName,
+    vararg types: KotlinTypeSpec,
+    block: KotlinFileBuilder.() -> Unit = {}
+): KotlinFile =
+    KotlinFile.builder(packageName).apply { addTypes(*types) }.also(block).build()
+
+/**
+ * Creates a [KotlinFile] instance
+ *
+ * @param packageNamePaths The package name path
+ * @param type The type specification
+ * @param block The code block to configure the [KotlinFileBuilder]
+ * @return A new [KotlinFile] instance
+ */
+public inline fun KotlinFile(
+    packageNamePaths: String,
+    type: KotlinTypeSpec,
+    block: KotlinFileBuilder.() -> Unit = {}
+): KotlinFile =
+    KotlinFile.builder(packageNamePaths.parseToPackageName(), type).also(block).build()
+
+/**
+ * Creates a [KotlinFile] instance
+ *
+ * @param packageNamePaths The package name path
+ * @param types The list of type specifications
+ * @param block The code block to configure the [KotlinFileBuilder]
+ * @return A new [KotlinFile] instance
+ */
+public inline fun KotlinFile(
+    packageNamePaths: String,
+    types: Iterable<KotlinTypeSpec>,
+    block: KotlinFileBuilder.() -> Unit = {}
+): KotlinFile =
+    KotlinFile.builder(packageNamePaths.parseToPackageName()).apply { addTypes(types) }.also(block).build()
+
+/**
+ * Creates a [KotlinFile] instance
+ *
+ * @param packageNamePaths The package name path
+ * @param types The array of type specifications
+ * @param block The code block to configure the [KotlinFileBuilder]
+ * @return A new [KotlinFile] instance
+ */
+public inline fun KotlinFile(
+    packageNamePaths: String,
+    vararg types: KotlinTypeSpec,
+    block: KotlinFileBuilder.() -> Unit = {}
+): KotlinFile =
+    KotlinFile.builder(packageNamePaths.parseToPackageName()).apply { addTypes(*types) }.also(block).build()
+
+/**
+ * Writes the Kotlin file to a string
+ *
+ * @return A string containing the Kotlin code
+ */
+public fun KotlinFile.writeToKotlinString(): String = buildString {
+    writeTo(this, ToStringKotlinWriteStrategy)
 }
