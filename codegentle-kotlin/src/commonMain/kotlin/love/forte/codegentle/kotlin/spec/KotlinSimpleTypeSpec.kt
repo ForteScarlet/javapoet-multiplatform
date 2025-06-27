@@ -22,7 +22,6 @@ public interface KotlinSimpleTypeSpec : KotlinTypeSpec {
     // TODO SimpleType 支持:
     //  - 普通的class
     //  - data class
-    //  - value class // 或许也可以让 value class 单独拿一个类型出来？
 
     /**
      * 创建一个简单的 Kotlin 类型规范的构建器。

@@ -10,7 +10,7 @@ import love.forte.codegentle.kotlin.spec.KotlinValueParameterSpec
  *
  * @author ForteScarlet
  */
-internal class KotlinValueParameterSpecImpl(
+internal data class KotlinValueParameterSpecImpl(
     override val name: String,
     override val typeRef: TypeRef<*>,
     override val annotations: List<AnnotationRef>,
@@ -18,4 +18,7 @@ internal class KotlinValueParameterSpecImpl(
     override val kDoc: CodeValue,
     override val defaultValue: CodeValue?
 ) : KotlinValueParameterSpec {
+    override fun toString(): String {
+        return "KotlinValueParameterSpec(name='$name', type=${typeRef.typeName})"
+    }
 }

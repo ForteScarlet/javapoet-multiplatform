@@ -8,10 +8,6 @@ package love.forte.codegentle.common.ref
 @SubclassOptInRequired(CodeGentleRefImplementation::class)
 public interface TypeNameRefStatus
 
-public object EmptyTypeNameRefStatus : TypeNameRefStatus
-
-// TODO Kotlin ref
-
 // Builders
 
 @SubclassOptInRequired(CodeGentleRefImplementation::class)

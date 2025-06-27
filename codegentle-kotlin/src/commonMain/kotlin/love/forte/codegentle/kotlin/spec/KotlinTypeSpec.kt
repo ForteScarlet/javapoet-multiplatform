@@ -147,8 +147,8 @@ public sealed interface KotlinTypeSpec : KotlinSpec, KotlinModifierContainer {
          * @param name the object name
          * @return a new builder
          */
-        public fun objectBuilder(name: String): KotlinSimpleTypeSpec.Builder {
-            return KotlinSimpleTypeSpec.builder(Kind.OBJECT, name)
+        public fun objectBuilder(name: String): KotlinObjectTypeSpec.Builder {
+            return KotlinObjectTypeSpec.builder(name)
         }
 
         /**
@@ -156,8 +156,8 @@ public sealed interface KotlinTypeSpec : KotlinSpec, KotlinModifierContainer {
          *
          * @return a new builder
          */
-        public fun companionObjectBuilder(): KotlinSimpleTypeSpec.Builder {
-            return KotlinSimpleTypeSpec.builder(Kind.COMPANION_OBJECT, "Companion")
+        public fun companionObjectBuilder(): KotlinObjectTypeSpec.Builder {
+            return KotlinObjectTypeSpec.companionBuilder()
         }
 
         /**
@@ -166,8 +166,8 @@ public sealed interface KotlinTypeSpec : KotlinSpec, KotlinModifierContainer {
          * @param name the enum class name
          * @return a new builder
          */
-        public fun enumBuilder(name: String): KotlinSimpleTypeSpec.Builder {
-            return KotlinSimpleTypeSpec.builder(Kind.ENUM, name)
+        public fun enumBuilder(name: String): KotlinEnumTypeSpec.Builder {
+            return KotlinEnumTypeSpec.builder(name)
         }
 
         /**
@@ -176,8 +176,8 @@ public sealed interface KotlinTypeSpec : KotlinSpec, KotlinModifierContainer {
          * @param name the annotation class name
          * @return a new builder
          */
-        public fun annotationBuilder(name: String): KotlinSimpleTypeSpec.Builder {
-            return KotlinSimpleTypeSpec.builder(Kind.ANNOTATION, name)
+        public fun annotationBuilder(name: String): KotlinAnnotationTypeSpec.Builder {
+            return KotlinAnnotationTypeSpec.builder(name)
         }
 
         /**
@@ -204,10 +204,11 @@ public sealed interface KotlinTypeSpec : KotlinSpec, KotlinModifierContainer {
          * Create a builder for a value class.
          *
          * @param name the value class name
+         * @param primaryParameter the primary constructor parameter
          * @return a new builder
          */
-        public fun valueClassBuilder(name: String): KotlinSimpleTypeSpec.Builder {
-            return KotlinSimpleTypeSpec.builder(Kind.VALUE, name)
+        public fun valueClassBuilder(name: String, primaryParameter: KotlinValueParameterSpec): KotlinValueClassSpec.Builder {
+            return KotlinValueClassSpec.builder(name, primaryParameter)
         }
 
         /**

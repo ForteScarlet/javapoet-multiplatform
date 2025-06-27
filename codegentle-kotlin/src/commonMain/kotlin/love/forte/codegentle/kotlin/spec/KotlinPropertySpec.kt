@@ -57,6 +57,13 @@ public interface KotlinPropertySpec : Spec, KotlinModifierContainer {
     }
 }
 
+public inline fun KotlinPropertySpec(
+    name: String,
+    type: TypeRef<*>,
+    block: KotlinPropertySpecBuilder.() -> Unit = {}
+): KotlinPropertySpec =
+    KotlinPropertySpec.builder(name, type).also(block).build()
+
 /**
  * Builder for [KotlinPropertySpec].
  */

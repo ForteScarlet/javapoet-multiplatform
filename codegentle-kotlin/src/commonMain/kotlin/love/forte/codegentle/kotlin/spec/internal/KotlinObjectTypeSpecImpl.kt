@@ -7,30 +7,31 @@ import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.spec.KotlinFunctionSpec
+import love.forte.codegentle.kotlin.spec.KotlinObjectTypeSpec
 import love.forte.codegentle.kotlin.spec.KotlinPropertySpec
-import love.forte.codegentle.kotlin.spec.KotlinSimpleTypeSpec
 import love.forte.codegentle.kotlin.spec.KotlinTypeSpec
 
 /**
- * Implementation of [KotlinSimpleTypeSpec].
+ * Implementation of [KotlinObjectTypeSpec].
  *
  * @author ForteScarlet
  */
-internal data class KotlinSimpleTypeSpecImpl(
-    override val kind: KotlinTypeSpec.Kind,
+internal data class KotlinObjectTypeSpecImpl(
     override val name: String,
+    override val kind: KotlinTypeSpec.Kind,
     override val kDoc: CodeValue,
     override val annotations: List<AnnotationRef>,
     override val modifiers: Set<KotlinModifier>,
     override val typeVariables: List<TypeRef<TypeVariableName>>,
-    override val superclass: TypeName?,
     override val superinterfaces: List<TypeName>,
     override val properties: List<KotlinPropertySpec>,
     override val initializerBlock: CodeValue,
     override val functions: List<KotlinFunctionSpec>,
     override val subtypes: List<KotlinTypeSpec>
-) : KotlinSimpleTypeSpec {
+) : KotlinObjectTypeSpec {
+    override val superclass: TypeName? = null
+
     override fun toString(): String {
-        return "KotlinSimpleTypeSpec(name='$name', kind=$kind)"
+        return "KotlinObjectTypeSpec(name='$name', kind=$kind)"
     }
 }

@@ -8,51 +8,55 @@ import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.MutableKotlinModifierSet
-import love.forte.codegentle.kotlin.spec.internal.KotlinEnumTypeSpecImpl
+import love.forte.codegentle.kotlin.spec.internal.KotlinValueClassSpecImpl
 
 /**
- * A generated Kotlin enum class.
+ * A generated Kotlin value class.
  *
  * ```kotlin
- * enum class EnumType {
- * }
+ * value class ValueClass(val value: String)
  * ```
+ *
+ * @author ForteScarlet
  */
 @SubclassOptInRequired(CodeGentleKotlinSpecImplementation::class)
-public interface KotlinEnumTypeSpec : KotlinTypeSpec {
+public interface KotlinValueClassSpec : KotlinTypeSpec {
     override val name: String
 
     override val kind: KotlinTypeSpec.Kind
-        get() = KotlinTypeSpec.Kind.ENUM
-
-    override val superclass: TypeName?
-        get() = null
+        get() = KotlinTypeSpec.Kind.VALUE
 
     /**
-     * Enum constants.
+     * The primary constructor parameter of the value class.
      */
-    public val enumConstants: Map<String, KotlinTypeSpec>
+    public val primaryParameter: KotlinValueParameterSpec
 
     public companion object {
         /**
-         * Create a builder for an enum class.
+         * Create a builder for a value class.
          *
-         * @param name the enum class name
+         * @param name the value class name
+         * @param primaryParameter the primary constructor parameter
          * @return a new builder
          */
-        public fun builder(name: String): Builder {
-            return KotlinEnumTypeSpecBuilder(name)
+        public fun builder(name: String, primaryParameter: KotlinValueParameterSpec): Builder {
+            return KotlinValueClassSpecBuilder(name, primaryParameter)
         }
     }
 
     /**
-     * Builder for [KotlinEnumTypeSpec].
+     * Builder for [KotlinValueClassSpec].
      */
     public interface Builder {
         /**
-         * The enum class name.
+         * The value class name.
          */
         public val name: String
+
+        /**
+         * The primary constructor parameter of the value class.
+         */
+        public val primaryParameter: KotlinValueParameterSpec
 
         /**
          * Add KDoc.
@@ -160,28 +164,19 @@ public interface KotlinEnumTypeSpec : KotlinTypeSpec {
         public fun addFunction(function: KotlinFunctionSpec): Builder
 
         /**
-         * Add enum constant.
+         * Build [KotlinValueClassSpec] instance.
          */
-        public fun addEnumConstant(name: String): Builder
-
-        /**
-         * Add enum constant with anonymous type.
-         */
-        public fun addEnumConstant(name: String, typeSpec: KotlinTypeSpec): Builder
-
-        /**
-         * Build [KotlinEnumTypeSpec] instance.
-         */
-        public fun build(): KotlinEnumTypeSpec
+        public fun build(): KotlinValueClassSpec
     }
 }
 
 /**
- * Builder implementation for [KotlinEnumTypeSpec].
+ * Builder implementation for [KotlinValueClassSpec].
  */
-private class KotlinEnumTypeSpecBuilder(
-    override val name: String
-) : KotlinEnumTypeSpec.Builder {
+private class KotlinValueClassSpecBuilder(
+    override val name: String,
+    override val primaryParameter: KotlinValueParameterSpec
+) : KotlinValueClassSpec.Builder {
     private val kDoc = CodeValue.builder()
     private val initializerBlock = CodeValue.builder()
 
@@ -191,104 +186,95 @@ private class KotlinEnumTypeSpecBuilder(
     private val superinterfaces: MutableList<TypeName> = mutableListOf()
     private val properties: MutableList<KotlinPropertySpec> = mutableListOf()
     private val functions: MutableList<KotlinFunctionSpec> = mutableListOf()
-    private val enumConstants = linkedMapOf<String, KotlinTypeSpec>()
 
-    override fun addKDoc(codeValue: CodeValue): KotlinEnumTypeSpec.Builder = apply {
+    override fun addKDoc(codeValue: CodeValue): KotlinValueClassSpec.Builder = apply {
         kDoc.add(codeValue)
     }
 
-    override fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): KotlinEnumTypeSpec.Builder = apply {
+    override fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): KotlinValueClassSpec.Builder = apply {
         kDoc.add(format, *argumentParts)
     }
 
-    override fun addInitializerBlock(codeValue: CodeValue): KotlinEnumTypeSpec.Builder = apply {
+    override fun addInitializerBlock(codeValue: CodeValue): KotlinValueClassSpec.Builder = apply {
         this.initializerBlock.add(codeValue)
     }
 
-    override fun addInitializerBlock(format: String, vararg argumentParts: CodeArgumentPart): KotlinEnumTypeSpec.Builder = apply {
+    override fun addInitializerBlock(format: String, vararg argumentParts: CodeArgumentPart): KotlinValueClassSpec.Builder = apply {
         this.initializerBlock.add(format, *argumentParts)
     }
 
-    override fun addAnnotationRef(ref: AnnotationRef): KotlinEnumTypeSpec.Builder = apply {
+    override fun addAnnotationRef(ref: AnnotationRef): KotlinValueClassSpec.Builder = apply {
         annotationRefs.add(ref)
     }
 
-    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): KotlinEnumTypeSpec.Builder = apply {
+    override fun addAnnotationRefs(refs: Iterable<AnnotationRef>): KotlinValueClassSpec.Builder = apply {
         annotationRefs.addAll(refs)
     }
 
-    override fun addModifiers(vararg modifiers: KotlinModifier): KotlinEnumTypeSpec.Builder = apply {
+    override fun addModifiers(vararg modifiers: KotlinModifier): KotlinValueClassSpec.Builder = apply {
         this.modifierSet.addAll(modifiers)
     }
 
-    override fun addModifiers(modifiers: Iterable<KotlinModifier>): KotlinEnumTypeSpec.Builder = apply {
+    override fun addModifiers(modifiers: Iterable<KotlinModifier>): KotlinValueClassSpec.Builder = apply {
         this.modifierSet.addAll(modifiers)
     }
 
-    override fun addModifier(modifier: KotlinModifier): KotlinEnumTypeSpec.Builder = apply {
+    override fun addModifier(modifier: KotlinModifier): KotlinValueClassSpec.Builder = apply {
         this.modifierSet.add(modifier)
     }
 
-    override fun addTypeVariableRefs(vararg typeVariables: TypeRef<TypeVariableName>): KotlinEnumTypeSpec.Builder = apply {
+    override fun addTypeVariableRefs(vararg typeVariables: TypeRef<TypeVariableName>): KotlinValueClassSpec.Builder = apply {
         this.typeVariableRefs.addAll(typeVariables)
     }
 
-    override fun addTypeVariableRefs(typeVariables: Iterable<TypeRef<TypeVariableName>>): KotlinEnumTypeSpec.Builder = apply {
+    override fun addTypeVariableRefs(typeVariables: Iterable<TypeRef<TypeVariableName>>): KotlinValueClassSpec.Builder = apply {
         this.typeVariableRefs.addAll(typeVariables)
     }
 
-    override fun addTypeVariableRef(typeVariable: TypeRef<TypeVariableName>): KotlinEnumTypeSpec.Builder = apply {
+    override fun addTypeVariableRef(typeVariable: TypeRef<TypeVariableName>): KotlinValueClassSpec.Builder = apply {
         this.typeVariableRefs.add(typeVariable)
     }
 
-    override fun addSuperinterfaces(vararg superinterfaces: TypeName): KotlinEnumTypeSpec.Builder = apply {
+    override fun addSuperinterfaces(vararg superinterfaces: TypeName): KotlinValueClassSpec.Builder = apply {
         this.superinterfaces.addAll(superinterfaces)
     }
 
-    override fun addSuperinterfaces(superinterfaces: Iterable<TypeName>): KotlinEnumTypeSpec.Builder = apply {
+    override fun addSuperinterfaces(superinterfaces: Iterable<TypeName>): KotlinValueClassSpec.Builder = apply {
         this.superinterfaces.addAll(superinterfaces)
     }
 
-    override fun addSuperinterface(superinterface: TypeName): KotlinEnumTypeSpec.Builder = apply {
+    override fun addSuperinterface(superinterface: TypeName): KotlinValueClassSpec.Builder = apply {
         this.superinterfaces.add(superinterface)
     }
 
-    override fun addProperties(vararg properties: KotlinPropertySpec): KotlinEnumTypeSpec.Builder = apply {
+    override fun addProperties(vararg properties: KotlinPropertySpec): KotlinValueClassSpec.Builder = apply {
         this.properties.addAll(properties)
     }
 
-    override fun addProperties(properties: Iterable<KotlinPropertySpec>): KotlinEnumTypeSpec.Builder = apply {
+    override fun addProperties(properties: Iterable<KotlinPropertySpec>): KotlinValueClassSpec.Builder = apply {
         this.properties.addAll(properties)
     }
 
-    override fun addProperty(property: KotlinPropertySpec): KotlinEnumTypeSpec.Builder = apply {
+    override fun addProperty(property: KotlinPropertySpec): KotlinValueClassSpec.Builder = apply {
         this.properties.add(property)
     }
 
-    override fun addFunctions(functions: Iterable<KotlinFunctionSpec>): KotlinEnumTypeSpec.Builder = apply {
+    override fun addFunctions(functions: Iterable<KotlinFunctionSpec>): KotlinValueClassSpec.Builder = apply {
         this.functions.addAll(functions)
     }
 
-    override fun addFunctions(vararg functions: KotlinFunctionSpec): KotlinEnumTypeSpec.Builder = apply {
+    override fun addFunctions(vararg functions: KotlinFunctionSpec): KotlinValueClassSpec.Builder = apply {
         this.functions.addAll(functions)
     }
 
-    override fun addFunction(function: KotlinFunctionSpec): KotlinEnumTypeSpec.Builder = apply {
+    override fun addFunction(function: KotlinFunctionSpec): KotlinValueClassSpec.Builder = apply {
         this.functions.add(function)
     }
 
-    override fun addEnumConstant(name: String): KotlinEnumTypeSpec.Builder = apply {
-        this.enumConstants[name] = KotlinSimpleTypeSpec.builder(KotlinTypeSpec.Kind.ENUM, name).build()
-    }
-
-    override fun addEnumConstant(name: String, typeSpec: KotlinTypeSpec): KotlinEnumTypeSpec.Builder = apply {
-        this.enumConstants[name] = typeSpec
-    }
-
-    override fun build(): KotlinEnumTypeSpec {
-        return KotlinEnumTypeSpecImpl(
+    override fun build(): KotlinValueClassSpec {
+        return KotlinValueClassSpecImpl(
             name = name,
-            enumConstants = enumConstants.toMap(linkedMapOf()),
+            primaryParameter = primaryParameter,
             kDoc = kDoc.build(),
             annotations = annotationRefs.toList(),
             modifiers = modifierSet.immutable(),
@@ -303,15 +289,17 @@ private class KotlinEnumTypeSpecBuilder(
 }
 
 /**
- * Create a [KotlinEnumTypeSpec] with the given name.
+ * Create a [KotlinValueClassSpec] with the given name and primary parameter.
  *
- * @param name the enum class name
+ * @param name the value class name
+ * @param primaryParameter the primary constructor parameter
  * @param block the configuration block
- * @return a new [KotlinEnumTypeSpec] instance
+ * @return a new [KotlinValueClassSpec] instance
  */
-public inline fun KotlinEnumTypeSpec(
+public inline fun KotlinValueClassSpec(
     name: String,
-    block: KotlinEnumTypeSpec.Builder.() -> Unit = {}
-): KotlinEnumTypeSpec {
-    return KotlinEnumTypeSpec.builder(name).apply(block).build()
+    primaryParameter: KotlinValueParameterSpec,
+    block: KotlinValueClassSpec.Builder.() -> Unit = {}
+): KotlinValueClassSpec {
+    return KotlinValueClassSpec.builder(name, primaryParameter).apply(block).build()
 }

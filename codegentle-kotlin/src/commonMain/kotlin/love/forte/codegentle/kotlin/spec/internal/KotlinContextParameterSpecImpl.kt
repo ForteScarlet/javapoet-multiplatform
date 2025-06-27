@@ -7,8 +7,13 @@ import love.forte.codegentle.kotlin.spec.KotlinContextParameterSpec
  *
  * @author ForteScarlet
  */
-internal class KotlinContextParameterSpecImpl(
+internal data class KotlinContextParameterSpecImpl(
     override val name: String?,
     override val typeRef: TypeRef<*>,
 ) : KotlinContextParameterSpec {
+
+
+    override fun toString(): String {
+        return "KotlinContextParameterSpec(name='$name', type=${typeRef.typeName})"
+    }
 }

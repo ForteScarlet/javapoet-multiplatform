@@ -10,7 +10,7 @@ import love.forte.codegentle.kotlin.spec.KotlinPropertySpec
  *
  * @author ForteScarlet
  */
-internal class KotlinPropertySpecImpl(
+internal data class KotlinPropertySpecImpl(
     override val name: String,
     override val typeRef: TypeRef<*>,
     override val annotations: List<AnnotationRef>,
@@ -19,4 +19,7 @@ internal class KotlinPropertySpecImpl(
     override val initializer: CodeValue?,
     override val delegate: CodeValue?
 ) : KotlinPropertySpec {
+    override fun toString(): String {
+        return "KotlinPropertySpec(name='$name', type=${typeRef.typeName})"
+    }
 }
