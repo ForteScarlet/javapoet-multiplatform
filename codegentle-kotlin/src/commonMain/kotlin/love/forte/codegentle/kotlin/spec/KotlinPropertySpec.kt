@@ -108,6 +108,22 @@ public interface KotlinPropertySpec : KotlinSpec, KotlinModifierContainer {
          */
         public fun addKDoc(format: String, vararg argumentParts: CodeArgumentPart): Builder
 
+        /**
+         * Set a custom getter for the property.
+         *
+         * @param getter the getter spec
+         * @return this builder
+         */
+        public fun getter(getter: KotlinGetterSpec): Builder
+
+        /**
+         * Set a custom setter for the property.
+         *
+         * @param setter the setter spec
+         * @return this builder
+         */
+        public fun setter(setter: KotlinSetterSpec): Builder
+
         override fun addModifier(modifier: KotlinModifier): Builder
 
         override fun addModifiers(modifiers: Iterable<KotlinModifier>): Builder
@@ -173,3 +189,25 @@ public inline fun KotlinPropertySpec.Builder.addKDoc(
     format: String,
     block: CodeValueSingleFormatBuilderDsl = {}
 ): KotlinPropertySpec.Builder = addKDoc(CodeValue(format, block))
+
+/**
+ * Set a custom getter for the property using a configuration block.
+ *
+ * @param block the configuration block for the getter
+ * @return this builder
+ */
+public inline fun KotlinPropertySpec.Builder.getter(
+    block: KotlinGetterSpec.Builder.() -> Unit
+): KotlinPropertySpec.Builder = getter(KotlinPropertyAccessorSpec.getterBuilder().apply(block).build())
+
+/**
+ * Set a custom setter for the property using a configuration block.
+ *
+ * @param parameterName the name of the setter parameter
+ * @param block the configuration block for the setter
+ * @return this builder
+ */
+public inline fun KotlinPropertySpec.Builder.setter(
+    parameterName: String = "value",
+    block: KotlinSetterSpec.Builder.() -> Unit
+): KotlinPropertySpec.Builder = setter(KotlinPropertyAccessorSpec.setterBuilder(parameterName).apply(block).build())

@@ -27,7 +27,7 @@ internal data class KotlinGetterSpecImpl(
     override val parameters: List<KotlinValueParameterSpec> = emptyList()
 
     override fun emit(codeWriter: KotlinCodeWriter) {
-        TODO()
+        emitTo(codeWriter)
     }
 
     override fun toString(): String {
@@ -115,7 +115,7 @@ internal data class KotlinSetterSpecImpl(
     override val parameters: List<KotlinValueParameterSpec> = emptyList()
 
     override fun emit(codeWriter: KotlinCodeWriter) {
-        TODO()
+        emitTo(codeWriter)
     }
 
     override fun toString(): String {

@@ -7,7 +7,9 @@ import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.MutableKotlinModifierSet
+import love.forte.codegentle.kotlin.spec.KotlinGetterSpec
 import love.forte.codegentle.kotlin.spec.KotlinPropertySpec
+import love.forte.codegentle.kotlin.spec.KotlinSetterSpec
 import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 
 /**
@@ -21,10 +23,12 @@ internal data class KotlinPropertySpecImpl(
     override val modifiers: Set<KotlinModifier>,
     override val kDoc: CodeValue,
     override val initializer: CodeValue?,
-    override val delegate: CodeValue?
+    override val delegate: CodeValue?,
+    override val getter: KotlinGetterSpec?,
+    override val setter: KotlinSetterSpec?
 ) : KotlinPropertySpec {
     override fun emit(codeWriter: KotlinCodeWriter) {
-        TODO()
+        emitTo(codeWriter)
     }
 
     override fun toString(): String {
@@ -60,6 +64,16 @@ internal class KotlinPropertySpecBuilderImpl(
      * Cannot exist at the same time as `delegate`.
      */
     private var initializer: CodeValue? = null
+
+    /**
+     * Custom getter for the property.
+     */
+    private var getter: KotlinGetterSpec? = null
+
+    /**
+     * Custom setter for the property.
+     */
+    private var setter: KotlinSetterSpec? = null
 
     /**
      * @throws IllegalArgumentException Cannot exist at the same time as `delegate`.
@@ -121,6 +135,26 @@ internal class KotlinPropertySpecBuilderImpl(
     }
 
     /**
+     * Set a custom getter for the property.
+     *
+     * @param getter the getter spec
+     * @return this builder
+     */
+    override fun getter(getter: KotlinGetterSpec): KotlinPropertySpec.Builder = apply {
+        this.getter = getter
+    }
+
+    /**
+     * Set a custom setter for the property.
+     *
+     * @param setter the setter spec
+     * @return this builder
+     */
+    override fun setter(setter: KotlinSetterSpec): KotlinPropertySpec.Builder = apply {
+        this.setter = setter
+    }
+
+    /**
      * Build [KotlinPropertySpec] instance.
      */
     override fun build(): KotlinPropertySpec =
@@ -131,6 +165,8 @@ internal class KotlinPropertySpecBuilderImpl(
             modifiers = modifierSet.immutable(),
             kDoc = kDoc.build(),
             initializer = initializer,
-            delegate = delegate
+            delegate = delegate,
+            getter = getter,
+            setter = setter
         )
 }
