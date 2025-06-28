@@ -20,12 +20,6 @@ import love.forte.codegentle.kotlin.spec.internal.KotlinSimpleTypeSpecBuilderImp
 public interface KotlinSimpleTypeSpec : KotlinTypeSpec {
     // simple, data class, sealed class, interface, sealed interface
 
-    /**
-     * `null` if it's the default like a simple class or interface.
-     */
-    // public val modality: KotlinModality?
-    // TODO
-
     override val kind: KotlinTypeSpec.Kind
 
     override val modifiers: Set<KotlinModifier>
@@ -34,13 +28,6 @@ public interface KotlinSimpleTypeSpec : KotlinTypeSpec {
 
     public val secondaryConstructors: List<KotlinConstructorSpec>
 
-    /**
-     * 创建一个简单的 Kotlin 类型规范的构建器。
-     *
-     * @param kind 类型的种类
-     * @param name 类型的名称
-     * @return 新的构建器实例
-     */
     public companion object {
         /**
          * Create a builder for a simple Kotlin type spec.

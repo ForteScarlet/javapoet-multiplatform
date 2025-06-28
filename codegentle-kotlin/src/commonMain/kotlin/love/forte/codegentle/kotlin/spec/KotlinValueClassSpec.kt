@@ -24,7 +24,7 @@ public interface KotlinValueClassSpec : KotlinTypeSpec {
     override val name: String
 
     override val kind: KotlinTypeSpec.Kind
-        get() = KotlinTypeSpec.Kind.VALUE
+        get() = KotlinTypeSpec.Kind.CLASS
 
     /**
      * The primary constructor parameter of the value class.

@@ -13,5 +13,3 @@ public annotation class GenEnumSet(
     val containerMultiAdder: String = "",
     val operatorsName: String = "",
 )
-
-// 标记一个enum class, 为它生成一个基于

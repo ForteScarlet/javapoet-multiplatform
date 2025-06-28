@@ -16,6 +16,7 @@ public interface KotlinSpec : Spec, KotlinCodeEmitter
 
 public fun KotlinSpec.writeToKotlinString(strategy: KotlinWriteStrategy = ToStringKotlinWriteStrategy): String {
     return buildString {
-        KotlinCodeWriter.create(this)
+        val writer = KotlinCodeWriter.create(this, strategy)
+        emit(writer)
     }
 }

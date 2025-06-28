@@ -25,7 +25,7 @@ public interface KotlinAnnotationTypeSpec : KotlinTypeSpec {
     override val name: String
 
     override val kind: KotlinTypeSpec.Kind
-        get() = KotlinTypeSpec.Kind.ANNOTATION
+        get() = KotlinTypeSpec.Kind.CLASS
 
     override val superclass: TypeName?
         get() = null

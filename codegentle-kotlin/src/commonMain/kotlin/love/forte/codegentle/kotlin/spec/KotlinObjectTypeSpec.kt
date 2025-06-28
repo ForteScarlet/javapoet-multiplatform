@@ -31,7 +31,7 @@ public interface KotlinObjectTypeSpec : KotlinTypeSpec {
      * Whether this is a companion object.
      */
     public val isCompanion: Boolean
-        get() = kind == KotlinTypeSpec.Kind.COMPANION_OBJECT
+        get() = KotlinModifier.COMPANION in modifiers
 
     public companion object {
         public const val DEFAULT_COMPANION_NAME: String = "Companion"

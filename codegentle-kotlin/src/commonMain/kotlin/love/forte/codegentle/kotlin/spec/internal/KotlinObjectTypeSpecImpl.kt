@@ -149,7 +149,8 @@ internal class KotlinObjectTypeSpecBuilderImpl(
     }
 
     override fun build(): KotlinObjectTypeSpec {
-        val kind = if (isCompanion) KotlinTypeSpec.Kind.COMPANION_OBJECT else KotlinTypeSpec.Kind.OBJECT
+        // TODO remove `kind`
+        val kind = KotlinTypeSpec.Kind.OBJECT
         return KotlinObjectTypeSpecImpl(
             name = name,
             kind = kind,

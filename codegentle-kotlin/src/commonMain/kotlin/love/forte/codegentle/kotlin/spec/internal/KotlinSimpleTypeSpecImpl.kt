@@ -50,7 +50,19 @@ internal class KotlinSimpleTypeSpecBuilderImpl(
     override val kind: KotlinTypeSpec.Kind,
     override val name: String
 ) : KotlinSimpleTypeSpec.Builder {
+    companion object {
+        val validKinds = MutableKotlinTypeSpecKindSet.of(
+            KotlinTypeSpec.Kind.INTERFACE,
+            KotlinTypeSpec.Kind.CLASS,
+        )
+    }
+
     // TODO 校验kind
+    init {
+        require(kind !in validKinds) {
+            "Invalid kind $kind, must be one of $validKinds"
+        }
+    }
 
     private val kDoc = CodeValue.builder()
     private var superclass: TypeName? = null

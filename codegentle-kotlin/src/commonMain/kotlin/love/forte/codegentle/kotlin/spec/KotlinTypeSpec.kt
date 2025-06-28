@@ -1,6 +1,7 @@
 package love.forte.codegentle.kotlin.spec
 
 import love.forte.codegentle.common.BuilderDsl
+import love.forte.codegentle.common.GenEnumSet
 import love.forte.codegentle.common.code.CodeArgumentPart
 import love.forte.codegentle.common.code.CodeValue
 import love.forte.codegentle.common.code.CodeValueBuilder
@@ -64,61 +65,48 @@ public sealed interface KotlinTypeSpec : KotlinSpec, KotlinModifierContainer {
 
     public val subtypes: List<KotlinTypeSpec>
 
-    public enum class Kind {
+    @GenEnumSet(
+        internal = true,
+        mutableName = "MutableKotlinTypeSpecKindSet",
+        immutableName = "KotlinTypeSpecKindSet"
+    )
+    public enum class Kind(
+        internal val keyword: String,
+    ) {
         /**
          * 类
          */
-        CLASS,
+        CLASS("class"),
 
         /**
          * 接口
          */
-        INTERFACE,
+        INTERFACE("interface"),
 
         /**
          * 对象
          */
-        OBJECT,
+        OBJECT("object"),
 
-        /**
-         * 伴生对象
-         */
-        COMPANION_OBJECT,
-
-        /**
-         * 枚举类
-         */
-        ENUM,
-
-        /**
-         * 注解类
-         */
-        ANNOTATION,
-
-        /**
-         * 密封类
-         */
-        SEALED,
-
-        /**
-         * 数据类
-         */
-        DATA,
-
-        /**
-         * 值类
-         */
-        VALUE,
-
-        /**
-         * 函数式接口
-         */
-        FUN_INTERFACE,
+        // /**
+        //  * 枚举类
+        //  */
+        // ENUM("enum class"),
+        //
+        // /**
+        //  * 注解类
+        //  */
+        // ANNOTATION("annotation class"),
+        //
+        // /**
+        //  * 值类
+        //  */
+        // VALUE("value class"),
 
         /**
          * 类型别名
          */
-        TYPE_ALIAS
+        TYPE_ALIAS("typealias")
     }
 
     public companion object {
@@ -182,26 +170,6 @@ public sealed interface KotlinTypeSpec : KotlinSpec, KotlinModifierContainer {
         }
 
         /**
-         * Create a builder for a sealed class.
-         *
-         * @param name the sealed class name
-         * @return a new builder
-         */
-        public fun sealedClassBuilder(name: String): KotlinSimpleTypeSpec.Builder {
-            return KotlinSimpleTypeSpec.builder(Kind.SEALED, name)
-        }
-
-        /**
-         * Create a builder for a data class.
-         *
-         * @param name the data class name
-         * @return a new builder
-         */
-        public fun dataClassBuilder(name: String): KotlinSimpleTypeSpec.Builder {
-            return KotlinSimpleTypeSpec.builder(Kind.DATA, name)
-        }
-
-        /**
          * Create a builder for a value class.
          *
          * @param name the value class name
@@ -213,16 +181,6 @@ public sealed interface KotlinTypeSpec : KotlinSpec, KotlinModifierContainer {
             primaryParameter: KotlinValueParameterSpec
         ): KotlinValueClassSpec.Builder {
             return KotlinValueClassSpec.builder(name, primaryParameter)
-        }
-
-        /**
-         * Create a builder for a functional interface.
-         *
-         * @param name the functional interface name
-         * @return a new builder
-         */
-        public fun funInterfaceBuilder(name: String): KotlinSimpleTypeSpec.Builder {
-            return KotlinSimpleTypeSpec.builder(Kind.FUN_INTERFACE, name)
         }
 
         /**

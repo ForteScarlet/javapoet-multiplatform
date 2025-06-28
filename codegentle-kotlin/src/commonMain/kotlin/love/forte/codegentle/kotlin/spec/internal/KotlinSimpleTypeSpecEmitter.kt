@@ -27,16 +27,8 @@ internal fun KotlinSimpleTypeSpec.emitTo(codeWriter: KotlinCodeWriter, implicitM
     codeWriter.emitModifiers(modifiers, implicitModifiers)
 
     // Emit the type keyword based on the kind
-    when (kind) {
-        love.forte.codegentle.kotlin.spec.KotlinTypeSpec.Kind.CLASS -> codeWriter.emit("class ")
-        love.forte.codegentle.kotlin.spec.KotlinTypeSpec.Kind.INTERFACE -> codeWriter.emit("interface ")
-        love.forte.codegentle.kotlin.spec.KotlinTypeSpec.Kind.OBJECT -> codeWriter.emit("object ")
-        love.forte.codegentle.kotlin.spec.KotlinTypeSpec.Kind.COMPANION_OBJECT -> codeWriter.emit("companion object ")
-        love.forte.codegentle.kotlin.spec.KotlinTypeSpec.Kind.ENUM -> codeWriter.emit("enum class ")
-        love.forte.codegentle.kotlin.spec.KotlinTypeSpec.Kind.ANNOTATION -> codeWriter.emit("annotation class ")
-        love.forte.codegentle.kotlin.spec.KotlinTypeSpec.Kind.VALUE -> codeWriter.emit("value class ")
-        else -> codeWriter.emit("class ") // Default to class
-    }
+    codeWriter.emit(kind.keyword)
+    codeWriter.emit(" ")
 
     // Emit the name
     codeWriter.emit(name)

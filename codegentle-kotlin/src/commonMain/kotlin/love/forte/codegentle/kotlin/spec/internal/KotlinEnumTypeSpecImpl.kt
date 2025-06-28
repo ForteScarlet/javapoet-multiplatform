@@ -18,7 +18,7 @@ import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
  */
 internal data class KotlinEnumTypeSpecImpl(
     override val name: String,
-    override val enumConstants: Map<String, KotlinTypeSpec>,
+    override val enumConstants: Map<String, KotlinAnonymousClassTypeSpec?>,
     override val kDoc: CodeValue,
     override val annotations: List<AnnotationRef>,
     override val modifiers: Set<KotlinModifier>,
@@ -55,7 +55,7 @@ internal class KotlinEnumTypeSpecBuilderImpl(
     private val superinterfaces: MutableList<TypeName> = mutableListOf()
     private val properties: MutableList<KotlinPropertySpec> = mutableListOf()
     private val functions: MutableList<KotlinFunctionSpec> = mutableListOf()
-    private val enumConstants = linkedMapOf<String, KotlinTypeSpec>()
+    private val enumConstants = linkedMapOf<String, KotlinAnonymousClassTypeSpec?>()
 
     override fun addKDoc(codeValue: CodeValue): KotlinEnumTypeSpec.Builder = apply {
         kDoc.add(codeValue)
@@ -142,7 +142,7 @@ internal class KotlinEnumTypeSpecBuilderImpl(
     }
 
     override fun addEnumConstant(name: String): KotlinEnumTypeSpec.Builder = apply {
-        this.enumConstants[name] = KotlinSimpleTypeSpec.builder(KotlinTypeSpec.Kind.ENUM, name).build()
+        this.enumConstants[name] = null
     }
 
     override fun addEnumConstant(name: String, typeSpec: KotlinAnonymousClassTypeSpec): KotlinEnumTypeSpec.Builder = apply {

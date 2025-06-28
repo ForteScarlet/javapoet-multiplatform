@@ -23,7 +23,7 @@ public interface KotlinEnumTypeSpec : KotlinTypeSpec {
     override val name: String
 
     override val kind: KotlinTypeSpec.Kind
-        get() = KotlinTypeSpec.Kind.ENUM
+        get() = KotlinTypeSpec.Kind.CLASS
 
     override val superclass: TypeName?
         get() = null
@@ -31,7 +31,7 @@ public interface KotlinEnumTypeSpec : KotlinTypeSpec {
     /**
      * Enum constants.
      */
-    public val enumConstants: Map<String, KotlinTypeSpec>
+    public val enumConstants: Map<String, KotlinAnonymousClassTypeSpec?>
 
     public companion object {
         /**
