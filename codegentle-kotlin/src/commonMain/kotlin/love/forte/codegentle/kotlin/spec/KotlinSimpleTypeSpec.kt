@@ -18,6 +18,17 @@ import love.forte.codegentle.kotlin.spec.internal.KotlinSimpleTypeSpecBuilderImp
  */
 @SubclassOptInRequired(CodeGentleKotlinSpecImplementation::class)
 public interface KotlinSimpleTypeSpec : KotlinTypeSpec {
+    // simple, data class, sealed class, interface, sealed interface
+
+    /**
+     * `null` if it's the default like a simple class or interface.
+     */
+    // public val modality: KotlinModality?
+    // TODO
+
+    override val kind: KotlinTypeSpec.Kind
+
+    override val modifiers: Set<KotlinModifier>
 
     public val primaryConstructor: KotlinConstructorSpec?
 
