@@ -65,6 +65,19 @@ internal fun KotlinSimpleTypeSpec.emitTo(codeWriter: KotlinCodeWriter, implicitM
 
         if (hasExtends) {
             codeWriter.emit(superclass!!)
+            codeWriter.emit("(")
+
+            // Check if the primary constructor has super delegation and add arguments
+            val primaryDelegation = primary?.constructorDelegation
+            if (primaryDelegation != null && primaryDelegation.kind == love.forte.codegentle.kotlin.spec.ConstructorDelegation.Kind.SUPER) {
+                primaryDelegation.arguments.forEachIndexed { index, argument ->
+                    if (index > 0) codeWriter.emit(", ")
+                    codeWriter.emit(argument)
+                }
+            }
+
+            codeWriter.emit(")")
+
             if (hasImplements) {
                 codeWriter.emit(", ")
             }
@@ -84,11 +97,13 @@ internal fun KotlinSimpleTypeSpec.emitTo(codeWriter: KotlinCodeWriter, implicitM
 
     // Emit initializer block
     if (!initializerBlock.isEmpty) {
-        codeWriter.emit("init {\n")
+        codeWriter.emit("init {")
+        codeWriter.emitNewLine()
         codeWriter.withIndent {
             emit(initializerBlock)
         }
-        codeWriter.emit("}\n")
+        codeWriter.emit("}")
+        codeWriter.emitNewLine()
         blockLineRequired = true
     }
 

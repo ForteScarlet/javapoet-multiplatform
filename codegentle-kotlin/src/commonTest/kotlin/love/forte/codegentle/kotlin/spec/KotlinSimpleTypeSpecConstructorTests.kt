@@ -48,7 +48,7 @@ class KotlinSimpleTypeSpecConstructorTests {
             .build()
 
         val code = typeSpec.writeToKotlinString()
-        assertEquals("class Person private(name: String) {\n}", code)
+        assertEquals("class Person private constructor(name: String) {\n}", code)
     }
 
     @Test
@@ -148,7 +148,7 @@ class KotlinSimpleTypeSpecConstructorTests {
             .build()
 
         val code = typeSpec.writeToKotlinString()
-        assertEquals("class Child(name: String) : Parent(name) {\n}", code)
+        assertEquals("class Child(name: String) : test.Parent(name) {\n}", code)
     }
 
     @Test

@@ -25,10 +25,7 @@ internal fun KotlinConstructorSpec.emitTo(codeWriter: KotlinCodeWriter, isPrimar
     codeWriter.emitModifiers(modifiers, emptySet())
 
     // Emit constructor keyword if not primary
-    if (!isPrimary) {
-        if (hasVisibilityModifiers) {
-            codeWriter.emit(" ")
-        }
+    if (!isPrimary || hasVisibilityModifiers) {
         codeWriter.emit("constructor")
     }
 
@@ -58,10 +55,11 @@ internal fun KotlinConstructorSpec.emitTo(codeWriter: KotlinCodeWriter, isPrimar
 
     // Emit constructor body if not empty
     if (!code.isEmpty) {
-        codeWriter.emit(" {\n")
+        codeWriter.emitNewLine(" {")
         codeWriter.withIndent {
             emit(code)
         }
+        codeWriter.emitNewLine()
         codeWriter.emit("}")
     }
 }
