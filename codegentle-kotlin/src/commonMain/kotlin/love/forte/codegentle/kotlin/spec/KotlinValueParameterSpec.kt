@@ -7,7 +7,6 @@ import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.AnnotationRefCollectable
 import love.forte.codegentle.common.ref.TypeRef
-import love.forte.codegentle.common.spec.Spec
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.KotlinModifierBuilderContainer
 import love.forte.codegentle.kotlin.KotlinModifierContainer
@@ -17,7 +16,7 @@ import love.forte.codegentle.kotlin.spec.internal.KotlinValueParameterSpecBuilde
  * A Kotlin value parameter.
  */
 @SubclassOptInRequired(CodeGentleKotlinSpecImplementation::class)
-public interface KotlinValueParameterSpec : Spec, KotlinModifierContainer {
+public interface KotlinValueParameterSpec : KotlinSpec, KotlinModifierContainer {
     /**
      * Parameter name.
      */

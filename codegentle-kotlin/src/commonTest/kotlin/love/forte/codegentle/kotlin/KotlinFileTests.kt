@@ -303,8 +303,6 @@ class KotlinFileTests {
 
         val output = kotlinFile.writeToKotlinString()
 
-        assertTrue(output.contains("// This is a test file."))
-
         assertEquals(
             """
                 // This is a test file.
@@ -328,9 +326,6 @@ class KotlinFileTests {
         }
 
         val output = kotlinFile.writeToKotlinString()
-
-        assertTrue(output.contains("import kotlin.collections.Collections.emptyList"))
-        assertTrue(output.contains("import kotlin.collections.Collections.emptyMap"))
 
         assertEquals(
             """

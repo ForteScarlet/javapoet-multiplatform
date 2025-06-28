@@ -49,10 +49,7 @@ public interface KotlinFile : KotlinCodeEmitter {
         get() = types.first()
 
     /**
-     * Whether to skip importing types from the kotlin.* package
-     *
-     * By default, types from the kotlin.* package are explicitly imported to prevent naming conflicts.
-     * If set to true, types from the kotlin.* package will not be imported.
+     * Whether to skip importing types from the `kotlin.*` package
      */
     public val skipKotlinImports: Boolean
 

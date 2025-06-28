@@ -8,17 +8,15 @@ import love.forte.codegentle.common.naming.TypeVariableName
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.AnnotationRefCollectable
 import love.forte.codegentle.common.ref.TypeRef
-import love.forte.codegentle.common.spec.Spec
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.KotlinModifierBuilderContainer
-import love.forte.codegentle.kotlin.KotlinModifierContainer
 import love.forte.codegentle.kotlin.spec.internal.KotlinFunctionSpecBuilderImpl
 
 /**
  * A Kotlin function。
  */
 @SubclassOptInRequired(CodeGentleKotlinSpecImplementation::class)
-public interface KotlinFunctionSpec : Spec, KotlinModifierContainer {
+public interface KotlinFunctionSpec : KotlinCallableSpec {
     /**
      * Function name.
      */
@@ -26,18 +24,20 @@ public interface KotlinFunctionSpec : Spec, KotlinModifierContainer {
     public val returnType: TypeRef<*>
 
     override val modifiers: Set<KotlinModifier>
-    public val annotations: List<AnnotationRef>
+    override val annotations: List<AnnotationRef>
     public val typeVariables: List<TypeRef<TypeVariableName>>
-    public val parameters: List<KotlinValueParameterSpec>
+    override val parameters: List<KotlinValueParameterSpec>
     public val receiver: TypeRef<*>?
     public val contextParameters: List<KotlinContextParameterSpec>
-    public val kDoc: CodeValue
-    public val code: CodeValue
+    override val kDoc: CodeValue
+    override val code: CodeValue
 
     /**
      * Builder for [KotlinFunctionSpec].
      */
-    public interface Builder : BuilderDsl,
+    public interface Builder :
+        BuilderDsl,
+        KotlinCallableSpec.Builder<KotlinFunctionSpec>,
         KotlinModifierBuilderContainer,
         AnnotationRefCollectable<Builder> {
 
@@ -152,7 +152,7 @@ public interface KotlinFunctionSpec : Spec, KotlinModifierContainer {
         /**
          * Build a [KotlinFunctionSpec] instance.
          */
-        public fun build(): KotlinFunctionSpec
+        override fun build(): KotlinFunctionSpec
     }
 
     public companion object {

@@ -167,7 +167,7 @@ public interface KotlinEnumTypeSpec : KotlinTypeSpec {
         /**
          * Add enum constant with anonymous type.
          */
-        public fun addEnumConstant(name: String, typeSpec: KotlinTypeSpec): Builder
+        public fun addEnumConstant(name: String, typeSpec: KotlinAnonymousClassTypeSpec): Builder
 
         /**
          * Build [KotlinEnumTypeSpec] instance.

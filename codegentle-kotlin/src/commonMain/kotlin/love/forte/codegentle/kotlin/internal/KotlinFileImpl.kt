@@ -10,11 +10,7 @@ import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.kotlin.KotlinFile
 import love.forte.codegentle.kotlin.naming.KotlinStdPackageName
 import love.forte.codegentle.kotlin.ref.KotlinTypeNameRefStatus
-import love.forte.codegentle.kotlin.spec.KotlinContextParameterSpec
-import love.forte.codegentle.kotlin.spec.KotlinFunctionSpec
-import love.forte.codegentle.kotlin.spec.KotlinPropertySpec
-import love.forte.codegentle.kotlin.spec.KotlinTypeSpec
-import love.forte.codegentle.kotlin.spec.KotlinValueParameterSpec
+import love.forte.codegentle.kotlin.spec.*
 import love.forte.codegentle.kotlin.spec.internal.emitTo
 import love.forte.codegentle.kotlin.strategy.KotlinWriteStrategy
 import love.forte.codegentle.kotlin.strategy.ToStringKotlinWriteStrategy
@@ -70,28 +66,49 @@ internal class KotlinFileImpl(
     }
 
     override fun emit(codeWriter: KotlinCodeWriter) {
+        class BlankLineRequirer(var value: Boolean = false) {
+            fun emitBlankLineIfRequired(reset: Boolean = true) {
+                if (value) {
+                    codeWriter.emitNewLine()
+                    if (reset) {
+                        value = false
+                    }
+                }
+            }
+
+            fun required() {
+                value = true
+            }
+        }
+
+        var blankLineRequired = BlankLineRequirer()
+
         codeWriter.inPackage(packageName) {
             if (!fileComment.isEmpty) {
                 codeWriter.emitComment(fileComment)
             }
 
             if (packageName.isNotEmpty) {
-                codeWriter.emit("package $packageName")
-                codeWriter.emit("\n\n")
-            }
-
-            if (staticImports.isNotEmpty()) {
-                for (signature in staticImports) {
-                    codeWriter.emit("import $signature")
-                    codeWriter.emit("\n")
-                }
-                codeWriter.emit("\n")
+                codeWriter.emitNewLine("package $packageName")
+                blankLineRequired.required()
             }
 
             var importedTypesCount = 0
-            val importedTypeSet = LinkedHashSet(codeWriter.importedTypes.values)
 
-            for (className in importedTypeSet) {
+            if (staticImports.isNotEmpty()) {
+                blankLineRequired.emitBlankLineIfRequired()
+
+                for (signature in staticImports) {
+                    if (importedTypesCount > 0) {
+                        codeWriter.emitNewLine()
+                    }
+                    codeWriter.emit("import $signature")
+                    importedTypesCount++
+                }
+                blankLineRequired.required()
+            }
+
+            for (className in codeWriter.importedTypes.values) {
                 // 跳过 kotlin.* 包的导入
                 if (skipKotlinImports
                     && className.packageName == KotlinStdPackageName
@@ -100,19 +117,20 @@ internal class KotlinFileImpl(
                     continue
                 }
 
-                // 检查是否为静态导入
-                if (className.enclosingClassName != null) {
-                    codeWriter.emit("import ${className.canonicalName}")
-                    codeWriter.emit("\n")
+                if (importedTypesCount == 0) {
+                    blankLineRequired.emitBlankLineIfRequired(false)
                 } else {
-                    codeWriter.emit("import ${className.canonicalName}")
-                    codeWriter.emit("\n")
+                    codeWriter.emitNewLine()
                 }
+
+                // 检查是否为静态导入
+                codeWriter.emit("import ${className.canonicalName}")
                 importedTypesCount++
             }
 
             if (importedTypesCount > 0) {
-                codeWriter.emit("\n")
+                codeWriter.emitNewLine()
+                blankLineRequired.required()
             }
 
             // 发射所有顶层元素（类型、函数、属性）
@@ -120,29 +138,35 @@ internal class KotlinFileImpl(
 
             // 发射所有属性
             for (property in properties) {
+                blankLineRequired.emitBlankLineIfRequired()
                 if (!first) {
-                    codeWriter.emit("\n\n")
+                    codeWriter.emitNewLine()
                 }
                 property.emitTo(codeWriter)
                 first = false
+                blankLineRequired.required()
             }
 
             // 发射所有函数
             for (function in functions) {
+                blankLineRequired.emitBlankLineIfRequired()
                 if (!first) {
-                    codeWriter.emit("\n\n")
+                    codeWriter.emitNewLine()
                 }
                 function.emitTo(codeWriter)
                 first = false
+                blankLineRequired.required()
             }
 
             // 发射所有类型
             for (typeSpec in types) {
+                blankLineRequired.emitBlankLineIfRequired()
                 if (!first) {
-                    codeWriter.emit("\n\n")
+                    codeWriter.emitNewLine()
                 }
                 typeSpec.emitTo(codeWriter)
                 first = false
+                blankLineRequired.required()
             }
         }
     }
@@ -306,6 +330,7 @@ private class ClassImportVisitor(
                         is AnnotationRef -> visitAnnotationRef(value)
                     }
                 }
+
                 else -> {
                     // Do nothing.
                 }
@@ -340,9 +365,11 @@ private class ClassImportVisitor(
                     visitTypeRef(ref)
                 }
             }
+
             is ArrayTypeName -> {
                 visitTypeRef(typeName.componentType)
             }
+
             is WildcardTypeName -> {
                 for (ref in typeName.bounds) {
                     visitTypeRef(ref)
