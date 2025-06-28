@@ -2,14 +2,13 @@ package love.forte.codegentle.kotlin.spec
 
 import love.forte.codegentle.common.BuilderDsl
 import love.forte.codegentle.common.ref.TypeRef
-import love.forte.codegentle.common.spec.Spec
 import love.forte.codegentle.kotlin.spec.internal.KotlinContextParameterSpecBuilderImpl
 
 /**
  * A Kotlin context parameter.
  */
 @SubclassOptInRequired(CodeGentleKotlinSpecImplementation::class)
-public interface KotlinContextParameterSpec : Spec {
+public interface KotlinContextParameterSpec : KotlinSpec {
     /**
      * Parameter name.
      * `null` if it's `_`, e.g., `context(_: ParameterType)`.

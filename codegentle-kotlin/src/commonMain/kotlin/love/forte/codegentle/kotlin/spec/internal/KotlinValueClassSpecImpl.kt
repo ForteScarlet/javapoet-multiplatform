@@ -9,6 +9,7 @@ import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.MutableKotlinModifierSet
 import love.forte.codegentle.kotlin.spec.*
+import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 
 /**
  * Implementation of [KotlinValueClassSpec].
@@ -29,6 +30,10 @@ internal data class KotlinValueClassSpecImpl(
     override val subtypes: List<KotlinTypeSpec>
 ) : KotlinValueClassSpec {
     override val superclass: TypeName? = null
+
+    override fun emit(codeWriter: KotlinCodeWriter) {
+        emitTo(codeWriter)
+    }
 
     override fun toString(): String {
         return "KotlinValueClassSpec(name='$name', kind=$kind)"

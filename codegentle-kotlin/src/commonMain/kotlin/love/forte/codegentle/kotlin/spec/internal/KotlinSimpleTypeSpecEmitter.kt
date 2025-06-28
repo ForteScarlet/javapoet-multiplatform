@@ -3,6 +3,7 @@ package love.forte.codegentle.kotlin.spec.internal
 import love.forte.codegentle.common.code.isEmpty
 import love.forte.codegentle.common.writer.withIndent
 import love.forte.codegentle.kotlin.KotlinModifier
+import love.forte.codegentle.kotlin.VISIBILITY_MODIFIERS
 import love.forte.codegentle.kotlin.spec.KotlinSimpleTypeSpec
 import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 
@@ -45,6 +46,16 @@ internal fun KotlinSimpleTypeSpec.emitTo(codeWriter: KotlinCodeWriter, implicitM
         codeWriter.emitTypeVariableRefs(typeVariables)
     }
 
+    // Emit primary constructor if present
+    val primary = primaryConstructor
+    if (primary != null) {
+        if (primary.modifiers.any { it in VISIBILITY_MODIFIERS }) {
+            codeWriter.emit(" ")
+        }
+
+        primary.emitTo(codeWriter, true)
+    }
+
     // Emit superclass and superinterfaces
     val hasExtends = superclass != null
     val hasImplements = superinterfaces.isNotEmpty()
@@ -78,6 +89,19 @@ internal fun KotlinSimpleTypeSpec.emitTo(codeWriter: KotlinCodeWriter, implicitM
             emit(initializerBlock)
         }
         codeWriter.emit("}\n")
+        blockLineRequired = true
+    }
+
+    // Emit secondary constructors
+    if (secondaryConstructors.isNotEmpty()) {
+        if (blockLineRequired) {
+            codeWriter.emitNewLine()
+        }
+
+        for (constructor in secondaryConstructors) {
+            constructor.emitTo(codeWriter, false)
+            codeWriter.emitNewLine()
+        }
         blockLineRequired = true
     }
 

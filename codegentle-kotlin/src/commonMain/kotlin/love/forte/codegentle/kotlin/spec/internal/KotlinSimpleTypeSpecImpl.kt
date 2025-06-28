@@ -8,10 +8,8 @@ import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.MutableKotlinModifierSet
-import love.forte.codegentle.kotlin.spec.KotlinFunctionSpec
-import love.forte.codegentle.kotlin.spec.KotlinPropertySpec
-import love.forte.codegentle.kotlin.spec.KotlinSimpleTypeSpec
-import love.forte.codegentle.kotlin.spec.KotlinTypeSpec
+import love.forte.codegentle.kotlin.spec.*
+import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 
 /**
  * Implementation of [KotlinSimpleTypeSpec].
@@ -30,8 +28,14 @@ internal data class KotlinSimpleTypeSpecImpl(
     override val properties: List<KotlinPropertySpec>,
     override val initializerBlock: CodeValue,
     override val functions: List<KotlinFunctionSpec>,
-    override val subtypes: List<KotlinTypeSpec>
+    override val subtypes: List<KotlinTypeSpec>,
+    override val primaryConstructor: KotlinConstructorSpec?,
+    override val secondaryConstructors: List<KotlinConstructorSpec>
 ) : KotlinSimpleTypeSpec {
+    override fun emit(codeWriter: KotlinCodeWriter) {
+        emitTo(codeWriter)
+    }
+
     override fun toString(): String {
         return "KotlinSimpleTypeSpec(name='$name', kind=$kind)"
     }
@@ -46,6 +50,8 @@ internal class KotlinSimpleTypeSpecBuilderImpl(
     override val kind: KotlinTypeSpec.Kind,
     override val name: String
 ) : KotlinSimpleTypeSpec.Builder {
+    // TODO 校验kind
+
     private val kDoc = CodeValue.builder()
     private var superclass: TypeName? = null
     private val initializerBlock = CodeValue.builder()
@@ -57,6 +63,8 @@ internal class KotlinSimpleTypeSpecBuilderImpl(
     private val properties: MutableList<KotlinPropertySpec> = mutableListOf()
     private val functions: MutableList<KotlinFunctionSpec> = mutableListOf()
     private val subtypes: MutableList<KotlinTypeSpec> = mutableListOf()
+    private var primaryConstructor: KotlinConstructorSpec? = null
+    private val secondaryConstructors: MutableList<KotlinConstructorSpec> = mutableListOf()
 
     override fun addKDoc(codeValue: CodeValue): KotlinSimpleTypeSpec.Builder = apply {
         kDoc.add(codeValue)
@@ -163,6 +171,22 @@ internal class KotlinSimpleTypeSpecBuilderImpl(
         this.subtypes.add(type)
     }
 
+    override fun primaryConstructor(constructor: KotlinConstructorSpec?): KotlinSimpleTypeSpec.Builder = apply {
+        this.primaryConstructor = constructor
+    }
+
+    override fun addSecondaryConstructor(constructor: KotlinConstructorSpec): KotlinSimpleTypeSpec.Builder = apply {
+        this.secondaryConstructors.add(constructor)
+    }
+
+    override fun addSecondaryConstructors(constructors: Iterable<KotlinConstructorSpec>): KotlinSimpleTypeSpec.Builder = apply {
+        this.secondaryConstructors.addAll(constructors)
+    }
+
+    override fun addSecondaryConstructors(vararg constructors: KotlinConstructorSpec): KotlinSimpleTypeSpec.Builder = apply {
+        this.secondaryConstructors.addAll(constructors)
+    }
+
     override fun build(): KotlinSimpleTypeSpec {
         return KotlinSimpleTypeSpecImpl(
             kind = kind,
@@ -176,7 +200,9 @@ internal class KotlinSimpleTypeSpecBuilderImpl(
             properties = properties.toList(),
             initializerBlock = initializerBlock.build(),
             functions = functions.toList(),
-            subtypes = subtypes.toList()
+            subtypes = subtypes.toList(),
+            primaryConstructor = primaryConstructor,
+            secondaryConstructors = secondaryConstructors.toList()
         )
     }
 }

@@ -18,10 +18,10 @@ import love.forte.codegentle.kotlin.spec.internal.KotlinSimpleTypeSpecBuilderImp
  */
 @SubclassOptInRequired(CodeGentleKotlinSpecImplementation::class)
 public interface KotlinSimpleTypeSpec : KotlinTypeSpec {
-    // TODO 类型拆分开
-    // TODO SimpleType 支持:
-    //  - 普通的class
-    //  - data class
+
+    public val primaryConstructor: KotlinConstructorSpec?
+
+    public val secondaryConstructors: List<KotlinConstructorSpec>
 
     /**
      * 创建一个简单的 Kotlin 类型规范的构建器。
@@ -186,6 +186,26 @@ public interface KotlinSimpleTypeSpec : KotlinTypeSpec {
         public fun addSubtype(type: KotlinTypeSpec): Builder
 
         /**
+         * Set the primary constructor for this type.
+         */
+        public fun primaryConstructor(constructor: KotlinConstructorSpec?): Builder
+
+        /**
+         * Add a secondary constructor to this type.
+         */
+        public fun addSecondaryConstructor(constructor: KotlinConstructorSpec): Builder
+
+        /**
+         * Add secondary constructors to this type.
+         */
+        public fun addSecondaryConstructors(constructors: Iterable<KotlinConstructorSpec>): Builder
+
+        /**
+         * Add secondary constructors to this type.
+         */
+        public fun addSecondaryConstructors(vararg constructors: KotlinConstructorSpec): Builder
+
+        /**
          * 构建 [KotlinSimpleTypeSpec] 实例。
          *
          * @return 新的 [KotlinSimpleTypeSpec] 实例
@@ -216,3 +236,16 @@ public inline fun KotlinSimpleTypeSpec.Builder.addFunction(
     block: KotlinFunctionSpec.Builder.() -> Unit = {}
 ): KotlinSimpleTypeSpec.Builder = addFunction(KotlinFunctionSpec(name, type, block))
 
+/**
+ * Set the primary constructor for this type.
+ */
+public inline fun KotlinSimpleTypeSpec.Builder.primaryConstructor(
+    block: KotlinConstructorSpec.Builder.() -> Unit = {}
+): KotlinSimpleTypeSpec.Builder = primaryConstructor(KotlinConstructorSpec.builder().apply(block).build())
+
+/**
+ * Add a secondary constructor to this type.
+ */
+public inline fun KotlinSimpleTypeSpec.Builder.addSecondaryConstructor(
+    block: KotlinConstructorSpec.Builder.() -> Unit = {}
+): KotlinSimpleTypeSpec.Builder = addSecondaryConstructor(KotlinConstructorSpec.builder().apply(block).build())

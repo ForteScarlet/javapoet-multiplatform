@@ -7,7 +7,6 @@ import love.forte.codegentle.common.code.CodeValueSingleFormatBuilderDsl
 import love.forte.codegentle.common.ref.AnnotationRef
 import love.forte.codegentle.common.ref.AnnotationRefCollectable
 import love.forte.codegentle.common.ref.TypeRef
-import love.forte.codegentle.common.spec.Spec
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.KotlinModifierBuilderContainer
 import love.forte.codegentle.kotlin.KotlinModifierContainer
@@ -17,7 +16,7 @@ import love.forte.codegentle.kotlin.spec.internal.KotlinPropertySpecBuilderImpl
  * A Kotlin property.
  */
 @SubclassOptInRequired(CodeGentleKotlinSpecImplementation::class)
-public interface KotlinPropertySpec : Spec, KotlinModifierContainer {
+public interface KotlinPropertySpec : KotlinSpec, KotlinModifierContainer {
     /**
      * Property's name.
      */
@@ -33,6 +32,9 @@ public interface KotlinPropertySpec : Spec, KotlinModifierContainer {
     public val kDoc: CodeValue
     public val initializer: CodeValue?
     public val delegate: CodeValue?
+
+    public val getter: KotlinGetterSpec?
+    public val setter: KotlinSetterSpec?
 
     /**
      * Builder for [KotlinPropertySpec].

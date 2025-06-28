@@ -8,6 +8,7 @@ import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.MutableKotlinModifierSet
 import love.forte.codegentle.kotlin.spec.KotlinValueParameterSpec
+import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 
 /**
  *
@@ -21,6 +22,10 @@ internal data class KotlinValueParameterSpecImpl(
     override val kDoc: CodeValue,
     override val defaultValue: CodeValue?
 ) : KotlinValueParameterSpec {
+    override fun emit(codeWriter: KotlinCodeWriter) {
+        emitTo(codeWriter)
+    }
+
     override fun toString(): String {
         return "KotlinValueParameterSpec(name='$name', type=${typeRef.typeName})"
     }

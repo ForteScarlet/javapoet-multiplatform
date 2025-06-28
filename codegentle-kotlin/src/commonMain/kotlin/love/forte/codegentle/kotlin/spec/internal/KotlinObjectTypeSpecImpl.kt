@@ -12,6 +12,7 @@ import love.forte.codegentle.kotlin.spec.KotlinFunctionSpec
 import love.forte.codegentle.kotlin.spec.KotlinObjectTypeSpec
 import love.forte.codegentle.kotlin.spec.KotlinPropertySpec
 import love.forte.codegentle.kotlin.spec.KotlinTypeSpec
+import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 
 /**
  * Implementation of [KotlinObjectTypeSpec].
@@ -32,6 +33,10 @@ internal data class KotlinObjectTypeSpecImpl(
     override val subtypes: List<KotlinTypeSpec>
 ) : KotlinObjectTypeSpec {
     override val superclass: TypeName? = null
+
+    override fun emit(codeWriter: KotlinCodeWriter) {
+        emitTo(codeWriter)
+    }
 
     override fun toString(): String {
         return "KotlinObjectTypeSpec(name='$name', kind=$kind)"

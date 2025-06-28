@@ -11,6 +11,7 @@ import love.forte.codegentle.kotlin.MutableKotlinModifierSet
 import love.forte.codegentle.kotlin.spec.KotlinContextParameterSpec
 import love.forte.codegentle.kotlin.spec.KotlinFunctionSpec
 import love.forte.codegentle.kotlin.spec.KotlinValueParameterSpec
+import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 
 /**
  * Implementation of [KotlinFunctionSpec].
@@ -29,6 +30,9 @@ internal data class KotlinFunctionSpecImpl(
     override val kDoc: CodeValue,
     override val code: CodeValue
 ) : KotlinFunctionSpec {
+    override fun emit(codeWriter: KotlinCodeWriter) {
+        emitTo(codeWriter)
+    }
     override fun toString(): String {
         return "KotlinFunctionSpec(name='$name', returnType=${returnType.typeName})"
     }

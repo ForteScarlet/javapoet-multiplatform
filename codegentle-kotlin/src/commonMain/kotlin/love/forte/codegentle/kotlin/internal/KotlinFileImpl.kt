@@ -81,7 +81,7 @@ internal class KotlinFileImpl(
             }
         }
 
-        var blankLineRequired = BlankLineRequirer()
+        val blankLineRequired = BlankLineRequirer()
 
         codeWriter.inPackage(packageName) {
             if (!fileComment.isEmpty) {

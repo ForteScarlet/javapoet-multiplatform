@@ -9,6 +9,7 @@ import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.MutableKotlinModifierSet
 import love.forte.codegentle.kotlin.spec.*
+import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 
 /**
  * Implementation of [KotlinEnumTypeSpec].
@@ -28,6 +29,9 @@ internal data class KotlinEnumTypeSpecImpl(
     override val functions: List<KotlinFunctionSpec>,
     override val subtypes: List<KotlinTypeSpec>
 ) : KotlinEnumTypeSpec {
+    override fun emit(codeWriter: KotlinCodeWriter) {
+        emitTo(codeWriter)
+    }
 
     override fun toString(): String {
         return "KotlinEnumTypeSpec(name='$name', kind=$kind)"
@@ -141,7 +145,7 @@ internal class KotlinEnumTypeSpecBuilderImpl(
         this.enumConstants[name] = KotlinSimpleTypeSpec.builder(KotlinTypeSpec.Kind.ENUM, name).build()
     }
 
-    override fun addEnumConstant(name: String, typeSpec: KotlinTypeSpec): KotlinEnumTypeSpec.Builder = apply {
+    override fun addEnumConstant(name: String, typeSpec: KotlinAnonymousClassTypeSpec): KotlinEnumTypeSpec.Builder = apply {
         this.enumConstants[name] = typeSpec
     }
 

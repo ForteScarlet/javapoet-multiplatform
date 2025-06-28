@@ -11,6 +11,7 @@ import love.forte.codegentle.kotlin.spec.KotlinAnnotationTypeSpec
 import love.forte.codegentle.kotlin.spec.KotlinFunctionSpec
 import love.forte.codegentle.kotlin.spec.KotlinPropertySpec
 import love.forte.codegentle.kotlin.spec.KotlinTypeSpec
+import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 
 /**
  * Implementation of [KotlinAnnotationTypeSpec].
@@ -28,6 +29,10 @@ internal data class KotlinAnnotationTypeSpecImpl(
     override val subtypes: List<KotlinTypeSpec>
 ) : KotlinAnnotationTypeSpec {
     override val initializerBlock: CodeValue = CodeValue()
+
+    override fun emit(codeWriter: KotlinCodeWriter) {
+        emitTo(codeWriter)
+    }
 
     override fun toString(): String {
         return "KotlinAnnotationTypeSpec(name='$name', kind=$kind)"

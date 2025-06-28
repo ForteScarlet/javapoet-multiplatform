@@ -56,17 +56,11 @@ public object DefaultKotlinWriteStrategy : KotlinWriteStrategy {
 public object ToStringKotlinWriteStrategy : KotlinWriteStrategy {
     override fun newline(): String = "\n"
 
-    override fun isIdentifier(value: String): Boolean {
-        return DefaultKotlinWriteStrategy.isIdentifier(value)
-    }
+    override fun isIdentifier(value: String): Boolean = true
 
-    override fun isValidSourceName(name: TypeName): Boolean {
-        return DefaultKotlinWriteStrategy.isValidSourceName(name)
-    }
+    override fun isValidSourceName(name: TypeName): Boolean = true
 
-    override fun isValidSourceName(name: String): Boolean {
-        return DefaultKotlinWriteStrategy.isValidSourceName(name)
-    }
+    override fun isValidSourceName(name: String): Boolean = true
 
     override fun omitKotlinPackage(): Boolean = true
 }

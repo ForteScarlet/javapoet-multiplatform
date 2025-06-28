@@ -8,6 +8,7 @@ import love.forte.codegentle.common.ref.TypeRef
 import love.forte.codegentle.kotlin.KotlinModifier
 import love.forte.codegentle.kotlin.MutableKotlinModifierSet
 import love.forte.codegentle.kotlin.spec.KotlinPropertySpec
+import love.forte.codegentle.kotlin.writer.KotlinCodeWriter
 
 /**
  *
@@ -22,6 +23,10 @@ internal data class KotlinPropertySpecImpl(
     override val initializer: CodeValue?,
     override val delegate: CodeValue?
 ) : KotlinPropertySpec {
+    override fun emit(codeWriter: KotlinCodeWriter) {
+        TODO()
+    }
+
     override fun toString(): String {
         return "KotlinPropertySpec(name='$name', type=${typeRef.typeName})"
     }
