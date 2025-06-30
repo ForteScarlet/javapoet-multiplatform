@@ -1,4 +1,4 @@
-import com.google.devtools.ksp.gradle.KspTaskMetadata
+import com.google.devtools.ksp.gradle.KspAATask
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
@@ -9,11 +9,6 @@ plugins {
     alias(libs.plugins.ksp)
     // kotlin("multiplatform")
     // id("com.google.devtools.ksp")
-}
-
-dependencies {
-    kspCommonMainMetadata(project(":internal:code-value-extensions"))
-    kspCommonMainMetadata(project(":internal:enum-set"))
 }
 
 kotlin {
@@ -104,11 +99,7 @@ kotlin {
     sourceSets {
         commonMain {
             // kotlin.srcDir(project.layout.buildDirectory.dir("generated/ksp/metadata/commonMain/kotlin"))
-            // see https://github.com/google/ksp/issues/963#issuecomment-1894144639
-            // TODO 这个似乎..不好使了? K2 模式下不好使。
-            tasks.withType<KspTaskMetadata> {
-                kotlin.srcDir(destinationDirectory.file("kotlin"))
-            }
+            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
         }
 
         commonTest {
@@ -122,6 +113,17 @@ kotlin {
                 implementation(kotlin("test-junit5"))
             }
         }
+    }
+}
+
+dependencies {
+    kspCommonMainMetadata(project(":internal:code-value-extensions"))
+    kspCommonMainMetadata(project(":internal:enum-set"))
+}
+
+tasks.withType<KspAATask>().configureEach {
+    if (name != "kspCommonMainKotlinMetadata") {
+        dependsOn("kspCommonMainKotlinMetadata")
     }
 }
 
